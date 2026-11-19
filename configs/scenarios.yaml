@@ -1,0 +1,37 @@
+
+# ABM THEO QUY - THAM SO GIA DINH
+# Khoi tao: Q1/2023
+# 18 buoc: Q2/2023 den Q3/2027
+# Chinh sach kich hoat tu Q4/2026
+
+# Ten n_months duoc giu de tuong thich code; gia tri la SO QUY.
+n_months: 18
+n_runs: 60
+base_seed: 202611
+
+# Dải do nhay tu dong: 0.30 = +/-30% quanh tham so co so.
+# Chi co gia tri co so can duoc Huy chinh trong parameters.
+sensitivity_relative_width: 0.30
+
+# Loi suat nhap/xuat la %/nam, nhung tang truong so du la moi QUY.
+# policy_month = 14 => lan kich hoat dau tien la buoc 15 (2026Q4).
+# Cac gia tri hien tai la GIA DINH, chua la he so hoi quy.
+parameters:
+  policy_month: 14
+  policy_pressure: 0.65
+  policy_step: 0.28
+
+  depositor_sensitivity: 0.035
+  borrower_elasticity: 0.012
+  pass_through: 0.48
+
+  deposit_competition: 0.07
+  deposit_cap_factor: 0.25
+
+  # Tran ky thuat cho ty le du no / tien gui
+  max_loan_to_deposit: 1.60
+
+scenarios:
+  A: "Khong can thiep"
+  B: "Chi dao giam lai suat"
+  C: "Chi dao va han che canh tranh huy dong"

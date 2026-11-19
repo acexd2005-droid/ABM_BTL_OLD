@@ -1,0 +1,7 @@
+# Pin these together after installation, especially Mesa, for official reproducibility.
+mesa==3.3.1
+numpy>=1.24,<3
+pandas>=2.0,<3
+matplotlib>=3.7,<4
+PyYAML>=6,<7
+pytest>=7,<10
