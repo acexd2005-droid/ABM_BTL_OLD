@@ -78,6 +78,30 @@ class ABMModel(Model):
             p.get("loan_spread_add", 1.35)
         )
 
+        # Học thích nghi (tùy chọn, mặc định TẮT để tái lập kết quả cũ)
+        self.adaptive_learning = bool(
+            p.get("adaptive_learning", False)
+        )
+        self.learning_up_step = float(
+            p.get("learning_up_step", 0.05)
+        )
+        self.learning_down_step = float(
+            p.get("learning_down_step", 0.10)
+        )
+        self.learning_growth_threshold = float(
+            p.get("learning_growth_threshold", 0.006)
+        )
+        self.learning_nim_threshold = float(
+            p.get("learning_nim_threshold", 5.5875)
+        )
+        self.margin_min = float(p.get("margin_min", 2.2))
+        self.margin_max = float(p.get("margin_max", 4.2))
+
+        if self.margin_min > self.margin_max:
+            raise ValueError("margin_min không được lớn hơn margin_max")
+        if self.learning_up_step < 0 or self.learning_down_step < 0:
+            raise ValueError("Bước học phải không âm")
+
         if self.n_months <= 0:
             raise ValueError("n_months phải dương")
 
@@ -183,6 +207,14 @@ class ABMModel(Model):
                 "Danh sách ngân hàng không được rỗng"
             )
 
+        # Trạng thái đầu kỳ cho học thích nghi (không dùng số ngẫu nhiên)
+        total_loans = sum(b.loans for b in banks)
+        for bank in banks:
+            bank.prev_loans = bank.loans
+            bank.prev_loan_share = (
+                bank.loans / total_loans if total_loans > 0 else 0.0
+            )
+
         return banks
 
     def step(self):
@@ -267,6 +299,9 @@ class ABMModel(Model):
                     bank.policy_complied
                 ),
                 "policy_cut": bank.policy_cut,
+
+                # Biên mục tiêu áp dụng cho quý kế tiếp (cột mới)
+                "target_margin": bank.target_margin,
             })
 
         # 7. Tổng hợp trạng thái toàn hệ thống

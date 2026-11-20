@@ -138,3 +138,42 @@ class Bank(Agent):
     def finish_month(self):
         """Cập nhật chi phí vốn trễ cuối quý. Giữ tên để tương thích."""
         self.lagged_funding_cost = self.funding_cost
+
+        if self.model.adaptive_learning:
+            self._learn_margin()
+
+    def _learn_margin(self):
+        """Học thích nghi: chỉnh target_margin cho quý sau theo kết quả quý này.
+
+        - Thị phần dư nợ giảm -> giảm biên một bước learning_down_step.
+        - Nếu không: tăng trưởng dư nợ >= g* và nim_proxy >= n* -> tăng biên
+          một bước learning_up_step. Cả hai cùng xảy ra thì chỉ giảm.
+        - Biên bị chặn trong [margin_min, margin_max]. Không dùng số ngẫu nhiên.
+        """
+        model = self.model
+
+        total_loans = sum(b.loans for b in model.banks)
+        share = self.loans / total_loans if total_loans > 0 else 0.0
+        growth = (
+            self.loans / self.prev_loans - 1
+            if self.prev_loans > 0 else 0.0
+        )
+
+        share_fell = share < self.prev_loan_share
+        doing_well = (
+            growth >= model.learning_growth_threshold
+            and self.nim_proxy >= model.learning_nim_threshold
+        )
+
+        if share_fell:
+            self.target_margin -= model.learning_down_step
+        elif doing_well:
+            self.target_margin += model.learning_up_step
+
+        self.target_margin = max(
+            model.margin_min,
+            min(model.margin_max, self.target_margin),
+        )
+
+        self.prev_loans = self.loans
+        self.prev_loan_share = share

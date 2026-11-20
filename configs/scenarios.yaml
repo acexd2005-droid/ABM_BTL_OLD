@@ -38,6 +38,23 @@ parameters:
   borrower_base_growth: 0.006      # ty le/QUY: tang truong du no co so tai lai suat tham chieu
   margin_floor: 2.2                # diem %: bien nim_proxy tham chieu trong xac suat tuan thu cua NHNN
 
+  # --- Hoc thich nghi cua ngan hang (TUY CHON, mac dinh TAT) ---
+  # Gia tri khoi diem, CHUA HIEU CHINH, cho Huy duyet.
+  # Cuoi moi quy, moi ngan hang chinh target_margin cho quy sau:
+  #  - thi phan du no giam so voi quy truoc -> giam bien learning_down_step
+  #  - nguoc lai, neu tang truong du no >= g* va nim_proxy >= n* -> tang bien learning_up_step
+  #  - ca hai cung xay ra thi chi giam. Bien bi chan trong [margin_min, margin_max].
+  adaptive_learning: false
+  learning_up_step: 0.05           # diem %/QUY: buoc tang bien
+  learning_down_step: 0.10         # diem %/QUY: buoc giam bien
+  learning_growth_threshold: 0.006 # g*: ty le/QUY, bang tang truong du no co so
+  # n*: nim_proxy binh quan gia quyen theo du no cua he thong tai t=0, tinh MOT LAN tu
+  # data/clean/abm_initial_8nganhang_2023Q1.csv: nim_i = loan_rate - (deposit_rate*(1-casa_ratio)+0.15),
+  # n* = sum(nim_i*loans_i)/sum(loans_i) = 5.5875. Don vi: diem %/nam. Khong tinh tu dong luc chay.
+  learning_nim_threshold: 5.5875
+  margin_min: 2.2                  # diem %: san cua target_margin
+  margin_max: 4.2                  # diem %: tran cua target_margin
+
 scenarios:
   A: "Khong can thiep"
   B: "Chi dao giam lai suat"
