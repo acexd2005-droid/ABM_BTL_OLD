@@ -95,3 +95,12 @@ Kiểm tra mục 6 CLAUDE.md khi BẬT: B và C không cao hơn A ở mọi lầ
 - `nim_proxy` tại t=0 (n\*) phụ thuộc cách định nghĩa chi phí vốn xấp xỉ của mô hình.
 - Học làm thay đổi xác suất tuân thủ chỉ đạo (vì xác suất phụ thuộc `nim_proxy`), nên khó tách riêng tác động của chỉ đạo với tác động của học.
 - Học chỉ chỉnh biên cho vay; tiền gửi và lãi suất huy động không học.
+
+
+## Quy tắc học relative (Giai đoạn 5, chưa hiệu chỉnh, chờ Huy duyệt)
+
+Cấu hình: `configs/scenarios_adaptive_relative.yaml` (có điều kiện nim) và `configs/scenarios_adaptive_relative_nonim.yaml` (không điều kiện nim). Giảm biên nếu $g_i < \bar g - \theta$; tăng biên nếu $g_i > \bar g + \theta$ và (khi bật điều kiện) $nim_i \ge \overline{nim}$; còn lại giữ. Mốc $\bar g$, $\overline{nim}$ tính một lần mỗi quý, bình quân đơn giản 8 ngân hàng (`learning_benchmark: simple`).
+
+Kết quả đo ở kịch bản A, bộ 2023Q1, độ trôi biên trung bình sau 18 quý (so với biên khởi đầu): absolute −0.79; relative có điều kiện nim ≈ 0.00; relative không điều kiện nim +0.24 (test đánh dấu xfail strict).
+
+**Lưu ý diễn giải:** "relative không trôi" là kết quả thực nghiệm trên dữ liệu này, không phải tính chất cấu trúc. Nó dựa vào cân bằng giữa hai thiên lệch ngược chiều (điều kiện nim cản bước tăng; phân phối tăng trưởng lệch phải làm phía tăng nhiều hơn). Thử θ = 0 cho trôi khoảng −0.15, và trên bộ 2026Q3 trôi khoảng +0.05. Trên dữ liệu giả lập mặc định các ngân hàng đồng nhất nên đều nằm trong vùng chết (relative = TẮT), không kiểm chứng được gì. Biến thể không điều kiện nim là kết quả âm, ghi nhận để nhóm quyết định.

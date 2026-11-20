@@ -2,18 +2,21 @@
 
 import pandas as pd
 import pytest
-import yaml
 from pathlib import Path
 
+from src.analysis.experiments import load_config as merged_config, _deep_merge
 from src.core.model import ABMModel
 from tests.test_golden import ROOT, GOLDEN, load_config, run_model
 
 ADAPTIVE = ROOT / "configs/scenarios_adaptive.yaml"
 
 
+RELATIVE = ROOT / "configs/scenarios_adaptive_relative.yaml"
+RELATIVE_NONIM = ROOT / "configs/scenarios_adaptive_relative_nonim.yaml"
+
+
 def adaptive_config():
-    with open(ADAPTIVE, encoding="utf-8") as f:
-        return yaml.safe_load(f)
+    return merged_config(ADAPTIVE)
 
 
 def make_model(**overrides):
@@ -27,12 +30,26 @@ def make_model(**overrides):
     return ABMModel("A", cfg["n_months"], 202611, params, rows)
 
 
-def test_adaptive_yaml_only_differs_in_flag():
-    off, on = load_config(), adaptive_config()
+def test_deep_merge_and_override_files():
+    base = {"a": 1, "parameters": {"x": 1, "y": 2}}
+    assert _deep_merge(base, {"parameters": {"y": 3}}) == {
+        "a": 1, "parameters": {"x": 1, "y": 3}
+    }
+    assert base["parameters"]["y"] == 2  # không sửa bản gốc
+    off = load_config()
     assert off["parameters"]["adaptive_learning"] is False
+    assert off["parameters"]["learning_rule"] == "absolute"
+    on = merged_config(ADAPTIVE)
     assert on["parameters"]["adaptive_learning"] is True
-    on["parameters"]["adaptive_learning"] = False
-    assert on == off
+    assert on["parameters"]["learning_rule"] == "absolute"
+    # Khóa không ghi đè phải giữ nguyên từ scenarios.yaml
+    assert on["parameters"]["pass_through"] == off["parameters"]["pass_through"]
+    assert on["n_runs"] == off["n_runs"]
+    for path, nim in ((RELATIVE, True), (RELATIVE_NONIM, False)):
+        rel = merged_config(path)["parameters"]
+        assert rel["learning_rule"] == "relative"
+        assert rel["learning_down_step"] == 0.05
+        assert rel["learning_nim_condition"] is nim
 
 
 def test_off_by_default_in_code():
@@ -148,3 +165,144 @@ def test_learning_has_no_effect_before_policy_only_via_state():
 def test_invalid_margin_bounds():
     with pytest.raises(ValueError):
         make_model(margin_min=5.0, margin_max=4.0)
+
+
+# ---------------- Quy tắc relative ----------------
+
+def make_relative(**overrides):
+    return make_model(learning_rule="relative", **overrides)
+
+
+def test_relative_defaults_in_code():
+    m = ABMModel(seed=1)
+    assert m.learning_rule == "absolute"
+    assert m.learning_deadband == 0.005
+    assert m.learning_benchmark == "simple"
+    assert m.learning_nim_condition is True
+
+
+def test_relative_invalid_options():
+    with pytest.raises(ValueError):
+        make_model(learning_rule="khac")
+    with pytest.raises(ValueError):
+        make_model(learning_benchmark="khac")
+    with pytest.raises(ValueError):
+        make_model(learning_deadband=-0.1)
+
+
+def test_relative_deadband_keeps_margin():
+    model = make_relative()
+    # Tất cả cùng tăng 1% => g_i = g_bar, nằm trong vùng chết
+    for b in model.banks:
+        b.loans *= 1.01
+    before = [b.target_margin for b in model.banks]
+    for b in model.banks:
+        b.finish_month()
+    assert [b.target_margin for b in model.banks] == before
+
+
+def test_relative_falls_when_below_benchmark_by_more_than_deadband():
+    model = make_relative()
+    bank = model.banks[0]
+    for other in model.banks[1:]:
+        other.loans *= 1.05
+    before = bank.target_margin
+    for b in model.banks:
+        b.finish_month()
+    assert bank.target_margin == pytest.approx(before - model.learning_down_step)
+
+
+def test_relative_rises_when_above_benchmark_and_nim_ok():
+    model = make_relative()
+    bank = model.banks[0]
+    bank.loans *= 1.10
+    # Bảo đảm nim của bank >= bình quân
+    bank.loan_rate += 5.0
+    before = bank.target_margin
+    for b in model.banks:
+        b.finish_month()
+    assert bank.target_margin == pytest.approx(before + model.learning_up_step)
+
+
+def test_relative_no_rise_when_nim_below_average():
+    bank_idx = 0
+    # Có điều kiện nim: không tăng
+    model = make_relative()
+    bank = model.banks[bank_idx]
+    bank.loans *= 1.10
+    bank.loan_rate -= 5.0
+    before = bank.target_margin
+    for b in model.banks:
+        b.finish_month()
+    assert bank.target_margin == before
+    # Không điều kiện nim: vẫn tăng
+    model = make_relative(learning_nim_condition=False)
+    bank = model.banks[bank_idx]
+    bank.loans *= 1.10
+    bank.loan_rate -= 5.0
+    before = bank.target_margin
+    for b in model.banks:
+        b.finish_month()
+    assert bank.target_margin == pytest.approx(before + model.learning_up_step)
+
+
+def test_relative_stats_computed_once_per_quarter():
+    # Kết quả không phụ thuộc thứ tự cập nhật ngân hàng
+    def run(order):
+        model = make_relative(learning_nim_condition=False)
+        for i, b in enumerate(model.banks):
+            b.loans *= 1 + 0.01 * i
+        for i in order:
+            model.banks[i].finish_month()
+        return [b.target_margin for b in model.banks]
+    n = 8
+    assert run(range(n)) == run(reversed(range(n)))
+
+
+def test_relative_weighted_benchmark_runs():
+    model = make_relative(learning_benchmark="weighted")
+    model.banks[0].loans *= 1.10
+    for b in model.banks:
+        b.finish_month()
+    assert all(
+        model.margin_min <= b.target_margin <= model.margin_max
+        for b in model.banks
+    )
+
+
+@pytest.mark.parametrize("path", [RELATIVE, RELATIVE_NONIM])
+@pytest.mark.parametrize("scenario", "ABC")
+def test_relative_margin_within_bounds(scenario, path):
+    cfg = merged_config(path)
+    _, bank_history = run_model(scenario, 202611, cfg)
+    p = cfg["parameters"]
+    assert bank_history.target_margin.between(p["margin_min"], p["margin_max"]).all()
+
+
+@pytest.mark.parametrize("path", [
+    RELATIVE,
+    pytest.param(RELATIVE_NONIM, marks=pytest.mark.xfail(
+        strict=True,
+        reason="Biến thể không điều kiện nim trôi +0.237 điểm % sau 18 quý "
+               "(ghi nhận, chờ nhóm quyết định; không chỉnh tham số)",
+    )),
+])
+@pytest.mark.parametrize("seed", [202611, 202612, 202613])
+def test_relative_drift_small_scenario_a(path, seed):
+    cfg = merged_config(path)
+    initial = make_model().banks
+    start = sum(b.target_margin for b in initial) / len(initial)
+    _, bank_history = run_model("A", seed, cfg)
+    last = bank_history[bank_history.month == cfg["n_months"]]
+    assert len(last) == 8
+    assert abs(last.target_margin.mean() - start) <= 0.1
+
+
+@pytest.mark.parametrize("path", [RELATIVE, RELATIVE_NONIM])
+def test_relative_same_before_policy(path):
+    cfg = merged_config(path)
+    pm = cfg["parameters"]["policy_month"]
+    frames = {s: run_model(s, 202611, cfg)[0] for s in "ABC"}
+    pre = lambda f: f[f.month <= pm][["loan_rate", "deposit_rate", "total_loans"]]
+    pd.testing.assert_frame_equal(pre(frames["A"]), pre(frames["B"]))
+    pd.testing.assert_frame_equal(pre(frames["A"]), pre(frames["C"]))

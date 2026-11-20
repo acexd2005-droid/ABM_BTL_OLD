@@ -94,8 +94,27 @@ class ABMModel(Model):
         self.learning_nim_threshold = float(
             p.get("learning_nim_threshold", 5.5875)
         )
+        # Quy tắc học "relative": so sánh với mốc bình quân hệ thống (mặc định TẮT)
+        self.learning_rule = str(p.get("learning_rule", "absolute"))
+        self.learning_deadband = float(
+            p.get("learning_deadband", 0.005)
+        )
+        self.learning_benchmark = str(
+            p.get("learning_benchmark", "simple")
+        )
+        self.learning_nim_condition = bool(
+            p.get("learning_nim_condition", True)
+        )
         self.margin_min = float(p.get("margin_min", 2.2))
         self.margin_max = float(p.get("margin_max", 4.2))
+
+        if self.learning_rule not in ("absolute", "relative"):
+            raise ValueError("learning_rule phải là absolute hoặc relative")
+        if self.learning_benchmark not in ("simple", "weighted"):
+            raise ValueError("learning_benchmark phải là simple hoặc weighted")
+        if self.learning_deadband < 0:
+            raise ValueError("learning_deadband phải không âm")
+        self._learning_stats_cache = None
 
         if self.margin_min > self.margin_max:
             raise ValueError("margin_min không được lớn hơn margin_max")

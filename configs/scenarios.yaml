@@ -52,6 +52,12 @@ parameters:
   # data/clean/abm_initial_8nganhang_2023Q1.csv: nim_i = loan_rate - (deposit_rate*(1-casa_ratio)+0.15),
   # n* = sum(nim_i*loans_i)/sum(loans_i) = 5.5875. Don vi: diem %/nam. Khong tinh tu dong luc chay.
   learning_nim_threshold: 5.5875
+  # Quy tac hoc "relative" (TUY CHON, mac dinh TAT = absolute). CHUA HIEU CHINH, cho Huy duyet.
+  #  - g_i < g_bar - theta -> giam bien; g_i > g_bar + theta VA (nim_i >= nim_bar neu bat dieu kien nim) -> tang bien; con lai giu.
+  learning_rule: absolute          # absolute | relative
+  learning_deadband: 0.005         # theta: ty le tang truong/QUY, vung chet quanh g_bar
+  learning_benchmark: simple       # simple = binh quan don gian 8 NH | weighted = gia quyen du no
+  learning_nim_condition: true     # true: chi tang bien khi nim_i >= nim_bar
   margin_min: 2.2                  # diem %: san cua target_margin
   margin_max: 4.2                  # diem %: tran cua target_margin
 

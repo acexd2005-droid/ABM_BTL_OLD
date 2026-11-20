@@ -138,6 +138,10 @@ parameters:
   learning_down_step: 0.10
   learning_growth_threshold: 0.006
   learning_nim_threshold: 5.5875
+  learning_rule: absolute
+  learning_deadband: 0.005
+  learning_benchmark: simple
+  learning_nim_condition: true
   margin_min: 2.2
   margin_max: 4.2
 
@@ -168,9 +172,13 @@ sensitivity_relative_width: 0.30
 | `learning_down_step` | Bước giảm `target_margin` mỗi quý, điểm % (khởi điểm 0.10, **chưa hiệu chỉnh**) |
 | `learning_growth_threshold` | g\*: ngưỡng tăng trưởng dư nợ quý để được tăng biên (0.006, **chưa hiệu chỉnh**) |
 | `learning_nim_threshold` | n\*: ngưỡng `nim_proxy` để được tăng biên, điểm %/năm; cố định 5.5875 = bình quân gia quyền theo dư nợ tại t=0 |
+| `learning_rule` | `absolute` (mặc định, ngưỡng g\*, n\*) hoặc `relative` (so với bình quân hệ thống) |
+| `learning_deadband` | θ: vùng chết quanh tăng trưởng bình quân hệ thống, tỷ lệ/quý (0.005, **chưa hiệu chỉnh, chờ Huy duyệt**); chỉ dùng khi `relative` |
+| `learning_benchmark` | Mốc hệ thống của `relative`: `simple` (bình quân đơn giản 8 NH, mặc định, chờ Huy duyệt) hoặc `weighted` (gia quyền dư nợ) |
+| `learning_nim_condition` | `relative`: `true` thì chỉ tăng biên khi `nim_proxy` của NH ≥ bình quân hệ thống |
 | `margin_min`, `margin_max` | Sàn và trần của `target_margin`, điểm % (2.2 và 4.2, **chưa hiệu chỉnh**) |
 
-Chi tiết cơ chế học: `docs/nang_cap_hoc_thich_nghi.md`. Chạy bản bật học: `python main.py --config configs/scenarios_adaptive.yaml` (file này là bản sao `scenarios.yaml`, chỉ khác `adaptive_learning: true`).
+Chi tiết cơ chế học: `docs/nang_cap_hoc_thich_nghi.md`. Chạy bản bật học: `python main.py --config configs/scenarios_adaptive.yaml` (file ghi đè: `load_config` luôn nạp `scenarios.yaml` rồi trộn đệ quy file này lên trên, nên file chỉ chứa khóa khác biệt). Quy tắc relative: `configs/scenarios_adaptive_relative.yaml` và `configs/scenarios_adaptive_relative_nonim.yaml` (không điều kiện nim); cả hai chưa hiệu chỉnh.
 
 ### 3.3. Cách thay đổi tham số
 
@@ -298,7 +306,9 @@ ABM_LaiSuat_Vu/
 │
 ├── configs/
 │   ├── scenarios.yaml
-│   └── scenarios_adaptive.yaml
+│   ├── scenarios_adaptive.yaml
+│   ├── scenarios_adaptive_relative.yaml
+│   └── scenarios_adaptive_relative_nonim.yaml
 │
 ├── data/
 │   └── clean/
