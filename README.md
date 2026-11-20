@@ -178,7 +178,7 @@ sensitivity_relative_width: 0.30
 | `learning_nim_condition` | `relative`: `true` thì chỉ tăng biên khi `nim_proxy` của NH ≥ bình quân hệ thống |
 | `margin_min`, `margin_max` | Sàn và trần của `target_margin`, điểm % (2.2 và 4.2, **chưa hiệu chỉnh**) |
 
-Chi tiết cơ chế học: `docs/nang_cap_hoc_thich_nghi.md`. Chạy bản bật học: `python main.py --config configs/scenarios_adaptive.yaml` (file ghi đè: `load_config` luôn nạp `scenarios.yaml` rồi trộn đệ quy file này lên trên, nên file chỉ chứa khóa khác biệt). Quy tắc relative: `configs/scenarios_adaptive_relative.yaml` và `configs/scenarios_adaptive_relative_nonim.yaml` (không điều kiện nim); cả hai chưa hiệu chỉnh.
+Chi tiết cơ chế học: `docs/nang_cap_hoc_thich_nghi.md`. Chạy bản bật học: `python main.py --config configs/scenarios_adaptive.yaml` (file ghi đè: `load_config` luôn nạp `scenarios.yaml` rồi trộn đệ quy file này lên trên, nên file chỉ chứa khóa khác biệt). Chẩn đoán độ nhạy θ/benchmark: `python -m src.analysis.relative_sensitivity --seeds 10` (kết quả trong `docs/nang_cap_hoc_thich_nghi.md` mục 6). Quy tắc relative: `configs/scenarios_adaptive_relative.yaml` và `configs/scenarios_adaptive_relative_nonim.yaml` (không điều kiện nim); cả hai chưa hiệu chỉnh.
 
 ### 3.3. Cách thay đổi tham số
 

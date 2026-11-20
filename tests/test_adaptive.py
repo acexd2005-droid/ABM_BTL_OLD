@@ -279,6 +279,9 @@ def test_relative_margin_within_bounds(scenario, path):
     assert bank_history.target_margin.between(p["margin_min"], p["margin_max"]).all()
 
 
+DRIFT_SEEDS = (202611, 202612, 202613, 202614, 202615)
+
+
 @pytest.mark.parametrize("path", [
     RELATIVE,
     pytest.param(RELATIVE_NONIM, marks=pytest.mark.xfail(
@@ -287,15 +290,22 @@ def test_relative_margin_within_bounds(scenario, path):
                "(ghi nhận, chờ nhóm quyết định; không chỉnh tham số)",
     )),
 ])
-@pytest.mark.parametrize("seed", [202611, 202612, 202613])
-def test_relative_drift_small_scenario_a(path, seed):
+def test_relative_drift_small_scenario_a(path):
+    """Bình quân qua 5 seed của biên TB quý 18 so với biên khởi đầu: |trôi| <= 0.1.
+
+    Lưu ý: kịch bản A không dùng RNG nên 5 seed cho cùng một kết quả; kiểm tra thực chất là
+    một lần chạy, nhiều seed chỉ giữ để bắt hồi quy nếu sau này có thành phần ngẫu nhiên.
+    """
     cfg = merged_config(path)
     initial = make_model().banks
     start = sum(b.target_margin for b in initial) / len(initial)
-    _, bank_history = run_model("A", seed, cfg)
-    last = bank_history[bank_history.month == cfg["n_months"]]
-    assert len(last) == 8
-    assert abs(last.target_margin.mean() - start) <= 0.1
+    means = []
+    for seed in DRIFT_SEEDS:
+        _, bank_history = run_model("A", seed, cfg)
+        last = bank_history[bank_history.month == cfg["n_months"]]
+        assert len(last) == 8
+        means.append(last.target_margin.mean())
+    assert abs(sum(means) / len(means) - start) <= 0.1
 
 
 @pytest.mark.parametrize("path", [RELATIVE, RELATIVE_NONIM])
@@ -306,3 +316,13 @@ def test_relative_same_before_policy(path):
     pre = lambda f: f[f.month <= pm][["loan_rate", "deposit_rate", "total_loans"]]
     pd.testing.assert_frame_equal(pre(frames["A"]), pre(frames["B"]))
     pd.testing.assert_frame_equal(pre(frames["A"]), pre(frames["C"]))
+
+
+def test_relative_sensitivity_script_smoke():
+    from src.analysis.relative_sensitivity import evaluate, DATASETS
+    cfg = merged_config(RELATIVE)
+    rows = pd.read_csv(DATASETS["2023Q1"]).to_dict("records")
+    out = evaluate(("2023Q1", "rel"), cfg, dict(cfg["parameters"]), rows, [202611])
+    assert out["B-A_tb"] < 0 and out["C-A_tb"] < 0
+    assert abs(out["troi_bien_q18"]) <= 0.1
+    assert out["cham_san_q18"] == 0 and out["cham_tran_q18"] == 0
