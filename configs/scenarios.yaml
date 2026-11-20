@@ -31,6 +31,13 @@ parameters:
   # Tran ky thuat cho ty le du no / tien gui
   max_loan_to_deposit: 1.60
 
+  # Hang so hanh vi truoc day cung trong code (gia tri giu nguyen, GIA DINH chua hieu chinh)
+  base_deposit_rate_step: 0.018    # diem %/nam moi QUY: muc tang co so cua lai suat huy dong
+  loan_spread_add: 1.35            # diem %: bien cong them vao muc tieu lai suat cho vay
+  borrower_reference_rate: 9.5     # %/nam: lai suat cho vay tham chieu cua khoi nguoi vay
+  borrower_base_growth: 0.006      # ty le/QUY: tang truong du no co so tai lai suat tham chieu
+  margin_floor: 2.2                # diem %: bien nim_proxy tham chieu trong xac suat tuan thu cua NHNN
+
 scenarios:
   A: "Khong can thiep"
   B: "Chi dao giam lai suat"

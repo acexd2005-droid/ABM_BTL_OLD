@@ -68,9 +68,9 @@ class Bank(Agent):
             min(0.5, ldr - 0.82)
         )
 
-        # 0.018 là mức điều chỉnh cơ sở GIẢ ĐỊNH MỖI QUÝ.
+        # base_deposit_rate_step: mức điều chỉnh cơ sở GIẢ ĐỊNH MỖI QUÝ (YAML).
         desired_increase = (
-            0.018
+            model.base_deposit_rate_step
             + model.deposit_competition * demand_pressure
         )
 
@@ -87,11 +87,11 @@ class Bank(Agent):
         )
 
         # 3. Lãi suất cho vay phản ứng với chi phí vốn trễ
-        # Biên cộng 1.35 điểm % là giả định cố định, chưa hiệu chỉnh.
+        # loan_spread_add (điểm %) là giả định cố định, chưa hiệu chỉnh (YAML).
         target_rate = (
             self.lagged_funding_cost
             + self.target_margin
-            + 1.35
+            + model.loan_spread_add
         )
 
         self.loan_rate += model.pass_through * (

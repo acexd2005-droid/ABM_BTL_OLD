@@ -58,7 +58,7 @@ class ABMModel(Model):
             p.get("policy_step", 0.28)
         )
         self.policy_month = int(
-            p.get("policy_month", 12)
+            p.get("policy_month", 14)
         )
         self.deposit_competition = float(
             p.get("deposit_competition", 0.07)
@@ -67,7 +67,15 @@ class ABMModel(Model):
             p.get("deposit_cap_factor", 0.25)
         )
         self.max_loan_to_deposit = float(
-            p.get("max_loan_to_deposit", 1.15)
+            p.get("max_loan_to_deposit", 1.60)
+        )
+
+        # Hằng số hành vi trước đây cứng trong agent (giá trị giữ nguyên)
+        self.base_deposit_rate_step = float(
+            p.get("base_deposit_rate_step", 0.018)
+        )
+        self.loan_spread_add = float(
+            p.get("loan_spread_add", 1.35)
         )
 
         if self.n_months <= 0:
@@ -84,6 +92,9 @@ class ABMModel(Model):
             pressure=float(
                 p.get("policy_pressure", 0.65)
             ),
+            margin_floor=float(
+                p.get("margin_floor", 2.2)
+            ),
         )
 
         # Tạo agent người gửi tiền gộp
@@ -99,6 +110,12 @@ class ABMModel(Model):
             self,
             elasticity=float(
                 p.get("borrower_elasticity", 0.012)
+            ),
+            reference_rate=float(
+                p.get("borrower_reference_rate", 9.5)
+            ),
+            base_growth=float(
+                p.get("borrower_base_growth", 0.006)
             ),
         )
 
