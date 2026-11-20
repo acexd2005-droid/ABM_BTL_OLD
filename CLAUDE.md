@@ -86,3 +86,12 @@ Khi chỉ cần kiểm tra code có chạy không, dùng bản chạy nhanh. Ch�
 - Lãi suất cho vay phản ứng **trễ** với cú sốc chi phí vốn (qua `lagged_funding_cost`).
 
 Nếu kết quả vi phạm các điểm trên, dừng lại và báo cho người dùng thay vì tự chỉnh tham số.
+## 7. Vòng kiểm tra tự động với reviewer-abm
+
+Sau mỗi giai đoạn có thay đổi trong `src/agents/`, `src/core/` hoặc `configs/`:
+
+1. Chạy test. Nếu qua, gọi subagent `reviewer-abm` để kiểm tra (không tự đánh giá thay reviewer).
+2. Nếu reviewer trả về **KHÔNG ĐẠT** hoặc có vấn đề NGHIÊM TRỌNG/TRUNG BÌNH thuộc về **code hoặc cơ chế**: tự sửa rồi gọi lại reviewer.
+3. Tối đa **3 vòng** sửa cho mỗi giai đoạn. Sau 3 vòng vẫn chưa đạt thì dừng, báo cáo cho người dùng.
+4. Vấn đề nằm trong mục "CẦN NGƯỜI DÙNG/NHÓM QUYẾT ĐỊNH" (giá trị tham số, giả định kinh tế): **không tự sửa**, dừng lại và hỏi người dùng.
+5. Chỉ commit giai đoạn khi reviewer trả về ĐẠT hoặc ĐẠT CÓ ĐIỀU KIỆN. Đưa nguyên văn báo cáo cuối của reviewer vào báo cáo gửi người dùng.
