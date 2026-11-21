@@ -5,6 +5,8 @@ Tên kỹ thuật month/n_months được giữ để không phá API và CSV c�
 Các tham số chưa hiệu chỉnh, các tốc độ tăng trưởng là giả định mỗi quý.
 """
 
+from pathlib import Path
+
 import pandas as pd
 from mesa import Model
 
@@ -21,6 +23,8 @@ GROUPS = (
 )
 
 HAS_MESA = True
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class ABMModel(Model):
@@ -86,6 +90,28 @@ class ABMModel(Model):
         self.deposit_rate_basis = str(p.get("deposit_rate_basis", "term"))
         if self.deposit_rate_basis not in ("total", "term"):
             raise ValueError("deposit_rate_basis phải là total hoặc term")
+
+        # Biến vĩ mô ngoại sinh (Giai đoạn 8, mặc định TẮT = "none"):
+        #  exogenous: lãi suất huy động neo về lãi suất liên ngân hàng qua đêm của quý LIỀN TRƯỚC (ON_{t-1})
+        #             deposit_rate += macro_dep_speed * (ON_{t-1} + macro_dep_spread - deposit_rate_{t-1}).
+        self.macro_driver = str(p.get("macro_driver", "none"))
+        if self.macro_driver not in ("none", "exogenous"):
+            raise ValueError("macro_driver phải là none hoặc exogenous")
+        self.macro_dep_speed = float(p.get("macro_dep_speed", 0.177))
+        self.macro_dep_spread = float(p.get("macro_dep_spread", 1.2723))
+        self.macro_lending_on_coef = float(p.get("macro_lending_on_coef", 0.0))
+        self.macro_lending_on_ref = float(p.get("macro_lending_on_ref", 3.7461))
+        self.macro_on_path = str(
+            p.get("macro_on_path", "data/raw/sbv_lnh_qua_dem_theo_quy.csv")
+        )
+        if not 0.0 <= self.macro_dep_speed <= 1.0:
+            raise ValueError("macro_dep_speed phải nằm trong [0, 1]")
+        if self.macro_driver == "none" and self.macro_lending_on_coef != 0.0:
+            raise ValueError("macro_lending_on_coef khác 0 cần macro_driver: exogenous")
+        self._macro_on = (
+            self._load_macro_on(self.macro_on_path)
+            if self.macro_driver == "exogenous" else None
+        )
 
         # Học thích nghi (tùy chọn, mặc định TẮT để tái lập kết quả cũ)
         self.adaptive_learning = bool(
@@ -184,6 +210,44 @@ class ABMModel(Model):
         self.market_rate = 0.0
         self.history = []
         self.bank_history = []
+    def _load_macro_on(self, path):
+        """Đọc ON (cột bq_gian_don) theo quý, liên tục từ quý khởi tạo tới quý cuối của file.
+
+        Thiếu quý lịch sử (kể cả quý khởi tạo) hoặc có khoảng trống => raise ValueError.
+        Chỉ số i ứng với quý initial_period + i.
+        """
+        f = Path(path)
+        f = f if f.is_absolute() else ROOT / f
+        if not f.is_file():
+            raise ValueError(f"Không tìm thấy dữ liệu ON: {f}")
+        data = pd.read_csv(f)
+        if not {"quy", "bq_gian_don"} <= set(data.columns):
+            raise ValueError("File ON cần cột quy và bq_gian_don")
+        data["per"] = pd.PeriodIndex(data["quy"], freq="Q")
+        series = dict(zip(data["per"].astype(int), data["bq_gian_don"].astype(float)))
+        start = int(self.initial_period.ordinal)
+        if start not in series:
+            raise ValueError("Thiếu ON của quý khởi tạo")
+        last = max(series)
+        missing = [q for q in range(start, last + 1) if q not in series]
+        if missing:
+            raise ValueError(
+                f"Thiếu ON của {len(missing)} quý lịch sử (vd {pd.Period(ordinal=missing[0], freq='Q')})"
+            )
+        values = [series[q] for q in range(start, last + 1)]
+        if any(v != v for v in values):
+            raise ValueError("Dữ liệu ON có giá trị thiếu")
+        return values
+
+    def macro_on_previous(self):
+        """ON của quý liền trước quý đang mô phỏng.
+
+        Bước đầu (month = 0, mô phỏng Q2/2023) dùng ON của Q1/2023 = quý khởi tạo.
+        Sau quý cuối có dữ liệu (2026Q3) giữ nguyên giá trị đó cho mọi kịch bản.
+        """
+        values = self._macro_on
+        return values[min(self.month, len(values) - 1)]
+
     def _make_banks(self, initial):
         """Khởi tạo ngân hàng từ dữ liệu hoặc bộ giả lập."""
         from_data = initial is not None

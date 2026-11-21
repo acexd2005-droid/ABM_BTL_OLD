@@ -176,6 +176,12 @@ sensitivity_relative_width: 0.30
 | `learning_nim_threshold` | n\*: ngưỡng `nim_proxy` để được tăng biên, điểm %/năm; mặc định 4.6331 cho cơ sở `term` = bình quân gia quyền theo dư nợ của `nim_i = loan_rate − (deposit_rate + 0.15)` tại t=0 trên `abm_initial_8nganhang_2023Q1.csv`, tính một lần (khởi điểm, **chưa hiệu chỉnh, chờ Huy duyệt**) |
 | `learning_nim_threshold_total` | n\* cho cơ sở `total` (5.5875 = cùng công thức nhưng `nim_i = loan_rate − (deposit_rate·(1−casa) + 0.15)`); mô hình tự dùng khi `deposit_rate_basis: total` (khi đó `learning_nim_threshold` bị bỏ qua, kể cả khi ghi đè tường minh) |
 | `deposit_rate_basis` | Cơ sở lãi suất huy động của dữ liệu nạp vào: `term` (**mặc định từ Bước A**; khi nạp dữ liệu quy đổi `deposit_rate = deposit_rate_dữ_liệu/(1−casa_ratio)`, nên `funding_cost = deposit_rate_dữ_liệu + 0.15`; trưởng nhóm duyệt vì `total` trừ CASA hai lần) hoặc `total` (hành vi cũ trước Bước A, giữ để đối chiếu lịch sử, golden ở `tests/golden_total/`). Không áp dụng cho bộ giả lập. |
+| `macro_driver` | `none` (mặc định) hoặc `exogenous`: lãi suất huy động neo về lãi suất liên ngân hàng qua đêm của quý liền trước, `deposit_rate += macro_dep_speed·(ON_{t−1} + macro_dep_spread − deposit_rate_{t−1})`, đặt NGOÀI `desired_increase` nên `deposit_cap_factor` (kịch bản C) không giảm số hạng này. Sau 2026Q3 giữ ON = 3.946; thiếu dữ liệu lịch sử thì báo lỗi |
+| `macro_dep_speed` | φ, tỷ lệ điều chỉnh/quý (0.177 = Giai đoạn 7b, PT5-ON biến thể d, k = 1; **chưa hiệu chỉnh lại**) |
+| `macro_dep_spread` | mức cân bằng ngụ ý của `r^D_term` so với ON, điểm %/năm (1.2723 = Giai đoạn 7b, mẫu N = 112; mẫu N = 104/96 cho 1.08/1.14) |
+| `macro_on_path` | file ON theo quý (`data/raw/sbv_lnh_qua_dem_theo_quy.csv`, cột `bq_gian_don`) |
+| `macro_lending_on_coef` | hệ số số hạng ON trong mục tiêu cho vay: `target_rate += coef·(ON_{t−1} − macro_lending_on_ref)`; mặc định 0 (tắt); 0.45 chỉ để so sánh |
+| `macro_lending_on_ref` | ON tham chiếu để tâm hóa (3.7461 = trung bình ON 2023Q1–2026Q2 của mẫu Giai đoạn 7) |
 | `learning_rule` | `absolute` (mặc định, ngưỡng g\*, n\*) hoặc `relative` (so với bình quân hệ thống) |
 | `learning_deadband` | θ: vùng chết quanh tăng trưởng bình quân hệ thống, tỷ lệ/quý (0.005, **chưa hiệu chỉnh, chờ Huy duyệt**); chỉ dùng khi `relative` |
 | `learning_benchmark` | Mốc hệ thống của `relative`: `simple` (bình quân đơn giản 8 NH, mặc định, chờ Huy duyệt) hoặc `weighted` (gia quyền dư nợ) |
@@ -413,3 +419,8 @@ Nếu muốn **thay đổi tham số và chạy lại**, sử dụng `configs/sc
 ## Cơ sở lãi suất huy động (`deposit_rate_basis`), Bước 8a và Bước A
 
 Từ Bước A mặc định là `term`. Chạy cơ sở cũ `total` để đối chiếu lịch sử: `python main.py --config configs/scenarios_total.yaml`. Cột `deposit_rate` trong CSV đầu ra: ở `total` đã cùng cơ sở với dữ liệu thực (chi phí lãi sổ sách trên tổng tiền gửi); ở `term` là lãi suất kỳ hạn (cao hơn), nên để so với dữ liệu thực phải quy đổi `deposit_rate × (1 − casa)`. Tùy chọn `term` bị bỏ qua (không cảnh báo) với bộ giả lập mặc định. Golden: `tests/golden/` (term, tạo ở Bước A) và `tests/golden_total/` (total, từ code gốc 0117fb6).
+
+
+## Biến vĩ mô ngoại sinh (Giai đoạn 8)
+
+`macro_driver: exogenous` đưa lãi suất liên ngân hàng qua đêm vào phương trình huy động (mặc định vẫn `none`). Mọi kết quả khi bật `exogenous` là kiểm tra TRONG MẪU (φ và spread ước lượng trên cùng dữ liệu 2023Q1–2026Q3). So sánh `none`, `exogenous`, `exogenous + lending_on 0.45` (60 lần chạy, so với chuỗi thực): `python -m src.analysis.compare_macro_driver` → `reports/stage8/summary_stage8.md`.

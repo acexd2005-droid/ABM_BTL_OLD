@@ -81,9 +81,22 @@ class Bank(Agent):
         ):
             desired_increase *= model.deposit_cap_factor
 
+        # 2b. Neo về lãi suất liên ngân hàng qua đêm của quý liền trước (macro_driver: exogenous).
+        # Cố ý đặt NGOÀI desired_increase: deposit_cap_factor của kịch bản C chỉ hạn chế phần CẠNH TRANH
+        # huy động (base_step + deposit_competition), còn lãi suất thị trường (ON) là biến ngoại sinh mà
+        # chỉ đạo của NHNN không làm giảm, nên số hạng neo ON KHÔNG bị nhân với deposit_cap_factor.
+        # Dùng lãi suất ĐẦU quý (deposit_rate_{t-1}) và ON_{t-1}.
+        macro_anchor = 0.0
+        if model.macro_driver == "exogenous":
+            macro_anchor = model.macro_dep_speed * (
+                model.macro_on_previous()
+                + model.macro_dep_spread
+                - self.deposit_rate
+            )
+
         self.deposit_rate = max(
             0.0,
-            min(14.0, self.deposit_rate + desired_increase)
+            min(14.0, self.deposit_rate + desired_increase + macro_anchor)
         )
 
         # 3. Lãi suất cho vay phản ứng với chi phí vốn trễ
@@ -93,6 +106,16 @@ class Bank(Agent):
             + self.target_margin
             + model.loan_spread_add
         )
+
+        # Số hạng ON trực tiếp trong mục tiêu cho vay (tùy chọn, mặc định 0): hệ số dài hạn
+        # đã tâm hóa theo ON tham chiếu, vì ước lượng Giai đoạn 7 dùng ON đã trừ trung bình mẫu.
+        if (
+            model.macro_driver == "exogenous"
+            and model.macro_lending_on_coef != 0.0
+        ):
+            target_rate += model.macro_lending_on_coef * (
+                model.macro_on_previous() - model.macro_lending_on_ref
+            )
 
         self.loan_rate += model.pass_through * (
             target_rate - self.loan_rate

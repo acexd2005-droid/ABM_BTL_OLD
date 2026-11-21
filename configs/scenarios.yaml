@@ -38,6 +38,29 @@ parameters:
   borrower_base_growth: 0.006      # ty le/QUY: tang truong du no co so tai lai suat tham chieu
   margin_floor: 2.2                # diem %: bien nim_proxy tham chieu trong xac suat tuan thu cua NHNN
 
+  # --- Bien vi mo ngoai sinh trong PHUONG TRINH HUY DONG (Giai doan 8, TUY CHON, mac dinh TAT) ---
+  # macro_driver: none | exogenous. Voi exogenous, trong Bank.step (sau desired_increase, deposit_cap_factor KHONG ap vao so hang nay):
+  #   deposit_rate += macro_dep_speed * (ON_{t-1} + macro_dep_spread - deposit_rate_{t-1})
+  # ON_{t-1} = lai suat lien ngan hang qua dem binh quan don gian cua QUY LIEN TRUOC (data/raw/sbv_lnh_qua_dem_theo_quy.csv,
+  # cot bq_gian_don). Sau 2026Q3 giu ON = 3.946 cho moi kich ban. Thieu du lieu lich su => bao loi.
+  # Gia tri khoi diem tu Giai doan 7b (reports/calibration/estimates_stage7b.csv; PT5-ON, bien the d, k=1, mau N=112, co so term):
+  #   macro_dep_speed 0.177 = phi 0.177147 (tu dieu chinh/quy, nua vong ~3.6 quy);
+  #   macro_dep_spread 1.2723 = spread_equilibrium 1.272256 (muc can bang ngu y r^D_term - ON, binh quan cac NH; mau N=104/96 cho 1.08/1.14).
+  # CHUA hieu chinh lai (lambda, delta, base_step, base_growth, nguong chan: Giai doan 9). Khi giu base_step va deposit_competition,
+  # muc can bang ngu y la ON + spread + drift/phi.
+  macro_driver: none
+  macro_dep_speed: 0.177           # phi: ty le/QUY
+  macro_dep_spread: 1.2723         # diem %/nam: r^D_term can bang - ON
+  macro_on_path: data/raw/sbv_lnh_qua_dem_theo_quy.csv
+  # So hang ON truc tiep trong muc tieu cho vay (mac dinh 0 = TAT; chi dung de so sanh): target_rate += coef*(ON_{t-1} - ref).
+  # 0.45 = tac dong dai han cua ON trong Giai doan 7 bien the (d1): 0.142/0.315 ~ 0.45; ref = trung binh ON 2023Q1-2026Q2 (14 quy,
+  # mau d1) = 3.7461 vi he so duoc uoc luong tren ON da tru trung binh mau.
+  # LUU Y (y nghia cua con so 0.45): la LUA CHON, khong phai kiem dinh. 0.45 = 0.142/0.3145 la he so dai han (theta/lambda) cua bien the d1
+  # trong Giai doan 7, uoc luong tren ~14 diem theo quy; d1 bac bo b+gamma=1 (nen khong con la PT1 cua mo hinh); mo hinh dung pass_through 0.48
+  # chu khong phai 0.3145 nen tac dong ON moi quy la 0.48*0.45 = 0.216 (khong phai 0.142). Viec tam hoa theo ref la mot lua chon quyet dinh muc.
+  macro_lending_on_coef: 0.0
+  macro_lending_on_ref: 3.7461     # %/nam
+
   # --- Co so cua deposit_rate trong du lieu ngan hang nap vao ---
   # term : (MAC DINH tu Buoc A) khi nap du lieu (--banks) quy doi deposit_rate = deposit_rate_du_lieu/(1-casa_ratio),
   #        nen funding_cost = deposit_rate_du_lieu + 0.15. Chi ap dung cho du lieu nap vao, khong cho bo gia lap.
