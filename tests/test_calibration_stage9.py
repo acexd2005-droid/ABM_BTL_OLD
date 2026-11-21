@@ -138,7 +138,7 @@ def test_objective_zero_on_perfect_fit_and_window():
 
 
 def test_scenario_a_deterministic_across_seeds():
-    cfg = load_config(ROOT / "configs/scenarios_calibrated.yaml")
+    cfg = load_config(ROOT / "configs/scenarios_calibrated_gd9.yaml")
     p = dict(cfg["parameters"])
     l1, d1, _ = c9.simulate(p, rows(), seed=1, cfg=cfg)
     l2, d2, _ = c9.simulate(p, rows(), seed=999, cfg=cfg)
@@ -161,7 +161,7 @@ def test_naive_on_formula():
 # ---------------------------------------------------------------- cấu hình hiệu chỉnh
 
 def test_calibrated_yaml_explicit_keys_and_matches_best():
-    with open(ROOT / "configs/scenarios_calibrated.yaml", encoding="utf-8") as f:
+    with open(ROOT / "configs/scenarios_calibrated_gd9.yaml", encoding="utf-8") as f:
         over = yaml.safe_load(f)["parameters"]
     for k in GD9A_KEYS + ("depositor_min_growth", "borrower_base_growth", "macro_driver", "deposit_rate_basis"):
         assert k in over, k
@@ -183,7 +183,7 @@ def test_calibrated_yaml_explicit_keys_and_matches_best():
 
 
 def test_calibrated_config_section6():
-    cfg = load_config(ROOT / "configs/scenarios_calibrated.yaml")
+    cfg = load_config(ROOT / "configs/scenarios_calibrated_gd9.yaml")
     res = c9.section6(cfg, rows())
     assert res["pass"], res
     assert res["max_B_minus_A_after"] <= 0 and res["max_C_minus_A_after"] <= 0

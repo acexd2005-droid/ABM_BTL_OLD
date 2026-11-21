@@ -347,7 +347,8 @@ ABM_LaiSuat_Vu/
 │   ├── scenarios_adaptive_relative_nonim.yaml
 │   ├── scenarios_total.yaml
 │   ├── scenarios_macro.yaml
-│   └── scenarios_calibrated.yaml   (sinh bởi src/calibration/calibrate_stage9.py)
+│   ├── scenarios_calibrated.yaml       (nghiệm GD9b, sinh bởi src/calibration/calibrate_stage9b.py)
+│   └── scenarios_calibrated_gd9.yaml   (bản GD9 giữ để đối chiếu, sinh bởi calibrate_stage9.py)
 │
 ├── data/
 │   └── clean/
@@ -457,3 +458,5 @@ Từ Bước A mặc định là `term`. Chạy cơ sở cũ `total` để đố
 ## Hiệu chỉnh bằng mô phỏng (Giai đoạn 9)
 
 `python -m src.calibration.calibrate_stage9` → `reports/calibration/stage9/` (phương pháp chốt trước ở `DANG_KY_TRUOC.md`, kết quả ở `summary_stage9.md`) và ghi `configs/scenarios_calibrated.yaml` (file ghi đè, mọi khóa hành vi ghi tường minh). Cửa sổ hiệu chỉnh 2023Q2–2025Q2, ngoài mẫu 2025Q3–2026Q3; kịch bản A, hàm mục tiêu J = 0.5·RMSE thô LS cho vay + 0.5·RMSE thô LS huy động (cơ sở dữ liệu). Tăng trưởng nền và ngưỡng chặn theo quy tắc (trung bình, phân vị 2.5/97.5), không tối ưu. σ, ε, `policy_pressure`, `policy_step` không hiệu chỉnh. Chạy với bộ hiệu chỉnh: `python main.py --config configs/scenarios_calibrated.yaml`. Đây là đối chiếu lịch sử (mô hình được cấp ON thực), không phải dự báo.
+
+**GD9b (D9):** `python -m src.calibration.calibrate_stage9b` → `reports/calibration/stage9b/` (phương pháp chốt trước ở `DANG_KY_TRUOC_GD9b.md`) và ghi đè `configs/scenarios_calibrated.yaml` bằng nghiệm GD9b: lưới ràng buộc λ ∈ [0.15, 0.40], biên tổng ∈ [3.4, 4.8], và bù một lần độ lệch tăng trưởng tổng (Q7) vào `depositor_base_growth`/`borrower_base_growth`. Bản GD9 cũ giữ ở `configs/scenarios_calibrated_gd9.yaml` (`calibrate_stage9` từ nay chỉ ghi file này). Chỉ đổi giá trị tham số trong YAML, không đổi công thức hành vi.

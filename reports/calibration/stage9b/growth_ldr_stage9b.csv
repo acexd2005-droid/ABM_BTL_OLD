@@ -1,0 +1,73 @@
+cau_hinh,pham_vi,tang_truong_tien_gui_tb,tang_truong_du_no_tb,bank_id,ldr
+thuc_te,trong_mau_1_9,0.0397609337,0.04475110499,,
+thuc_te,ngoai_mau_10_14,0.03344100954,0.04342018115,,
+thuc_te,LDR_2025Q2,,,ACB,1.11692108
+thuc_te,LDR_2025Q2,,,BIDV,1.050651978
+thuc_te,LDR_2025Q2,,,HDBank,1.062353455
+thuc_te,LDR_2025Q2,,,MB Bank,1.123321337
+thuc_te,LDR_2025Q2,,,Techcombank,1.303138104
+thuc_te,LDR_2025Q2,,,VPBank,1.380097153
+thuc_te,LDR_2025Q2,,,Vietcombank,0.980517088
+thuc_te,LDR_2025Q2,,,VietinBank,1.104301249
+thuc_te,LDR_2026Q3,,,ACB,1.283936661
+thuc_te,LDR_2026Q3,,,BIDV,1.085265109
+thuc_te,LDR_2026Q3,,,HDBank,1.015130257
+thuc_te,LDR_2026Q3,,,MB Bank,1.295919456
+thuc_te,LDR_2026Q3,,,Techcombank,1.313102913
+thuc_te,LDR_2026Q3,,,VPBank,1.528463163
+thuc_te,LDR_2026Q3,,,Vietcombank,1.019301893
+thuc_te,LDR_2026Q3,,,VietinBank,1.101402395
+hieu_chinh_GD9b,trong_mau_1_9,0.03952922324,0.04820547387,,
+hieu_chinh_GD9b,ngoai_mau_10_14,0.05596460073,0.0536734224,,
+hieu_chinh_GD9b,LDR_2025Q2,,,ACB,0.9369074863
+hieu_chinh_GD9b,LDR_2025Q2,,,BIDV,1.139142127
+hieu_chinh_GD9b,LDR_2025Q2,,,HDBank,0.9140006316
+hieu_chinh_GD9b,LDR_2025Q2,,,MB Bank,1.12492647
+hieu_chinh_GD9b,LDR_2025Q2,,,Techcombank,1.183739384
+hieu_chinh_GD9b,LDR_2025Q2,,,VPBank,1.162202398
+hieu_chinh_GD9b,LDR_2025Q2,,,Vietcombank,1.264337483
+hieu_chinh_GD9b,LDR_2025Q2,,,VietinBank,1.125414954
+hieu_chinh_GD9b,LDR_2026Q3,,,ACB,0.9226883191
+hieu_chinh_GD9b,LDR_2026Q3,,,BIDV,1.109649257
+hieu_chinh_GD9b,LDR_2026Q3,,,HDBank,0.8563192525
+hieu_chinh_GD9b,LDR_2026Q3,,,MB Bank,1.142978221
+hieu_chinh_GD9b,LDR_2026Q3,,,Techcombank,1.177470775
+hieu_chinh_GD9b,LDR_2026Q3,,,VPBank,1.0959668
+hieu_chinh_GD9b,LDR_2026Q3,,,Vietcombank,1.305335062
+hieu_chinh_GD9b,LDR_2026Q3,,,VietinBank,1.103256467
+hieu_chinh_GD9,trong_mau_1_9,0.02975501421,0.06018452689,,
+hieu_chinh_GD9,ngoai_mau_10_14,0.04627977333,0.06044757466,,
+hieu_chinh_GD9,LDR_2025Q2,,,ACB,1.1356692
+hieu_chinh_GD9,LDR_2025Q2,,,BIDV,1.369910761
+hieu_chinh_GD9,LDR_2025Q2,,,HDBank,1.112260194
+hieu_chinh_GD9,LDR_2025Q2,,,MB Bank,1.364127015
+hieu_chinh_GD9,LDR_2025Q2,,,Techcombank,1.430309671
+hieu_chinh_GD9,LDR_2025Q2,,,VPBank,1.413021989
+hieu_chinh_GD9,LDR_2025Q2,,,Vietcombank,1.51928467
+hieu_chinh_GD9,LDR_2025Q2,,,VietinBank,1.355434103
+hieu_chinh_GD9,LDR_2026Q3,,,ACB,1.230596495
+hieu_chinh_GD9,LDR_2026Q3,,,BIDV,1.464522098
+hieu_chinh_GD9,LDR_2026Q3,,,HDBank,1.146968194
+hieu_chinh_GD9,LDR_2026Q3,,,MB Bank,1.521304228
+hieu_chinh_GD9,LDR_2026Q3,,,Techcombank,1.560878542
+hieu_chinh_GD9,LDR_2026Q3,,,VPBank,1.461699919
+hieu_chinh_GD9,LDR_2026Q3,,,Vietcombank,1.6
+hieu_chinh_GD9,LDR_2026Q3,,,VietinBank,1.458434398
+GD8_chua_hieu_chinh,trong_mau_1_9,-0.00521239203,0.01313665321,,
+GD8_chua_hieu_chinh,ngoai_mau_10_14,0.01041315446,0.01438203318,,
+GD8_chua_hieu_chinh,LDR_2025Q2,,,ACB,1.028869816
+GD8_chua_hieu_chinh,LDR_2025Q2,,,BIDV,1.240995193
+GD8_chua_hieu_chinh,LDR_2025Q2,,,HDBank,1.001283597
+GD8_chua_hieu_chinh,LDR_2025Q2,,,MB Bank,1.243650276
+GD8_chua_hieu_chinh,LDR_2025Q2,,,Techcombank,1.29865113
+GD8_chua_hieu_chinh,LDR_2025Q2,,,VPBank,1.280195693
+GD8_chua_hieu_chinh,LDR_2025Q2,,,Vietcombank,1.380224481
+GD8_chua_hieu_chinh,LDR_2025Q2,,,VietinBank,1.229254214
+GD8_chua_hieu_chinh,LDR_2026Q3,,,ACB,1.045138744
+GD8_chua_hieu_chinh,LDR_2026Q3,,,BIDV,1.243856605
+GD8_chua_hieu_chinh,LDR_2026Q3,,,HDBank,0.9651069413
+GD8_chua_hieu_chinh,LDR_2026Q3,,,MB Bank,1.304786409
+GD8_chua_hieu_chinh,LDR_2026Q3,,,Techcombank,1.332912406
+GD8_chua_hieu_chinh,LDR_2026Q3,,,VPBank,1.240742755
+GD8_chua_hieu_chinh,LDR_2026Q3,,,Vietcombank,1.474987384
+GD8_chua_hieu_chinh,LDR_2026Q3,,,VietinBank,1.240440595

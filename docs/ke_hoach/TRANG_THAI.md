@@ -7,7 +7,7 @@ Trạng thái: CHUA_LAM · DANG_LAM · XONG · XONG_CHO_DUYET · BI_CHAN · DUNG
 | GD7c | Quyết định GĐ8 + chỉ đạo LS và biên cho vay | – | XONG | ff20d53 | reports/calibration/estimates_stage7c.md | Làm thủ công trước khi cài điều phối; không có bằng chứng chỉ đạo làm hẹp biên → giữ D6 |
 | GD9a | Đưa hằng số cứng còn lại ra YAML | – | XONG_CHO_DUYET | 9e806f4 | reports/giai_doan/GD9a.md | 13 khóa mới, hành vi bitwise không đổi; reviewer ĐẠT vòng 1; 2 việc NHỎ chuyển sang đầu GD9 |
 | GD9 | Hiệu chỉnh bằng mô phỏng + kiểm định ngoài mẫu lịch sử | GD7c, GD9a | XONG_CHO_DUYET | 464c86d | reports/giai_doan/GD9.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; nghiệm ở biên lưới (λ 0.45 ngoài CI), chờ Huy: Q4b, Q6, Q7 |
-| GD9b | Hiệu chỉnh lại GD9 theo D9 (Q7 bù tăng trưởng; Q6 lưới λ ∈ CI, biên tổng 3.4–4.8) | GD9 | CHUA_LAM | | reports/giai_doan/GD9b.md | Giữ bản GD9 cũ ở `configs/scenarios_calibrated_gd9.yaml`; DANG_KY_TRUOC_GD9b.md commit trước khi chạy lưới |
+| GD9b | Hiệu chỉnh lại GD9 theo D9 (Q7 bù tăng trưởng; Q6 lưới λ ∈ CI, biên tổng 3.4–4.8) | GD9 | XONG_CHO_DUYET | HASH9B | reports/giai_doan/GD9b.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; nghiệm góc λ 0.40 (ngoài CI 0.005), biên tổng 3.4; bù Q7 làm hết chạm trần LDR nhưng C không phân biệt được với B; ngoài mẫu LS cho vay kém GD9. Chờ Huy: Q9–Q11 |
 | GD10 | Chạy lại A/B/C, độ nhạy, độ vững | GD9b | CHUA_LAM | | reports/giai_doan/GD10.md | Hết bị chặn nhờ quyết định D9; thêm biến thể λ = 0.45 không ràng buộc vào độ nhạy |
 | GD11 | Khung kiểm định ngoài mẫu Q4/2026 | GD9b | XONG_CHO_DUYET | f8658cc | reports/giai_doan/GD11.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; chưa có kết quả ngoài mẫu thực (panel dừng ở 2026Q3); đã tải ON Q4/2026 đến 19/11; chạy lại script khi YAML đổi ở GD9b; Q8 đã đóng (D9) |
 | GD12 | Hoàn thiện báo cáo nghiên cứu | GD10, GD11 | CHUA_LAM | | reports/giai_doan/GD12.md | |
@@ -20,6 +20,9 @@ Trạng thái: CHUA_LAM · DANG_LAM · XONG · XONG_CHO_DUYET · BI_CHAN · DUNG
 | Q2 | (trước) | r^L trong mô hình là LS chào khoản vay mới hay LS bình quân danh mục | Coi là bình quân danh mục (vì đối chiếu với lợi suất sổ sách) | GD9, GD12 |
 | Q4 | GD9a | Chặn `demand_pressure` ±0.5 và tăng trưởng tiền gửi: 1 khóa đối xứng hay 2 khóa sàn/trần | 1 khóa đối xứng (`demand_pressure_cap`, `depositor_max_growth`) | GD9 (dạng tham số có thể hiệu chỉnh; Bước 1 GD9 dùng phân vị 2.5/97.5 – nếu bất đối xứng sẽ cần tách khóa) |
 | Q5 | GD9a | Đưa miền hợp lệ 0–20/0–14 và sàn 0.01 ra YAML? | Giữ cứng (trùng assert mục 6) | Không |
+| Q9 | GD9b | Nghiệm GD9b chạm góc lưới (λ = 0.40 ngoài CI GĐ7 0.005; biên tổng 3.4 cận dưới; J đơn điệu) – giữ làm cấu hình chính? | Giữ theo D9 (không mở rộng lưới); λ = 0.35 (trong CI, J +0.0055) và nghiệm GD9 đưa vào độ nhạy GD10 | GD10, GD12 |
+| Q10 | GD9b | Bù Q7 làm nhánh áp lực huy động gần như không kích hoạt (LDR TB của A sau chính sách 1.46 → 1.09), nên C−B ≈ 0 (−0.0014) và C không phân biệt được với B; xem lại `deposit_competition`/ngưỡng LDR (ngoài phạm vi D9)? | Giữ GD9b; GD10 báo B vs C ở mức "không phân biệt được" và so thêm biến thể GD9 (`scenarios_calibrated_gd9.yaml`) cho B vs C | GD10, GD12 |
+| Q11 | GD9b | Ngoài mẫu LS cho vay GD9b kém GD9 (RMSE thô 0.592 so 0.477; sai số TB −0.338 so +0.122); tăng trưởng tiền gửi ngoài mẫu gấp 1.67 lần dữ liệu. Chọn cấu hình chính theo ngoài mẫu / bù lần hai? | Không: tiêu chí đã đăng ký là J trong mẫu; không bù lần hai | GD10, GD12 |
 
 ## Quyết định đã đóng (Huy, 21/11/2026 – D9 trong LO_TRINH.md)
 | # | Giai đoạn | Quyết định | Áp dụng ở |

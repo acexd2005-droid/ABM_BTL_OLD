@@ -1,0 +1,6 @@
+tham_so,pass_through,total_margin,base_deposit_rate_step,deposit_competition,ldr_is_mean
+pass_through,1,0.390396,0.095225,-0.0575266,-0.111856
+total_margin,0.390396,1,-0.244302,0.0434969,0.110264
+base_deposit_rate_step,0.095225,-0.244302,1,-0.00452645,0.182061
+deposit_competition,-0.0575266,0.0434969,-0.00452645,1,0.269571
+ldr_is_mean,-0.111856,0.110264,0.182061,0.269571,1

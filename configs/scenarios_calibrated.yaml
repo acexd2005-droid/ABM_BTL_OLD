@@ -1,29 +1,30 @@
-# FILE GHI ĐÈ lên scenarios.yaml (sinh tự động bởi `python -m src.calibration.calibrate_stage9`, KHÔNG sửa tay).
-# Bộ tham số hiệu chỉnh Giai đoạn 9 (D5). Nền: scenarios.yaml + scenarios_macro.yaml (D2).
-# Phương pháp: reports/calibration/stage9/DANG_KY_TRUOC.md; kết quả: reports/calibration/stage9/summary_stage9.md.
+# FILE GHI ĐÈ lên scenarios.yaml (sinh tự động bởi `python -m src.calibration.calibrate_stage9b`, KHÔNG sửa tay).
+# Bộ tham số hiệu chỉnh Giai đoạn 9b (D9: Q6 lưới ràng buộc λ, Q7 bù tăng trưởng, Q4b ngưỡng bất đối xứng). Nền: scenarios.yaml + scenarios_macro.yaml (D2).
+# Phương pháp: reports/calibration/stage9b/DANG_KY_TRUOC_GD9b.md; kết quả: reports/calibration/stage9b/summary_stage9b.md.
+# Bản GD9 cũ giữ ở configs/scenarios_calibrated_gd9.yaml (đối chiếu).
 # Hàm mục tiêu: J = 0.5*RMSE thô LS cho vay + 0.5*RMSE thô LS huy động (cơ sở dữ liệu), kịch bản A, 2023Q2-2025Q2.
 # Mọi khóa hành vi (gồm 13 khóa GD9a) ghi TƯỜNG MINH ở đây, không dựa vào mặc định trong code.
 # Đây là đối chiếu trong mẫu; không phải dự báo và không phải tác động chính sách thực tế.
 # Chạy: python main.py --config configs/scenarios_calibrated.yaml
 parameters:
-  target_margin: 2.45    # GD9 lưới: biên tổng 3.8 − loan_spread_add 1.35
+  target_margin: 2.05    # GD9b lưới Q6: biên tổng 3.4 − loan_spread_add 1.35; CHẠM cận dưới biên tổng 3.4 (giữ, D9)
   funding_cost_add: 0.15    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
-  deposit_ldr_target: 1.0899618858566973    # GD9 lưới: LDR bình quân ngân hàng-quý 2023Q2-2025Q2 = 1.089962
+  deposit_ldr_target: 1.0899618858566973    # GD9b lưới: LDR bình quân ngân hàng-quý 2023Q2-2025Q2 = 1.089962
   demand_pressure_cap: 0.5    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
-  depositor_base_growth: 0.03976093370475935    # GD9 Bước 1: TB tăng trưởng quý tổng tiền gửi 8 NH 2023Q2-2025Q2 (quy tắc, không tối ưu)
-  depositor_max_growth: 0.17322255795489236    # GD9 Bước 1: P97.5 tăng trưởng tiền gửi ngân hàng-quý (N = 72)
-  depositor_min_growth: -0.014160053263038454    # GD9 Bước 1: P2.5 tăng trưởng tiền gửi ngân hàng-quý (N = 72); khóa tùy chọn GD9
-  borrower_growth_min: 0.0011790118598663808    # GD9 Bước 1: P2.5 tăng trưởng dư nợ ngân hàng-quý (N = 72)
-  borrower_growth_max: 0.13950953337717706    # GD9 Bước 1: P97.5 tăng trưởng dư nợ ngân hàng-quý (N = 72)
-  borrower_base_growth: 0.044751104985969604    # GD9 Bước 1: TB tăng trưởng quý tổng dư nợ 8 NH 2023Q2-2025Q2 (tại borrower_reference_rate)
+  depositor_base_growth: 0.04976685319823532    # GD9b Q7: 0.0397609337 (TB tăng trưởng quý tổng tiền gửi 8 NH 2023Q2-2025Q2, GD9) + bù Δ_D = +0.0100059195 (dữ liệu 0.0397609337 − mô hình A tại nghiệm GD9 0.0297550142); bù MỘT lần, không tối ưu J
+  depositor_max_growth: 0.17322255795489236    # GD9 Bước 1 (giữ): P97.5 tăng trưởng tiền gửi ngân hàng-quý (N = 72)
+  depositor_min_growth: -0.014160053263038454    # GD9 Bước 1 (giữ): P2.5 tăng trưởng tiền gửi ngân hàng-quý (N = 72); sàn bất đối xứng Q4b
+  borrower_growth_min: 0.0011790118598663808    # GD9 Bước 1 (giữ): P2.5 tăng trưởng dư nợ ngân hàng-quý (N = 72)
+  borrower_growth_max: 0.13950953337717706    # GD9 Bước 1 (giữ): P97.5 tăng trưởng dư nợ ngân hàng-quý (N = 72)
+  borrower_base_growth: 0.029317683082609278    # GD9b Q7: 0.0447511050 (TB tăng trưởng quý tổng dư nợ 8 NH 2023Q2-2025Q2, GD9) + bù Δ_L = -0.0154334219 (dữ liệu 0.0447511050 − mô hình A tại nghiệm GD9 0.0601845269); bù MỘT lần, không tối ưu J
   compliance_pressure_coef: 2.5    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
   compliance_pressure_center: 0.5    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
   compliance_margin_coef: 1.1    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
   compliance_prob_min: 0.02    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
   compliance_prob_max: 0.98    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
-  pass_through: 0.45    # GD9 lưới (argmin J, cửa sổ 2023Q2-2025Q2); CI GĐ7 (c) [0.158; 0.395]: NGOÀI CI
-  base_deposit_rate_step: 0.0    # GD9 lưới (argmin J)
-  deposit_competition: 0.07    # GD9 lưới (argmin J)
+  pass_through: 0.4    # GD9b lưới Q6 (argmin J, cửa sổ 2023Q2-2025Q2); CI GĐ7 (c) [0.158; 0.395]: NGOÀI CI; CHẠM BIÊN lưới ràng buộc 0.4 (giữ, D9)
+  base_deposit_rate_step: 0.0    # GD9b lưới (argmin J)
+  deposit_competition: 0.07    # GD9b lưới (argmin J)
   loan_spread_add: 1.35    # giữ 1.35 (D7/Q1); biên tổng hiệu chỉnh qua target_margin
   depositor_sensitivity: 0.035    # GIẢ ĐỊNH, không nhận diện được (GĐ7), không hiệu chỉnh
   borrower_elasticity: 0.012    # GIẢ ĐỊNH, không nhận diện được (GĐ7), không hiệu chỉnh

@@ -7,7 +7,7 @@ Phương pháp chốt TRƯỚC khi chạy: reports/calibration/stage9/DANG_KY_TR
   Bước 2 (lưới, kịch bản A, tất định): λ × biên tổng × base_step × δ × ngưỡng LDR = 1536 bộ / biến thể.
           Hàm mục tiêu J = 0.5·RMSE_L + 0.5·RMSE_D (RMSE thô, month 1–9, cơ sở dữ liệu cho huy động).
   Bước 3 (ngoài mẫu, month 10–14): so bộ tốt nhất với cấu hình GĐ8 và hai mốc ngây thơ.
-  Bước 4: ghi configs/scenarios_calibrated.yaml; mục 6 CLAUDE.md (A/B/C, 10 lần chạy); ngưỡng có đạt tới không.
+  Bước 4: ghi configs/scenarios_calibrated_gd9.yaml (từ GD9b); mục 6 CLAUDE.md (A/B/C, 10 lần chạy); ngưỡng có đạt tới không.
 
 Đây là đối chiếu lịch sử; mô hình (và mốc ON) được cấp ON THỰC trong cửa sổ ngoài mẫu (lợi thế thông tin),
 nên RMSE ngoài mẫu không phải dự báo thật. A/B/C không phải tác động chính sách thực tế.
@@ -32,7 +32,8 @@ ROOT = Path(__file__).resolve().parents[2]
 BANKS = ROOT / "data/clean/abm_initial_8nganhang_2023Q1.csv"
 PANEL = ROOT / "data/clean/abm_panel_8nganhang_2023Q1_2026Q3.csv"
 MACRO_CFG = ROOT / "configs/scenarios_macro.yaml"
-CALIBRATED_CFG = ROOT / "configs/scenarios_calibrated.yaml"
+# Từ GD9b, configs/scenarios_calibrated.yaml là nghiệm GD9b; bản GD9 giữ ở file _gd9 (script này chỉ ghi file _gd9).
+CALIBRATED_CFG = ROOT / "configs/scenarios_calibrated_gd9.yaml"
 OUTDIR = ROOT / "reports/calibration/stage9"
 OUTLIERS = ROOT / "reports/calibration/outliers_stage7.csv"
 
@@ -518,6 +519,8 @@ def write_calibrated_yaml(path, params, best, stats, ldr_value, lam_in_ci):
         "loan_spread_add": "giữ 1.35 (D7/Q1); biên tổng hiệu chỉnh qua target_margin",
     }
     lines = [
+        "# BẢN GD9 GIỮ ĐỂ ĐỐI CHIẾU (D9): sao nguyên từ configs/scenarios_calibrated.yaml trước khi GD9b ghi đè; sinh bởi calibrate_stage9.",
+        "# Không dùng làm cấu hình chính (λ = 0.45 ngoài CI GĐ7, chưa bù tăng trưởng Q7). Dùng làm biến thể độ nhạy ở GD10.",
         "# FILE GHI ĐÈ lên scenarios.yaml (sinh tự động bởi `python -m src.calibration.calibrate_stage9`, KHÔNG sửa tay).",
         "# Bộ tham số hiệu chỉnh Giai đoạn 9 (D5). Nền: scenarios.yaml + scenarios_macro.yaml (D2).",
         "# Phương pháp: reports/calibration/stage9/DANG_KY_TRUOC.md; kết quả: reports/calibration/stage9/summary_stage9.md.",
@@ -554,7 +557,7 @@ def md_table(df, digits=4):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--outdir", default=str(OUTDIR))
-    ap.add_argument("--no-yaml", action="store_true", help="không ghi configs/scenarios_calibrated.yaml")
+    ap.add_argument("--no-yaml", action="store_true", help="không ghi configs/scenarios_calibrated_gd9.yaml")
     args = ap.parse_args()
     out = Path(args.outdir)
     out.mkdir(parents=True, exist_ok=True)

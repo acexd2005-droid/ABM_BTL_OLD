@@ -1,0 +1,5 @@
+tham_so,gia_tri,can_duoi_luoi,can_tren_luoi,cham_can_duoi,cham_can_tren
+pass_through,0.4,0.15,0.4,False,True
+total_margin,3.4,3.4,4.8,True,False
+base_deposit_rate_step,0,0,0.018,True,False
+deposit_competition,0.07,0.07,1.2,True,False

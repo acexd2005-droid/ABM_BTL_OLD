@@ -24,7 +24,7 @@ BANKS = ROOT / "data/clean/abm_initial_8nganhang_2023Q1.csv"
 BANKS_2026Q3 = ROOT / "data/clean/abm_initial_8nganhang_2026Q3.csv"
 OUTDIR = ROOT / "reports/calibration/stage9"
 CONFIGS = {"macro_GD8": ROOT / "configs/scenarios_macro.yaml",
-           "hieu_chinh_GD9": ROOT / "configs/scenarios_calibrated.yaml"}
+           "hieu_chinh_GD9": ROOT / "configs/scenarios_calibrated_gd9.yaml"}
 N_SEEDS = 10
 REL_TOL = 1e-9
 

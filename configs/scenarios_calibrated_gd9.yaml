@@ -1,0 +1,46 @@
+# BẢN GD9 GIỮ ĐỂ ĐỐI CHIẾU (D9): sao nguyên từ configs/scenarios_calibrated.yaml trước khi GD9b ghi đè; sinh bởi calibrate_stage9.
+# Không dùng làm cấu hình chính (λ = 0.45 ngoài CI GĐ7, chưa bù tăng trưởng Q7). Dùng làm biến thể độ nhạy ở GD10.
+# FILE GHI ĐÈ lên scenarios.yaml (sinh tự động bởi `python -m src.calibration.calibrate_stage9`, KHÔNG sửa tay).
+# Bộ tham số hiệu chỉnh Giai đoạn 9 (D5). Nền: scenarios.yaml + scenarios_macro.yaml (D2).
+# Phương pháp: reports/calibration/stage9/DANG_KY_TRUOC.md; kết quả: reports/calibration/stage9/summary_stage9.md.
+# Hàm mục tiêu: J = 0.5*RMSE thô LS cho vay + 0.5*RMSE thô LS huy động (cơ sở dữ liệu), kịch bản A, 2023Q2-2025Q2.
+# Mọi khóa hành vi (gồm 13 khóa GD9a) ghi TƯỜNG MINH ở đây, không dựa vào mặc định trong code.
+# Đây là đối chiếu trong mẫu; không phải dự báo và không phải tác động chính sách thực tế.
+# Chạy: python main.py --config configs/scenarios_calibrated.yaml
+parameters:
+  target_margin: 2.45    # GD9 lưới: biên tổng 3.8 − loan_spread_add 1.35
+  funding_cost_add: 0.15    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  deposit_ldr_target: 1.0899618858566973    # GD9 lưới: LDR bình quân ngân hàng-quý 2023Q2-2025Q2 = 1.089962
+  demand_pressure_cap: 0.5    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  depositor_base_growth: 0.03976093370475935    # GD9 Bước 1: TB tăng trưởng quý tổng tiền gửi 8 NH 2023Q2-2025Q2 (quy tắc, không tối ưu)
+  depositor_max_growth: 0.17322255795489236    # GD9 Bước 1: P97.5 tăng trưởng tiền gửi ngân hàng-quý (N = 72)
+  depositor_min_growth: -0.014160053263038454    # GD9 Bước 1: P2.5 tăng trưởng tiền gửi ngân hàng-quý (N = 72); khóa tùy chọn GD9
+  borrower_growth_min: 0.0011790118598663808    # GD9 Bước 1: P2.5 tăng trưởng dư nợ ngân hàng-quý (N = 72)
+  borrower_growth_max: 0.13950953337717706    # GD9 Bước 1: P97.5 tăng trưởng dư nợ ngân hàng-quý (N = 72)
+  borrower_base_growth: 0.044751104985969604    # GD9 Bước 1: TB tăng trưởng quý tổng dư nợ 8 NH 2023Q2-2025Q2 (tại borrower_reference_rate)
+  compliance_pressure_coef: 2.5    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  compliance_pressure_center: 0.5    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  compliance_margin_coef: 1.1    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  compliance_prob_min: 0.02    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  compliance_prob_max: 0.98    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  pass_through: 0.45    # GD9 lưới (argmin J, cửa sổ 2023Q2-2025Q2); CI GĐ7 (c) [0.158; 0.395]: NGOÀI CI
+  base_deposit_rate_step: 0.0    # GD9 lưới (argmin J)
+  deposit_competition: 0.07    # GD9 lưới (argmin J)
+  loan_spread_add: 1.35    # giữ 1.35 (D7/Q1); biên tổng hiệu chỉnh qua target_margin
+  depositor_sensitivity: 0.035    # GIẢ ĐỊNH, không nhận diện được (GĐ7), không hiệu chỉnh
+  borrower_elasticity: 0.012    # GIẢ ĐỊNH, không nhận diện được (GĐ7), không hiệu chỉnh
+  borrower_reference_rate: 9.5    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  policy_month: 14    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  policy_pressure: 0.65    # giả định kịch bản (D6), không hiệu chỉnh
+  policy_step: 0.28    # giả định kịch bản (D6), không hiệu chỉnh
+  deposit_cap_factor: 0.25    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  max_loan_to_deposit: 1.6    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  margin_floor: 2.2    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  macro_driver: exogenous    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  macro_dep_speed: 0.177    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  macro_dep_spread: 1.2723    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  macro_on_path: data/raw/sbv_lnh_qua_dem_theo_quy.csv    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  macro_lending_on_coef: 0.0    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  macro_lending_on_ref: 3.7461    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  deposit_rate_basis: term    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)
+  adaptive_learning: false    # giữ giá trị scenarios.yaml/scenarios_macro.yaml (KHÔNG hiệu chỉnh)

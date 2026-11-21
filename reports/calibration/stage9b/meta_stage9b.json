@@ -1,0 +1,60 @@
+{
+  "lambda_best": 0.4,
+  "lambda_ci_stage7": [
+    0.158,
+    0.395
+  ],
+  "lambda_in_ci": false,
+  "scenario_A_deterministic_two_seeds": true,
+  "ldr_mean_window": 1.0899618858566973,
+  "n_grid_per_variant": 1536,
+  "yaml_matches_best": true,
+  "yaml_path_max_abs_diff": 0.0,
+  "section6_pass_calibrated": true,
+  "bu_q7": {
+    "g_D_du_lieu": 0.03976093370475935,
+    "g_L_du_lieu": 0.044751104985969604,
+    "g_D_mo_hinh_GD9": 0.029755014211283386,
+    "g_L_mo_hinh_GD9": 0.06018452688932993,
+    "delta_D": 0.010005919493475967,
+    "delta_L": -0.015433421903360327,
+    "depositor_base_growth_GD9": 0.03976093370475935,
+    "borrower_base_growth_GD9": 0.044751104985969604,
+    "depositor_base_growth_moi": 0.04976685319823532,
+    "borrower_base_growth_moi": 0.029317683082609278
+  },
+  "boundary": [
+    {
+      "tham_so": "pass_through",
+      "gia_tri": 0.4,
+      "can_duoi_luoi": 0.15,
+      "can_tren_luoi": 0.4,
+      "cham_can_duoi": false,
+      "cham_can_tren": true
+    },
+    {
+      "tham_so": "total_margin",
+      "gia_tri": 3.4,
+      "can_duoi_luoi": 3.4,
+      "can_tren_luoi": 4.8,
+      "cham_can_duoi": true,
+      "cham_can_tren": false
+    },
+    {
+      "tham_so": "base_deposit_rate_step",
+      "gia_tri": 0.0,
+      "can_duoi_luoi": 0.0,
+      "can_tren_luoi": 0.018,
+      "cham_can_duoi": true,
+      "cham_can_tren": false
+    },
+    {
+      "tham_so": "deposit_competition",
+      "gia_tri": 0.07,
+      "can_duoi_luoi": 0.07,
+      "can_tren_luoi": 1.2,
+      "cham_can_duoi": true,
+      "cham_can_tren": false
+    }
+  ]
+}

@@ -51,3 +51,11 @@ Tất cả sinh từ script vào `reports/calibration/stage9b/`:
 
 ## 6. Phụ lục
 Phụ lục chẩn đoán (nếu có) sẽ được thêm SAU khi chạy lưới chính, chỉ chẩn đoán, không đổi bộ chính.
+
+## 7. Phụ lục chẩn đoán (THÊM SAU khi chạy lưới chính; chỉ chẩn đoán, không đổi bộ chính, không đổi mục 1–6 ở trên)
+Sinh bởi `src/calibration/calibrate_stage9b.py` vào `reports/calibration/stage9b/` (xem `diagnostics_stage9b.csv`, `oos_stage9b.csv`, `boundary_stage9b.csv`):
+- Bộ J nhỏ nhất với λ nằm trong CI GĐ7 [0.158; 0.395] (dòng `lambda_trong_CI_GD7_tot_nhat`), và đường đi ngoài mẫu của bộ này (`chan_doan_GD9b_lambda_trong_CI`).
+- Đường đi của nghiệm GD9b nhưng KHÔNG bù Q7 (cộng ngược Δ; `chan_doan_GD9b_nghiem_khong_bu`), để tách tác động của bù tăng trưởng.
+- Bảng chạm biên lưới của nghiệm chính (`boundary_stage9b.csv`).
+- Đối với biến thể (i), (ii) ở mục 4: bù Δ_D, Δ_L cộng vào base_growth của chính Bước 1 của biến thể đó (biến thể (ii) có base riêng 0.0371/0.0438 từ Bước 1 GD9); mục 2 chỉ nêu "cộng cùng Δ", đây là cách hiểu đã áp dụng.
+- (Vòng sửa 2, thêm SAU khi chạy lưới; chỉ chẩn đoán, không đổi mục 1–6, không đổi nghiệm, không chạy lại lưới) `src/calibration/diag_gd9b.py` → `diag_gd9b.csv`/`diag_gd9b.md`: (a) nghiệm GD9b bỏ bù Q7 (cộng ngược Δ) chỉ để chẩn đoán, không ghi YAML, so tỷ lệ chạm trần LDR, LDR max, tăng trưởng; (b) GD9 so GD9b về áp lực huy động (LDR đầu quý của A sau chính sách, tỷ lệ trên ngưỡng) và C−B lãi suất huy động, `nim_proxy`; (c) hai định nghĩa biên và khoảng cách tăng trưởng mô hình − dữ liệu.
