@@ -1,0 +1,4 @@
+# FILE GHI ĐÈ lên scenarios.yaml: cơ sở lãi suất huy động "total" (hành vi cũ trước Bước A: CASA bị trừ hai lần).
+# Giữ để đối chiếu lịch sử; golden tương ứng ở tests/golden_total/. Ngưỡng n* tự chuyển sang 5.5875.
+parameters:
+  deposit_rate_basis: total

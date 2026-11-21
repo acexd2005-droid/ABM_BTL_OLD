@@ -101,6 +101,8 @@ Kiểm tra mục 6 CLAUDE.md khi BẬT: B và C không cao hơn A ở mọi lầ
 
 > **Vai trò trong báo cáo (quyết định của người dùng):** mô hình chính vẫn là **học TẮT**. Quy tắc relative được trình bày như **phân tích độ vững**: kiểm tra kết luận B−A, C−A có đổi khi ngân hàng học thích nghi hay không. Mọi tham số (θ, bước 0.05, benchmark) **chưa hiệu chỉnh, chờ Huy duyệt**.
 
+> **Lưu ý sau Bước A:** các số liệu ở mục 4–6 (so sánh bật/tắt học, độ nhạy θ, kết luận độ vững B−A/C−A) được tính khi cơ sở lãi suất huy động là `total` (CASA bị trừ hai lần). Từ Bước A mặc định là `term`; các bảng này chưa được tính lại. Chạy lại bằng `configs/scenarios_total.yaml` để tái lập số cũ. Đổi cơ sở không chỉ dịch mức mà còn đổi thứ hạng lãi suất huy động tương đối giữa các ngân hàng (hệ số 1/(1−casa) khác nhau), nên không so trực tiếp tiền gửi/thị phần từng ngân hàng giữa hai cơ sở. Khi đo lại độ trôi biên ở kịch bản A: absolute −0.79 → −0.70; relative có điều kiện nim 0.00 → +0.056; relative không điều kiện nim +0.237 → +0.094 (sát ngưỡng ±0.1; test chuyển thành test thường ở `term` và giữ `xfail` ở `total`).
+
 ### 6.1. Kế hoạch và quyết định đã duyệt (để nhóm theo dõi)
 
 **Giai đoạn 4 (chẩn đoán).** Biên trôi của quy tắc absolute do cơ chế: khoảng 0.04–0.06 điểm %/quý, 33–38% ngân hàng chạm sàn 2.2 ở quý 18, hầu như không có bước tăng vì `nim_proxy` < n\* = 5.5875. Hai nguyên nhân nghi ngờ: (1) thị phần có tổng cố định nên luôn có ngân hàng bị giảm biên; (2) n\* lấy từ 2023Q1 không đạt được ở cân bằng.

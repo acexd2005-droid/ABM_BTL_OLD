@@ -1,7 +1,7 @@
 """Bước 8a: so sánh cơ sở lãi suất huy động `total` (cũ) và `term` (chia 1 - casa) khi khởi tạo.
 
 Chạy A/B/C, n_runs lần (mặc định 60 theo configs/scenarios.yaml), dữ liệu 8 ngân hàng thật,
-khởi tạo 2023Q1, cùng seed cho hai cơ sở. KHÔNG đổi mặc định của dự án sang `term`.
+khởi tạo 2023Q1, cùng seed cho hai cơ sở. Mặc định của dự án là `term` từ Bước A; `total` chỉ để đối chiếu.
 Chạy: python -m src.analysis.compare_deposit_basis [--runs 60] [--outdir reports/stage8a]
 
 Đơn vị: lãi suất %/năm. Dữ liệu là chi phí lãi sổ sách trên TỔNG tiền gửi ("cơ sở total"). Cột `deposit_rate`
@@ -23,7 +23,7 @@ from .experiments import load_config
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = ROOT / "data/clean/abm_initial_8nganhang_2023Q1.csv"
 PANEL = ROOT / "data/clean/abm_panel_8nganhang_2023Q1_2026Q3.csv"
-TERM_OVERRIDE = ROOT / "configs/scenarios_term.yaml"
+TOTAL_OVERRIDE = ROOT / "configs/scenarios_total.yaml"   # cơ sở cũ; mặc định của dự án là term từ Bước A
 BASES = ("total", "term")
 
 
@@ -50,7 +50,7 @@ def run_all(runs):
     hist, bank = [], []
     init = []
     for basis in BASES:
-        cfg = load_config(TERM_OVERRIDE if basis == "term" else None)
+        cfg = load_config(TOTAL_OVERRIDE if basis == "total" else None)
         params = dict(cfg["parameters"])
         assert params["deposit_rate_basis"] == basis
         for sc in "ABC":
@@ -195,7 +195,7 @@ def main():
 
     md = [f"# Bước 8a: cơ sở lãi suất huy động `total` so với `term` (sinh tự động)\n",
           f"> {runs} lần chạy mỗi kịch bản, seed = base_seed + run_id (cùng seed cho hai cơ sở), dữ liệu 8 ngân hàng thật, khởi tạo 2023Q1, 18 quý, chính sách từ bước {pm + 1} (Q4/2026). "
-          "Mặc định của dự án vẫn là `total`; đổi sang `term` là quyết định của trưởng nhóm. "
+          "Từ Bước A mặc định của dự án là `term` (trưởng nhóm duyệt); `total` giữ để đối chiếu lịch sử. "
           "RMSE là đối chiếu trong mẫu, không phải dự báo ngoài mẫu; chênh lệch A/B/C không phải tác động chính sách thực tế. "
           "Kịch bản A không dùng số ngẫu nhiên nên các lần chạy của A giống hệt nhau (sd RMSE = 0); số lần chạy chỉ có tác dụng với B và C (xác suất tuân thủ).\n",
           "`deposit_rate_total_basis` gia quyền theo tiền gửi, cùng cơ sở với dữ liệu (chi phí lãi sổ sách trên tổng tiền gửi): ở `total` bằng chính `deposit_rate` của mô hình; "

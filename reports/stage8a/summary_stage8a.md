@@ -1,6 +1,6 @@
 # Bước 8a: cơ sở lãi suất huy động `total` so với `term` (sinh tự động)
 
-> 60 lần chạy mỗi kịch bản, seed = base_seed + run_id (cùng seed cho hai cơ sở), dữ liệu 8 ngân hàng thật, khởi tạo 2023Q1, 18 quý, chính sách từ bước 15 (Q4/2026). Mặc định của dự án vẫn là `total`; đổi sang `term` là quyết định của trưởng nhóm. RMSE là đối chiếu trong mẫu, không phải dự báo ngoài mẫu; chênh lệch A/B/C không phải tác động chính sách thực tế. Kịch bản A không dùng số ngẫu nhiên nên các lần chạy của A giống hệt nhau (sd RMSE = 0); số lần chạy chỉ có tác dụng với B và C (xác suất tuân thủ).
+> 60 lần chạy mỗi kịch bản, seed = base_seed + run_id (cùng seed cho hai cơ sở), dữ liệu 8 ngân hàng thật, khởi tạo 2023Q1, 18 quý, chính sách từ bước 15 (Q4/2026). Từ Bước A mặc định của dự án là `term` (trưởng nhóm duyệt); `total` giữ để đối chiếu lịch sử. RMSE là đối chiếu trong mẫu, không phải dự báo ngoài mẫu; chênh lệch A/B/C không phải tác động chính sách thực tế. Kịch bản A không dùng số ngẫu nhiên nên các lần chạy của A giống hệt nhau (sd RMSE = 0); số lần chạy chỉ có tác dụng với B và C (xác suất tuân thủ).
 
 `deposit_rate_total_basis` gia quyền theo tiền gửi, cùng cơ sở với dữ liệu (chi phí lãi sổ sách trên tổng tiền gửi): ở `total` bằng chính `deposit_rate` của mô hình; ở `term` bằng `deposit_rate × (1 − casa)` (cột `deposit_rate` gốc ở `term` là lãi suất kỳ hạn nên cao hơn).
 

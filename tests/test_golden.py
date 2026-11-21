@@ -9,7 +9,8 @@ import yaml
 from src.core.model import ABMModel
 
 ROOT = Path(__file__).resolve().parents[1]
-GOLDEN = ROOT / "tests" / "golden"
+GOLDEN = ROOT / "tests" / "golden"                # cơ sở term (mặc định từ Bước A)
+GOLDEN_TOTAL = ROOT / "tests" / "golden_total"    # cơ sở total (trước Bước A), để đối chiếu lịch sử
 SEEDS = (202611, 202612, 202613)
 
 
@@ -46,4 +47,20 @@ def test_golden(scenario, seed):
             check_exact=False,
             atol=1e-9,
             rtol=0,
+        )
+
+
+@pytest.mark.parametrize("seed", SEEDS)
+@pytest.mark.parametrize("scenario", "ABC")
+def test_golden_total(scenario, seed):
+    """Cơ sở `total` (hành vi cũ, golden tạo từ code gốc 0117fb6) vẫn tái lập y nguyên."""
+    cfg = load_config()
+    cfg["parameters"]["deposit_rate_basis"] = "total"
+    history, bank_history = run_model(scenario, seed, cfg)
+    for name, frame in (("history", history), ("bank_history", bank_history)):
+        expected = pd.read_csv(
+            GOLDEN_TOTAL / f"{name}_{scenario}_{seed}.csv", float_precision="round_trip"
+        )
+        pd.testing.assert_frame_equal(
+            frame[list(expected.columns)], expected, check_exact=False, atol=1e-9, rtol=0,
         )

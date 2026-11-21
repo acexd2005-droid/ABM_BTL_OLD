@@ -137,9 +137,9 @@ parameters:
   learning_up_step: 0.05
   learning_down_step: 0.10
   learning_growth_threshold: 0.006
-  learning_nim_threshold: 5.5875
-  learning_nim_threshold_term: 4.6331
-  deposit_rate_basis: total
+  learning_nim_threshold: 4.6331
+  learning_nim_threshold_total: 5.5875
+  deposit_rate_basis: term
   learning_rule: absolute
   learning_deadband: 0.005
   learning_benchmark: simple
@@ -173,9 +173,9 @@ sensitivity_relative_width: 0.30
 | `learning_up_step` | Bước tăng `target_margin` mỗi quý, điểm % (khởi điểm 0.05, **chưa hiệu chỉnh, chờ Huy duyệt**) |
 | `learning_down_step` | Bước giảm `target_margin` mỗi quý, điểm % (khởi điểm 0.10, **chưa hiệu chỉnh**) |
 | `learning_growth_threshold` | g\*: ngưỡng tăng trưởng dư nợ quý để được tăng biên (0.006, **chưa hiệu chỉnh**) |
-| `learning_nim_threshold` | n\*: ngưỡng `nim_proxy` để được tăng biên, điểm %/năm; cố định 5.5875 = bình quân gia quyền theo dư nợ tại t=0 |
-| `learning_nim_threshold_term` | n\* cho cơ sở `term` (4.6331 = `nim_i = loan_rate − (deposit_rate + 0.15)` gia quyền theo dư nợ trên `abm_initial_8nganhang_2023Q1.csv`); mô hình tự dùng khi `deposit_rate_basis: term` |
-| `deposit_rate_basis` | Cơ sở lãi suất huy động của dữ liệu nạp vào: `total` (mặc định, hành vi cũ, dữ liệu là chi phí lãi sổ sách trên **tổng** tiền gửi nhưng `funding_cost` lại trừ CASA nên CASA bị trừ hai lần) hoặc `term` (khi nạp dữ liệu quy đổi `deposit_rate = deposit_rate_dữ_liệu/(1−casa_ratio)`, nên `funding_cost = deposit_rate_dữ_liệu + 0.15`). Không áp dụng cho bộ giả lập. Đổi mặc định là quyết định của trưởng nhóm. |
+| `learning_nim_threshold` | n\*: ngưỡng `nim_proxy` để được tăng biên, điểm %/năm; mặc định 4.6331 cho cơ sở `term` = bình quân gia quyền theo dư nợ của `nim_i = loan_rate − (deposit_rate + 0.15)` tại t=0 trên `abm_initial_8nganhang_2023Q1.csv`, tính một lần (khởi điểm, **chưa hiệu chỉnh, chờ Huy duyệt**) |
+| `learning_nim_threshold_total` | n\* cho cơ sở `total` (5.5875 = cùng công thức nhưng `nim_i = loan_rate − (deposit_rate·(1−casa) + 0.15)`); mô hình tự dùng khi `deposit_rate_basis: total` (khi đó `learning_nim_threshold` bị bỏ qua, kể cả khi ghi đè tường minh) |
+| `deposit_rate_basis` | Cơ sở lãi suất huy động của dữ liệu nạp vào: `term` (**mặc định từ Bước A**; khi nạp dữ liệu quy đổi `deposit_rate = deposit_rate_dữ_liệu/(1−casa_ratio)`, nên `funding_cost = deposit_rate_dữ_liệu + 0.15`; trưởng nhóm duyệt vì `total` trừ CASA hai lần) hoặc `total` (hành vi cũ trước Bước A, giữ để đối chiếu lịch sử, golden ở `tests/golden_total/`). Không áp dụng cho bộ giả lập. |
 | `learning_rule` | `absolute` (mặc định, ngưỡng g\*, n\*) hoặc `relative` (so với bình quân hệ thống) |
 | `learning_deadband` | θ: vùng chết quanh tăng trưởng bình quân hệ thống, tỷ lệ/quý (0.005, **chưa hiệu chỉnh, chờ Huy duyệt**); chỉ dùng khi `relative` |
 | `learning_benchmark` | Mốc hệ thống của `relative`: `simple` (bình quân đơn giản 8 NH, mặc định, chờ Huy duyệt) hoặc `weighted` (gia quyền dư nợ) |
@@ -313,7 +313,7 @@ ABM_LaiSuat_Vu/
 │   ├── scenarios_adaptive.yaml
 │   ├── scenarios_adaptive_relative.yaml
 │   ├── scenarios_adaptive_relative_nonim.yaml
-│   └── scenarios_term.yaml
+│   └── scenarios_total.yaml
 │
 ├── data/
 │   └── clean/
@@ -410,6 +410,6 @@ Nếu muốn **thay đổi tham số và chạy lại**, sử dụng `configs/sc
 
 **Quy trình khuyến nghị:** Chỉnh tham số trong YAML → chạy kiểm thử và validation → chạy `python main.py` → mở thư mục kết quả mới nhất → đối chiếu với bộ kết quả trước đó → lưu lại cấu hình đã sử dụng.
 
-## Cơ sở lãi suất huy động (`deposit_rate_basis`) và báo cáo Bước 8a
+## Cơ sở lãi suất huy động (`deposit_rate_basis`), Bước 8a và Bước A
 
-Chạy với cơ sở `term`: `python main.py --config configs/scenarios_term.yaml`. Cột `deposit_rate` trong CSV đầu ra: ở `total` đã cùng cơ sở với dữ liệu thực (chi phí lãi sổ sách trên tổng tiền gửi); ở `term` là lãi suất kỳ hạn (cao hơn), nên để so với dữ liệu thực phải quy đổi `deposit_rate × (1 − casa)`. Tùy chọn `term` bị bỏ qua (không cảnh báo) với bộ giả lập mặc định. So sánh hai cơ sở (60 lần chạy, A/B/C, RMSE so với chuỗi thực): `python -m src.analysis.compare_deposit_basis` → `reports/stage8a/summary_stage8a.md`.
+Từ Bước A mặc định là `term`. Chạy cơ sở cũ `total` để đối chiếu lịch sử: `python main.py --config configs/scenarios_total.yaml`. Cột `deposit_rate` trong CSV đầu ra: ở `total` đã cùng cơ sở với dữ liệu thực (chi phí lãi sổ sách trên tổng tiền gửi); ở `term` là lãi suất kỳ hạn (cao hơn), nên để so với dữ liệu thực phải quy đổi `deposit_rate × (1 − casa)`. Tùy chọn `term` bị bỏ qua (không cảnh báo) với bộ giả lập mặc định. Golden: `tests/golden/` (term, tạo ở Bước A) và `tests/golden_total/` (total, từ code gốc 0117fb6).

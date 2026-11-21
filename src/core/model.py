@@ -78,12 +78,12 @@ class ABMModel(Model):
             p.get("loan_spread_add", 1.35)
         )
 
-        # Cơ sở của deposit_rate trong dữ liệu ngân hàng nạp vào (mặc định "total" = hành vi cũ):
-        #  total: dữ liệu là chi phí lãi sổ sách trên TỔNG tiền gửi, dùng nguyên giá trị làm deposit_rate
-        #         (funding_cost trừ CASA lần nữa, tức CASA bị trừ hai lần).
+        # Cơ sở của deposit_rate trong dữ liệu ngân hàng nạp vào (mặc định "term" từ Bước A):
         #  term : quy đổi deposit_rate = deposit_rate_dữ_liệu / (1 - casa_ratio) khi nạp dữ liệu, để
         #         funding_cost = deposit_rate_dữ_liệu + 0.15. Chỉ áp dụng cho dữ liệu nạp vào, không cho bộ giả lập.
-        self.deposit_rate_basis = str(p.get("deposit_rate_basis", "total"))
+        #  total: hành vi cũ trước Bước A: dùng nguyên giá trị dữ liệu làm deposit_rate
+        #         (funding_cost trừ CASA lần nữa, tức CASA bị trừ hai lần). Giữ để đối chiếu lịch sử.
+        self.deposit_rate_basis = str(p.get("deposit_rate_basis", "term"))
         if self.deposit_rate_basis not in ("total", "term"):
             raise ValueError("deposit_rate_basis phải là total hoặc term")
 
@@ -100,15 +100,16 @@ class ABMModel(Model):
         self.learning_growth_threshold = float(
             p.get("learning_growth_threshold", 0.006)
         )
+        # n* mặc định cho cơ sở "term" (nim_i = loan_rate - (deposit_rate_dữ_liệu + 0.15))
         self.learning_nim_threshold = float(
-            p.get("learning_nim_threshold", 5.5875)
+            p.get("learning_nim_threshold", 4.6331)
         )
-        # n* tính lại cho cơ sở "term" (nim_i = loan_rate - (deposit_rate_dữ_liệu + 0.15))
-        self.learning_nim_threshold_term = float(
-            p.get("learning_nim_threshold_term", 4.6331)
+        # n* cho cơ sở "total" (nim_i = loan_rate - (deposit_rate*(1-casa) + 0.15)); dùng khi basis = total
+        self.learning_nim_threshold_total = float(
+            p.get("learning_nim_threshold_total", 5.5875)
         )
-        if self.deposit_rate_basis == "term":
-            self.learning_nim_threshold = self.learning_nim_threshold_term
+        if self.deposit_rate_basis == "total":
+            self.learning_nim_threshold = self.learning_nim_threshold_total
         # Quy tắc học "relative": so sánh với mốc bình quân hệ thống (mặc định TẮT)
         self.learning_rule = str(p.get("learning_rule", "absolute"))
         self.learning_deadband = float(

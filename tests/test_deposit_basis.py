@@ -5,10 +5,10 @@ import pytest
 
 from src.analysis.experiments import load_config
 from src.core.model import ABMModel
-from tests.test_golden import ROOT, GOLDEN, run_model
+from tests.test_golden import ROOT, GOLDEN_TOTAL, run_model
 
 DATA = ROOT / "data/clean/abm_initial_8nganhang_2023Q1.csv"
-TERM = ROOT / "configs/scenarios_term.yaml"
+TOTAL = ROOT / "configs/scenarios_total.yaml"
 
 
 def rows():
@@ -24,10 +24,14 @@ def build(basis=None, scenario="A", initial=True, **extra):
     return ABMModel(scenario, cfg["n_months"], 202611, params, rows() if initial else None)
 
 
-def test_default_is_total_in_code_and_yaml():
-    assert ABMModel(seed=1).deposit_rate_basis == "total"
-    assert load_config()["parameters"]["deposit_rate_basis"] == "total"
-    assert load_config(TERM)["parameters"]["deposit_rate_basis"] == "term"
+def test_default_is_term_in_code_and_yaml():
+    assert ABMModel(seed=1).deposit_rate_basis == "term"
+    assert load_config()["parameters"]["deposit_rate_basis"] == "term"
+    assert load_config(TOTAL)["parameters"]["deposit_rate_basis"] == "total"
+    # n* mặc định cho term; file total chọn 5.5875
+    assert load_config()["parameters"]["learning_nim_threshold"] == 4.6331
+    assert ABMModel(seed=1).learning_nim_threshold == pytest.approx(4.6331)
+    assert load_config(TOTAL)["parameters"]["learning_nim_threshold_total"] == 5.5875
 
 
 def test_invalid_basis_rejected():
@@ -36,14 +40,14 @@ def test_invalid_basis_rejected():
 
 
 @pytest.mark.parametrize("scenario", "ABC")
-def test_total_matches_golden_explicitly(scenario):
+def test_total_matches_golden_total_explicitly(scenario):
     cfg = load_config()
     cfg["parameters"]["deposit_rate_basis"] = "total"
     for seed in (202611, 202612, 202613):
         hist, bank = run_model(scenario, seed, cfg)
         for name, frame in (("history", hist), ("bank_history", bank)):
             expected = pd.read_csv(
-                GOLDEN / f"{name}_{scenario}_{seed}.csv", float_precision="round_trip"
+                GOLDEN_TOTAL / f"{name}_{scenario}_{seed}.csv", float_precision="round_trip"
             )
             pd.testing.assert_frame_equal(
                 frame[list(expected.columns)], expected,
@@ -88,14 +92,14 @@ def test_term_threshold_selected_and_derivable_from_data():
 
 @pytest.mark.parametrize("scenario", "ABC")
 def test_term_run_respects_constraints(scenario):
-    cfg = load_config(TERM)
+    cfg = load_config()
     hist, bank = run_model(scenario, 202611, cfg)
     assert bank.loan_rate.between(0, 20).all() and bank.deposit_rate.between(0, 14).all()
     assert (bank.loans <= bank.deposits * cfg["parameters"]["max_loan_to_deposit"] + 1e-9).all()
 
 
 def test_term_same_before_policy_and_b_not_above_a():
-    cfg = load_config(TERM)
+    cfg = load_config()
     pm = cfg["parameters"]["policy_month"]
     f = {s: run_model(s, 202611, cfg)[0] for s in "ABC"}
     for s in "BC":

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from src.analysis.experiments import load_config as merged_config, _deep_merge
 from src.core.model import ABMModel
-from tests.test_golden import ROOT, GOLDEN, load_config, run_model
+from tests.test_golden import ROOT, GOLDEN, GOLDEN_TOTAL, load_config, run_model
 
 ADAPTIVE = ROOT / "configs/scenarios_adaptive.yaml"
 
@@ -73,7 +73,7 @@ def test_off_matches_golden_and_margin_constant():
 
 def test_old_columns_unchanged_order():
     _, bank_history = run_model("A", 202611)
-    expected = pd.read_csv(GOLDEN / "bank_history_A_202611.csv")
+    expected = pd.read_csv(GOLDEN_TOTAL / "bank_history_A_202611.csv")   # thứ tự cột của code gốc
     assert list(bank_history.columns[:-1]) == list(expected.columns)
     assert bank_history.columns[-1] == "target_margin"
 
@@ -282,21 +282,25 @@ def test_relative_margin_within_bounds(scenario, path):
 DRIFT_SEEDS = (202611, 202612, 202613, 202614, 202615)
 
 
-@pytest.mark.parametrize("path", [
-    RELATIVE,
-    pytest.param(RELATIVE_NONIM, marks=pytest.mark.xfail(
+@pytest.mark.parametrize("path,basis", [
+    (RELATIVE, "term"),
+    (RELATIVE, "total"),
+    # relnn dưới cơ sở term trôi +0.094 (sát ngưỡng 0.1, KHÔNG nới ngưỡng); dưới total trôi +0.237.
+    (RELATIVE_NONIM, "term"),
+    pytest.param(RELATIVE_NONIM, "total", marks=pytest.mark.xfail(
         strict=True,
-        reason="Biến thể không điều kiện nim trôi +0.237 điểm % sau 18 quý "
-               "(ghi nhận, chờ nhóm quyết định; không chỉnh tham số)",
+        reason="Biến thể không điều kiện nim trôi +0.237 điểm % sau 18 quý ở cơ sở total "
+               "(kết quả lịch sử trước Bước A; ghi nhận, không chỉnh tham số)",
     )),
 ])
-def test_relative_drift_small_scenario_a(path):
+def test_relative_drift_small_scenario_a(path, basis):
     """Bình quân qua 5 seed của biên TB quý 18 so với biên khởi đầu: |trôi| <= 0.1.
 
     Lưu ý: kịch bản A không dùng RNG nên 5 seed cho cùng một kết quả; kiểm tra thực chất là
     một lần chạy, nhiều seed chỉ giữ để bắt hồi quy nếu sau này có thành phần ngẫu nhiên.
     """
     cfg = merged_config(path)
+    cfg["parameters"]["deposit_rate_basis"] = basis
     initial = make_model().banks
     start = sum(b.target_margin for b in initial) / len(initial)
     means = []

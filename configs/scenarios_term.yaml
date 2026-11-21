@@ -1,4 +1,0 @@
-# FILE GHI ĐÈ lên scenarios.yaml: quy đổi deposit_rate dữ liệu sang cơ sở "term" (chia 1 - casa) khi nạp ngân hàng.
-# Mặc định của dự án vẫn là total; đổi mặc định là quyết định của trưởng nhóm.
-parameters:
-  deposit_rate_basis: term
