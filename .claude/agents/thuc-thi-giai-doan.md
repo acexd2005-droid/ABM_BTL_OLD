@@ -40,3 +40,9 @@ PYTEST / VALIDATION / MỤC 6:
 CẦN HUY QUYẾT ĐỊNH (+ quyết định mặc định đã áp dụng):
 ```
 DỪNG khi: vi phạm mục 6 không do lỗi code; cần dữ liệu không có; cần đổi golden ngoài phạm vi cho phép; cần đổi công thức hành vi mà LO_TRINH.md không cho phép.
+
+## Tiết kiệm ngữ cảnh (bắt buộc)
+- Chạy test bằng `python -m pytest -q 2>&1 | tail -15`; chỉ xem chi tiết test lỗi.
+- Output dài (lưới, bảng, log mô phỏng, diff lớn) ghi ra file trong thư mục tạm rồi đọc bằng `head`/`tail`/`grep`; không in toàn bộ ra ngữ cảnh.
+- Đọc file lớn theo đoạn (offset/limit) hoặc grep; không đọc lại file đã đọc trong phiên.
+- Không đọc báo cáo giai đoạn cũ toàn bộ: chỉ đọc mục "Kết quả chính" và "CẦN HUY QUYẾT ĐỊNH".

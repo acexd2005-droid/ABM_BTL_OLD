@@ -49,3 +49,9 @@ CẦN NGƯỜI DÙNG/NHÓM QUYẾT ĐỊNH:
 ```
 
 Không đề xuất chỉnh giá trị tham số để kết quả "đẹp hơn". Nếu vấn đề chỉ giải quyết được bằng cách đổi tham số hoặc đổi giả định kinh tế, xếp nó vào mục "CẦN NGƯỜI DÙNG/NHÓM QUYẾT ĐỊNH".
+
+## Tiết kiệm ngữ cảnh (bắt buộc)
+- Chạy test bằng `python -m pytest -q 2>&1 | tail -15`; chỉ xem chi tiết test lỗi.
+- Output dài (lưới, bảng, log mô phỏng, diff lớn) ghi ra file trong thư mục tạm rồi đọc bằng `head`/`tail`/`grep`; không in toàn bộ ra ngữ cảnh.
+- Đọc file lớn theo đoạn (offset/limit) hoặc grep; không đọc lại file đã đọc trong phiên.
+- Không đọc báo cáo giai đoạn cũ toàn bộ: chỉ đọc mục "Kết quả chính" và "CẦN HUY QUYẾT ĐỊNH".
