@@ -8,7 +8,7 @@ Trạng thái: CHUA_LAM · DANG_LAM · XONG · XONG_CHO_DUYET · BI_CHAN · DUNG
 | GD9a | Đưa hằng số cứng còn lại ra YAML | – | XONG_CHO_DUYET | 9e806f4 | reports/giai_doan/GD9a.md | 13 khóa mới, hành vi bitwise không đổi; reviewer ĐẠT vòng 1; 2 việc NHỎ chuyển sang đầu GD9 |
 | GD9 | Hiệu chỉnh bằng mô phỏng + kiểm định ngoài mẫu lịch sử | GD7c, GD9a | XONG_CHO_DUYET | 464c86d | reports/giai_doan/GD9.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; nghiệm ở biên lưới (λ 0.45 ngoài CI), chờ Huy: Q4b, Q6, Q7 |
 | GD10 | Chạy lại A/B/C, độ nhạy, độ vững | GD9 | BI_CHAN | | reports/giai_doan/GD10.md | Chờ Huy quyết Q6/Q7 (đổi λ, biên tổng, quy tắc tăng trưởng thì đổi mức/độ lớn B−A, C−A; phải quyết trước, nếu đổi phải chạy lại lưới GD9) |
-| GD11 | Khung kiểm định ngoài mẫu Q4/2026 | GD9 | XONG_CHO_DUYET | HASH11 | reports/giai_doan/GD11.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; chưa có kết quả ngoài mẫu thực (panel dừng ở 2026Q3); đã tải ON Q4/2026 đến 19/11; chờ Huy: Q8 |
+| GD11 | Khung kiểm định ngoài mẫu Q4/2026 | GD9 | XONG_CHO_DUYET | f8658cc | reports/giai_doan/GD11.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; chưa có kết quả ngoài mẫu thực (panel dừng ở 2026Q3); đã tải ON Q4/2026 đến 19/11; chờ Huy: Q8 |
 | GD12 | Hoàn thiện báo cáo nghiên cứu | GD10, GD11 | BI_CHAN | | reports/giai_doan/GD12.md | Phụ thuộc GD10 (bị chặn bởi Q6/Q7) |
 | GD13 | Tổng hợp cho trưởng nhóm | tất cả | BI_CHAN | | reports/giai_doan/TONG_HOP.md | Phụ thuộc GD10, GD12. Bản TONG_HOP tạm thời đã viết cho lượt chạy này |
 
