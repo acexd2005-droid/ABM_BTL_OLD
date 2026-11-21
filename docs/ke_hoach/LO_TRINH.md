@@ -23,6 +23,12 @@ D5. Không sửa `configs/scenarios.yaml` ngoài việc thêm khóa mới (với
 D6. `policy_pressure`, `policy_step` là giả định kịch bản; chỉ phân tích độ nhạy (GD10), không hiệu chỉnh, trừ khi GD7c chứng minh nhận diện được – khi đó vẫn chỉ BÁO CÁO, không đổi giá trị.
 D7. Q1, Q2 trong TRANG_THAI.md: dùng mặc định đã ghi ở đó.
 D8. Được phép thay golden **chỉ** ở GD9a nếu và chỉ nếu kết quả bitwise thay đổi do lỗi số học không thể tránh — mặc định là golden PHẢI giữ nguyên.
+D9. **Quyết định của Huy ngày 21/11/2026 sau GD9** (đã đóng Q4b, Q6, Q7, Q8, Q3):
+- Q7 (b): bù độ lệch tăng trưởng tổng vào `base_growth` để tăng trưởng tổng của mô hình khớp trung bình dữ liệu trong cửa sổ hiệu chỉnh (đúng mục đích quy tắc Bước 1; không đổi tiêu chí).
+- Q6: bản chính ràng buộc λ ∈ {0.15, 0.20, 0.25, 0.30, 0.35, 0.40} (trong CI GĐ7); lưới biên tổng {3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8}; các tham số khác như lưới GD9. Nếu nghiệm chạm cận dưới biên tổng: giữ, ghi lại, KHÔNG mở rộng thêm. Nghiệm không ràng buộc λ (0.45) chỉ đưa vào độ nhạy GD10.
+- Q4b: duyệt (a), khóa `depositor_min_growth` (đã có từ GD9).
+- Q8: đồng ý mặc định (không đặt ngưỡng, chỉ báo tín hiệu/nhiễu).
+- Q3: cho phép cập nhật CLAUDE.md mục 4.2 trong GD13 (chỉ tài liệu).
 
 ---
 
@@ -54,16 +60,32 @@ Bước 3 – Ngoài mẫu (2025Q3–2026Q3): RMSE thô, RMSE khử mức, biên
 Bước 4 – Ghi `configs/scenarios_calibrated.yaml` (bộ tốt nhất; comment nguồn từng giá trị). Mục 6 CLAUDE.md với A/B/C 10 lần chạy. Nếu bộ tốt nhất vi phạm mục 6 → DỪNG.
 KHÔNG hiệu chỉnh σ, ε (không nhận diện, GĐ7) – giữ giá trị hiện tại, ghi là giả định; policy_pressure/policy_step theo D6.
 
+## GD9b – Hiệu chỉnh lại GD9 theo quyết định D9 (Q6, Q7)
+Tiên quyết: GD9. Kết quả: `reports/calibration/stage9b/`, `configs/scenarios_calibrated.yaml` (ghi đè), `configs/scenarios_calibrated_gd9.yaml` (bản GD9 cũ giữ để đối chiếu).
+Hai thay đổi so với GD9, mọi thứ khác giữ nguyên (cửa sổ hiệu chỉnh 2023Q2–2025Q2, ngoài mẫu 2025Q3–2026Q3, hàm mục tiêu J = 0.5·RMSE_cho_vay + 0.5·RMSE_huy_động, cấu hình nền `scenarios_macro.yaml`, seed, 10 seed cho A):
+1. **Q7 – bù độ lệch tăng trưởng.** Quy tắc đặt trước: đặt lại `depositor_base_growth` và `borrower_base_growth` sao cho tăng trưởng tổng của mô hình (kịch bản A, trung bình 10 seed, cửa sổ hiệu chỉnh, cùng trọng số với dữ liệu) khớp trung bình tăng trưởng tổng của dữ liệu trong cửa sổ (tiền gửi ≈ 0.0398, dư nợ ≈ 0.0448/quý). Dùng đúng phương pháp bù một lần của phần chẩn đoán GD9 (`reports/calibration/stage9/diag_growth_stage9.csv`); ghi công thức, số bước (một lần, không lặp để tối ưu J) và giá trị bù vào DANG_KY. Ngưỡng chặn (phân vị 2.5%/97.5%) giữ như GD9. Ghi rõ: đây là hiệu chỉnh tham số trong YAML, không đổi công thức hành vi.
+2. **Q6 – lưới ràng buộc.** λ ∈ {0.15, 0.20, 0.25, 0.30, 0.35, 0.40}; biên tổng {3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8} qua `target_margin` (giữ `loan_spread_add` = 1.35); `base_deposit_rate_step`, `deposit_competition`, ngưỡng LDR như lưới GD9. Nghiệm chạm cận dưới biên tổng (3.4): giữ, ghi lại, không mở rộng. Mục tiêu: nếu λ nằm ở biên lưới ràng buộc cũng chỉ ghi lại.
+Quy trình:
+- Viết `reports/calibration/stage9b/DANG_KY_TRUOC_GD9b.md` (quy tắc bù, lưới, hàm mục tiêu, tiêu chí chọn, quy tắc hòa) và **commit riêng, đẩy lên trước khi chạy lưới** (commit này chỉ chứa file đăng ký; điều phối viên kiểm bằng `git log`). Phần phụ lục chẩn đoán thêm sau, ghi rõ là thêm sau.
+- Chạy lưới; chọn argmin J theo quy tắc đã ghi. Giữ bản GD9 cũ: sao `configs/scenarios_calibrated.yaml` hiện tại thành `configs/scenarios_calibrated_gd9.yaml` (trước khi ghi đè; thêm comment đầu file nêu đây là bản GD9 giữ để đối chiếu). Ghi đè `configs/scenarios_calibrated.yaml` bằng nghiệm GD9b, ghi tường minh đủ khóa, comment nguồn từng giá trị.
+- Báo cáo so với GD9, trong mẫu và ngoài mẫu: RMSE thô, RMSE khử mức, biên độ/đáy V, so với GĐ8, mốc giữ 2025Q2, mốc ON (như GD9 Bước 3, nêu lợi thế thông tin); hồ sơ hàm mục tiêu theo từng tham số, top 10, tương quan top 50, λ có nằm trong CI không.
+- Trần LDR 1.60: tỷ lệ ngân hàng-quý chạm trần theo kịch bản A theo thời gian và cả khi khởi đầu từ 2026Q3 (so GD9: 0% đến Q10, 12.5% từ month 11, 37.5% từ month 16; khởi đầu 2026Q3 87.5%). Kiểm tra tăng trưởng tổng mô hình so với dữ liệu sau bù.
+- Nhiễu lẫn tuân thủ so với GD9: xác suất tuân thủ TB của B/C, `nim_proxy`, mức A sau chính sách, B−A, C−A, C−B (trung bình theo seed, quý 15–18, 10 seed), dùng lại `src/calibration/confounding_stage9.py` (tổng quát hóa tham số đầu vào, không đổi phương pháp).
+- Mục 6 CLAUDE.md với A/B/C 10 lần chạy trên cấu hình mới. Vi phạm → DỪNG.
+- Chạy lại `src/analysis/kiem_dinh_ngoai_mau.py` với cấu hình mới (không có dữ liệu thực nên chỉ cập nhật trạng thái/chạy thử) và cập nhật `reports/stage11/` nếu có thay đổi.
+- Nếu cần thêm khóa cấu hình hoặc test: giữ nguyên hành vi mặc định; golden term/golden_total phải khớp bitwise (GD9b không có phép chạm `src/agents/`, `src/core/`).
+- Ghi các quyết định đã đóng vào bảng "Quyết định" của TRANG_THAI.md (đánh dấu ĐÃ ĐÓNG, kèm D9).
+
 ## GD10 – Chạy lại A/B/C, độ nhạy, độ vững
-Tiên quyết: GD9. Kết quả: `reports/stage10/`.
+Tiên quyết: GD9b. Kết quả: `reports/stage10/`.
 1. A/B/C 60 lần với `scenarios_calibrated.yaml`: LS cho vay/huy động theo quý (TB, P5–P95), B−A, C−A cuối kỳ và TB sau chính sách, tuân thủ. So với cấu hình gốc (`scenarios.yaml`) và cấu hình GĐ8.
-2. Độ nhạy (mỗi lần đổi 1 tham số, 30 lần chạy): policy_pressure ±30%; policy_step ∈ {0.14, 0.28, 0.42, 0.50} (0.375–0.50 ≈ giảm 1.5–2 điểm %/năm trải trong 4 quý theo CV 9608 – ghi rõ đây là ánh xạ giả định); λ ở hai đầu CI GĐ7; macro_dep_spread = 1.08; σ, ε ±50%.
+2. Độ nhạy (mỗi lần đổi 1 tham số, 30 lần chạy; thêm biến thể nghiệm không ràng buộc λ (λ = 0.45, biên tổng 3.8, `configs/scenarios_calibrated_gd9.yaml`) theo D9): policy_pressure ±30%; policy_step ∈ {0.14, 0.28, 0.42, 0.50} (0.375–0.50 ≈ giảm 1.5–2 điểm %/năm trải trong 4 quý theo CV 9608 – ghi rõ đây là ánh xạ giả định); λ ở hai đầu CI GĐ7; macro_dep_spread = 1.08; σ, ε ±50%.
 3. Độ vững học thích nghi: `learning_rule: relative` (θ=0.005, bước 0.05, simple) trên cấu hình hiệu chỉnh; so B−A, C−A với khi TẮT.
 4. Bảng tóm tắt: kết luận chính sách nào giữ được dấu và độ lớn qua mọi biến thể.
 5. Tách hiệu ứng tuân thủ: báo tuân thủ theo biến thể và nêu nhiễu lẫn với mức `nim_proxy`.
 
 ## GD11 – Khung kiểm định ngoài mẫu sau chính sách (Q4/2026 trở đi)
-Tiên quyết: GD9. Kết quả: `src/analysis/kiem_dinh_ngoai_mau.py`, `reports/stage11/`.
+Tiên quyết: GD9 (xong; chạy lại script khi `configs/scenarios_calibrated.yaml` đổi ở GD9b). Kết quả: `src/analysis/kiem_dinh_ngoai_mau.py`, `reports/stage11/`.
 1. Script đọc panel mở rộng (khi Minh bổ sung 2026Q4, 2027Q1 theo đúng định dạng panel hiện tại; viết đặc tả định dạng vào `docs/ke_hoach/yeu_cau_du_lieu_Minh.md`) và so dự báo A/B/C (cấu hình hiệu chỉnh) với thực tế: sai số từng kịch bản, kịch bản nào gần thực tế nhất, kiểm tra hướng (C−A dự báo so với thay đổi thực).
 2. Chạy thử với dữ liệu giả lập ĐƯỢC ĐÁNH DẤU RÕ là giả lập trong test (không ghi vào data/), để chứng minh script chạy. Không tạo kết quả "thực" khi chưa có dữ liệu.
 3. Thử tải ON thực Q4/2026 bằng `src/data/fetch_sbv_interbank.py` (có thể bị chặn 403 – nếu vậy ghi lại, không coi là lỗi). Nếu có, lưu riêng `data/raw/sbv_lnh_qua_dem_ngoai_mau.csv`, KHÔNG đổi file ON dùng cho kịch bản (D3).
@@ -78,4 +100,4 @@ Tiên quyết: GD10, GD11.
 Reviewer kiểm tra: số liệu khớp, không diễn giải A/B/C là tác động thực, nêu đủ hạn chế.
 
 ## GD13 – Tổng hợp cho trưởng nhóm
-Tiên quyết: tất cả. Viết `reports/giai_doan/TONG_HOP.md`: tóm tắt 1 trang toàn dự án; bảng giai đoạn; **mọi quyết định đang mở** với phương án mặc định đã dùng và hệ quả nếu đổi; việc cần làm khi có dữ liệu Q4/2026; đề xuất PR (nhánh nào, gộp theo thứ tự nào); danh sách câu hỏi cho Minh. Không cần reviewer.
+Tiên quyết: tất cả. Cập nhật CLAUDE.md mục 4.2 (danh sách hằng số cứng; bỏ câu "1.15/12 khác YAML"; trỏ tới `tests/test_constants_yaml.py`) – chỉ tài liệu, được Huy cho phép (D9, Q3). Viết `reports/giai_doan/TONG_HOP.md`: tóm tắt 1 trang toàn dự án; bảng giai đoạn; **mọi quyết định đang mở** với phương án mặc định đã dùng và hệ quả nếu đổi; việc cần làm khi có dữ liệu Q4/2026; đề xuất PR (nhánh nào, gộp theo thứ tự nào); danh sách câu hỏi cho Minh. Không cần reviewer.
