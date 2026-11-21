@@ -36,3 +36,4 @@ outputs/
 build/
 dist/
 *.egg-info/
+data/raw/_cache_sbv/
