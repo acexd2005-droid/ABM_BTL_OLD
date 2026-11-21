@@ -23,7 +23,7 @@ KHÔNG làm: không đổi YAML, không chạm `src/agents/`, `src/core/`, khôn
 | deposit_competition 1.2 | 8.0983 | −0.4016 | −0.4001 | +0.0015 | −0.5119 | −0.5104 | −0.0019 | 0.8193 | 0 |
 | policy_step 0.375 | 7.9781 | −0.5342 | −0.5356 | −0.0014 | −0.6793 | −0.6824 | −0.0047 | 0.8083 | 0 |
 - Cả 4 giá trị `deposit_competition` được báo cáo ngang hàng; không giá trị nào là bản chính. Đổi `deposit_competition` làm mức A tăng nhẹ (7.978 → 8.098) nhưng B−A gần như không đổi (−0.4001 đến −0.4016); C−A và C−B đổi trong khoảng nhỏ (C−B từ −0.0058 đến +0.0015, tức ≤ 1.5% |B−A|), dấu C−B không đơn điệu theo giá trị. Tỷ lệ chạm trần LDR bằng 0 ở cả 4 giá trị (không phải bằng chứng về cơ chế).
-- `policy_step` 0.375: B−A TB −0.5342 (≈ 1.9 × step), cuối kỳ −0.6793, nằm giữa kết quả step 0.28 (−0.4004) và 0.42/0.50 của GD10 (`sensitivity_stage10.csv`). Mô hình vẫn không tái tạo mức giảm 1.5–2 điểm %; ánh xạ step ↔ chỉ đạo thực là giả định.
+- `policy_step` 0.375: B−A TB −0.5342 (≈ 1.42 × step, khớp quan hệ B−A ≈ −1.4 × step của GD10), cuối kỳ −0.6793, nằm giữa kết quả step 0.28 (−0.4004) và 0.42/0.50 của GD10 (`sensitivity_stage10.csv`). Mô hình vẫn không tái tạo mức giảm 1.5–2 điểm %; ánh xạ step ↔ chỉ đạo thực là giả định.
 - Mục 6 đạt ở cả 6 cấu hình (`sensitivity_gd10b_section6_stage10.csv`).
 
 ### 3.2 Sai lệch mức trong mẫu 2023Q2–2025Q2, kịch bản A (`reports/calibration/stage9b/mean_error_insample_stage9b.csv`; TRONG MẪU, mô hình − thực)
@@ -71,3 +71,5 @@ Reviewer-abm: **ĐẠT** sau 1 vòng.
 > VẤN ĐỀ CẦN SỬA: (1) [NHỎ] mục 8 và ô Commit chưa điền – điều phối viên điền. (2) [NHỎ] `CmB_ci95_nua_rong` rất nhỏ do cùng seed A/B/C, không đọc là độ chắc chắn ước lượng. (3) [NHỎ] tỷ lệ chạm trần LDR = 0 nên cột không phân biệt các giá trị `deposit_competition`.
 >
 > CẦN NGƯỜI DÙNG/NHÓM QUYẾT ĐỊNH: không có điểm mới. Việc chọn `deposit_competition` làm bản chính vẫn để mở theo Q10 và không nên chọn theo bảng này (C−B nhỏ hơn nhiễu mô phỏng); ánh xạ `policy_step` sang mức chỉ đạo thực là giả định của nhóm.
+
+Ghi chú điều phối viên: 1.9 là lỗi tính; đúng là 0.5342/0.375 = 1.42.
