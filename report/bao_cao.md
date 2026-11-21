@@ -6,12 +6,12 @@
 
 > ### ⚠️ Những điều KHÔNG được diễn giải
 > 1. **Chênh lệch giữa kịch bản A/B/C không phải tác động chính sách thực tế.** Đó là chênh lệch giữa các quy tắc bên trong mô hình, nhiễu lẫn với mức lãi suất của A và xác suất tuân thủ.
-> 2. **Mô hình không tái tạo mức giảm 1.5–2 điểm %/năm** nêu trong chỉ đạo tháng 10/2026. Ngay ở `policy_step` = 0.50 (cận trên dải thử), B−A cuối kỳ chỉ khoảng −0.89 điểm %. Hai con số cũng **không cùng cơ sở**: mức 1.5–2%/năm tập trung cho sản xuất kinh doanh/lĩnh vực ưu tiên, còn `policy_step` áp lên lãi suất cho vay bình quân của toàn bộ dư nợ trong mô hình.
+> 2. **Không so sánh trực tiếp B−A với mức giảm 1.5–2%/năm trong CV 9608:** chỉ đạo nhắm vào lĩnh vực sản xuất kinh doanh, ưu tiên, còn mô hình trừ `policy_step` vào toàn bộ lãi suất cho vay. Với giả định step 0.14–0.50, B−A cuối kỳ của mô hình là −0.26 đến −0.89 điểm %.
 > 3. **Tỷ lệ chạm trần LDR bằng 0% không phải bằng chứng về cơ chế.** Nó là hệ quả của việc bù tăng trưởng (Q7); bỏ bù (chẩn đoán, khởi đầu 2023Q1, quý 1–18, kịch bản A) thì tỷ lệ chạm trần là 18.1%.
 > 4. **λ (`pass_through`), biên tổng và `deposit_competition` không phải ước lượng.** Chúng là nghiệm của lưới hiệu chỉnh (nghiệm biên) hoặc giá trị độ nhạy, không có khoảng tin cậy thống kê.
 > 5. **RMSE ngoài mẫu không phải dự báo.** Ở giai đoạn 2025Q3–2026Q3 mô hình được cấp lãi suất qua đêm (ON) thực tế, tức có lợi thế thông tin.
 
-<!-- nguồn ý 2: reports/stage10/sensitivity_stage10.csv, dòng policy_step_0.5, cột BmA_cuoi_ky_q18 = -0.8857 -->
+<!-- nguồn ý 2: reports/stage10/sensitivity_stage10.csv, cột BmA_cuoi_ky_q18: policy_step_0.14 = -0.2587, policy_step_0.5 = -0.8857; quyết định D11 (Huy, 21/11/2026) -->
 <!-- nguồn ý 3: reports/calibration/stage9b/diag_gd9b.csv, phần bo_bu (18.1%); confounding_stage9b.csv (0%) -->
 
 ## 1. Giới thiệu và câu hỏi nghiên cứu
@@ -133,6 +133,8 @@ P = `policy_pressure` (0.65). Ngân hàng tuân thủ với xác suất p_i (b�
 | B | Từ bước 15 (Q4/2026): ngân hàng tuân thủ với xác suất p_i giảm r^L thêm `policy_step` |
 | C | B + nhân phần cạnh tranh huy động với `deposit_cap_factor` = 0.25 |
 
+`policy_step` là **giả định** kịch bản (YAML: 0.28). Phần phân tích độ nhạy thử dải 0.14–0.50; đầu trên của dải (0.375–0.50) được chọn để gần với quy đổi thô của mức giảm 1.5–2%/năm trong chỉ đạo, trải trong 4 quý, nhưng phạm vi khác nhau: chỉ đạo nhắm vào sản xuất kinh doanh và lĩnh vực ưu tiên, còn `policy_step` trừ vào toàn bộ lãi suất cho vay của ngân hàng tuân thủ (`src/agents/bank.py`).
+
 Trước bước chính sách, A/B/C trùng nhau với cùng seed. Kịch bản A là tất định (không có bốc thăm), nên khoảng phân vị giữa các lần chạy chỉ phản ánh bốc thăm tuân thủ ở B, C.
 
 ### 4.5. Tùy chọn mở rộng
@@ -237,7 +239,7 @@ Mốc đối chiếu ngoài mẫu (cùng cửa sổ): cấu hình GĐ8 chưa hi�
 - **B−A trung bình sau chính sách (TB quý 15–18) ≈ −1.4 × step** (từ −1.40 đến −1.44): nằm trong khoảng −0.20 đến −0.70 điểm %.
 - **B−A cuối kỳ (quý 18) ≈ −1.8 × step** (từ −1.77 đến −1.85): nằm trong khoảng −0.26 đến −0.89 điểm %. Hệ số cuối kỳ lớn hơn vì mức giảm tích lũy qua các quý tuân thủ.
 
-Việc coi step 0.375–0.50 tương ứng mức giảm 1.5–2 điểm %/năm trải trong 4 quý theo CV 9608 là **ánh xạ giả định**, không được dữ liệu kiểm chứng. Ngay ở cận trên, mô hình không tái tạo mức giảm 1.5–2 điểm %. Hơn nữa, so sánh này **không cùng cơ sở**: CV 9608 yêu cầu giảm lãi suất cho vay nói chung, còn mức 1.5–2%/năm tập trung cho sản xuất kinh doanh/lĩnh vực ưu tiên; trong mô hình, `policy_step` trừ vào lãi suất cho vay bình quân của toàn bộ dư nợ ngân hàng (`src/agents/bank.py`). Mức giảm 1.5–2 điểm % trên một phần danh mục tương ứng với mức giảm nhỏ hơn trên toàn danh mục; dữ liệu hiện có không cho biết tỷ trọng phần danh mục đó.
+Độ lớn B−A là hệ quả của giả định `policy_step` (mục 4.4), không phải kết quả nhận diện từ dữ liệu; không so sánh trực tiếp với mức giảm trong CV 9608 (xem hộp ý 2 ở đầu báo cáo).
 
 **Độ nhạy các tham số khác** (30 lần, mỗi lần đổi một tham số; `sensitivity_stage10.csv`): `policy_pressure` ×0.7 / ×1.3 cho B−A −0.3639 / −0.4262 (chỉ qua xác suất tuân thủ 0.737 / 0.878; mức A không đổi); λ = 0.158 (đầu dưới CI) cho −0.4886, λ = 0.395 cho −0.4022; `macro_dep_spread` 1.08 cho −0.4004; σ, ε ±50% cho −0.3989 đến −0.4006; nghiệm GD9 (λ 0.45) cho −0.4047. Trong 20 dòng tóm tắt của `robustness_stage10.csv` (không phải 20 biến thể độc lập): B−A < 0 và C−A < 0 ở 20/20; cùng bậc độ lớn (tỷ số 0.5–1.5 so cấu hình chính) ở 18/20, hai trường hợp không giữ là step 0.42 và 0.50; **C phân biệt được B ở 0/20** (|C−B| < 10% |B−A| ở mọi dòng). Độ nhạy một-tham-số-một-lần không bắt được tương tác giữa tham số.
 
@@ -269,7 +271,7 @@ B−A gần như không đổi theo `deposit_competition`; C−B đổi theo `de
 ### 6.3. Bối cảnh chỉ đạo thực tế tháng 10/2026 và kiểm định ngoài mẫu sau chính sách
 <!-- nguồn: data/raw/chi_dao_lai_suat_2023_2026.csv (dòng 2026-10-18, 2026-10-21); data/raw/sbv_lnh_qua_dem_ngoai_mau.csv; reports/stage11/trang_thai_stage11.md -->
 
-Ngày 18/10/2026 [CẦN XÁC MINH: ngày ban hành, đang hỏi Minh – GD12.md], NHNN ban hành CV 9608/NHNN-CSTT: giảm tối thiểu 0.5%/năm lãi suất huy động kỳ hạn từ 6 tháng; giảm lãi suất cho vay nói chung, với mức 1.5–2%/năm tập trung cho sản xuất kinh doanh/lĩnh vực ưu tiên (không cùng cơ sở với `policy_step`, vốn áp lên toàn bộ dư nợ trong mô hình; xem 6.2). Ngày 21/10/2026, sau cuộc họp ngày 19/10/2026, CV 9736/NHNN-CSTT quán triệt giảm lãi suất huy động giao dịch mới kỳ hạn từ 6 tháng tối thiểu 0.5%/năm so với kỳ 11–20/10/2026. Thời điểm và nội dung trùng với kịch bản C (chỉ đạo từ Q4/2026, cả cho vay và huy động). Thực tế Q4/2026 vì vậy tương ứng nhánh B/C; kịch bản A là phản thực tế, không quan sát được.
+Ngày 18/10/2026 [CẦN XÁC MINH: ngày ban hành, đang hỏi Minh – GD12.md], NHNN ban hành CV 9608/NHNN-CSTT: giảm tối thiểu 0.5%/năm lãi suất huy động kỳ hạn từ 6 tháng; giảm lãi suất cho vay nói chung, với mức 1.5–2%/năm tập trung cho sản xuất kinh doanh/lĩnh vực ưu tiên (không cùng phạm vi với `policy_step`, vốn áp lên toàn bộ dư nợ trong mô hình; xem hộp ý 2 ở đầu báo cáo). Ngày 21/10/2026, sau cuộc họp ngày 19/10/2026, CV 9736/NHNN-CSTT quán triệt giảm lãi suất huy động giao dịch mới kỳ hạn từ 6 tháng tối thiểu 0.5%/năm so với kỳ 11–20/10/2026. Thời điểm và nội dung trùng với kịch bản C (chỉ đạo từ Q4/2026, cả cho vay và huy động). Thực tế Q4/2026 vì vậy tương ứng nhánh B/C; kịch bản A là phản thực tế, không quan sát được.
 
 Kiểm định ngoài mẫu sau chính sách (GD11) **chưa có kết quả**: panel kết thúc 2026Q3, lợi suất sổ sách Q4/2026 chưa công bố. Khung kiểm định đã sẵn sàng (`src/analysis/kiem_dinh_ngoai_mau.py`). ON thực tế Q4/2026 đến 19/11/2026 bình quân 4.074, cao hơn 3.946 giả định trong kịch bản; ý nghĩa của chênh lệch này chưa được đánh giá. Khi có dữ liệu, kết quả chỉ là đối chiếu mô tả trên 1–2 quý, không phải ước lượng tác động chính sách.
 

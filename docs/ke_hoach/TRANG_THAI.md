@@ -11,7 +11,7 @@ Trạng thái: CHUA_LAM · DANG_LAM · XONG · XONG_CHO_DUYET · BI_CHAN · DUNG
 | GD10 | Chạy lại A/B/C, độ nhạy, độ vững | GD9b | XONG_CHO_DUYET | 05712bb | reports/giai_doan/GD10.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; dấu B−A, C−A giữ ở mọi biến thể, độ lớn ≈ −1.4×policy_step (giả định); B và C không phân biệt được; chờ Huy: Q12, Q13 (và Q9–Q11) |
 | GD11 | Khung kiểm định ngoài mẫu Q4/2026 | GD9b | XONG_CHO_DUYET | f8658cc | reports/giai_doan/GD11.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; chưa có kết quả ngoài mẫu thực (panel dừng ở 2026Q3); đã tải ON Q4/2026 đến 19/11; chạy lại script khi YAML đổi ở GD9b; Q8 đã đóng (D9) |
 | GD10b | Độ nhạy `deposit_competition` ∈ {0.07, 0.3, 0.7, 1.2} và `policy_step` 0.375 trên GD9b (30 lần; không đổi YAML) | GD10 | XONG | ab6d156 | reports/giai_doan/GD10b.md | Theo D10 (Q10); quy tắc đọc đặt trước: báo cả 4 giá trị, không chọn. Gồm xuất sai lệch mức GD9b (Q14) |
-| GD12 | Hoàn thiện báo cáo nghiên cứu | GD10, GD10b, GD11 | XONG_CHO_DUYET | 01f250c | reports/giai_doan/GD12.md | Reviewer ĐẠT sau 2 vòng; hộp 5 ý, B−A theo dải `policy_step` (TB ≈ −1.4×step, cuối kỳ ≈ −1.8×step), bảng GD9b/GD9/λ 0.35, hạn chế (a) +0.312, (b), (c). Chờ Huy: hộp ý (ii) và ánh xạ step↔1.5–2 điểm % (GD12.md mục 6). Câu hỏi cho Minh: ngày/thứ tự CV 9608–9736, định nghĩa biên PT2 |
+| GD12 | Hoàn thiện báo cáo nghiên cứu | GD10, GD10b, GD11 | XONG_CHO_DUYET | 01f250c | reports/giai_doan/GD12.md | Reviewer ĐẠT sau 2 vòng; hộp 5 ý, B−A theo dải `policy_step` (TB ≈ −1.4×step, cuối kỳ ≈ −1.8×step), bảng GD9b/GD9/λ 0.35, hạn chế (a) +0.312, (b), (c). Hộp ý (ii) và ánh xạ step↔1.5–2 điểm % đã đóng theo D11 (không còn chờ Huy). Câu hỏi cho Minh: ngày/thứ tự CV 9608–9736, định nghĩa biên PT2 |
 | GD13 | Tổng hợp cho trưởng nhóm | tất cả | CHUA_LAM | | reports/giai_doan/TONG_HOP.md | Gồm cập nhật CLAUDE.md mục 4.2 (Q3, được phép) |
 
 ## Quyết định đang mở (chờ Huy)
@@ -22,7 +22,7 @@ Trạng thái: CHUA_LAM · DANG_LAM · XONG · XONG_CHO_DUYET · BI_CHAN · DUNG
 | Q4 | GD9a | Chặn `demand_pressure` ±0.5 và tăng trưởng tiền gửi: 1 khóa đối xứng hay 2 khóa sàn/trần | 1 khóa đối xứng (`demand_pressure_cap`, `depositor_max_growth`) | GD9 (dạng tham số có thể hiệu chỉnh; Bước 1 GD9 dùng phân vị 2.5/97.5 – nếu bất đối xứng sẽ cần tách khóa) |
 | Q5 | GD9a | Đưa miền hợp lệ 0–20/0–14 và sàn 0.01 ra YAML? | Giữ cứng (trùng assert mục 6) | Không |
 
-## Quyết định đã đóng (Huy, 21/11/2026 – D9 và D10 trong LO_TRINH.md)
+## Quyết định đã đóng (Huy, 21/11/2026 – D9 và D10 trong LO_TRINH.md; D11 ghi tại đây và GD12.md)
 | # | Giai đoạn | Quyết định | Áp dụng ở |
 |---|---|---|---|
 | Q3 | GD9a | ĐÃ ĐÓNG – Cho phép cập nhật CLAUDE.md mục 4.2 trong GD13 (chỉ tài liệu) | GD13 |
@@ -36,3 +36,5 @@ Trạng thái: CHUA_LAM · DANG_LAM · XONG · XONG_CHO_DUYET · BI_CHAN · DUNG
 | Q12 | GD10 | ĐÃ ĐÓNG (D10) – giữ YAML; báo cả hai bản học | GD12 |
 | Q13 | GD10 | ĐÃ ĐÓNG (D10) – giữ ngưỡng; B−A báo theo dải `policy_step` | GD12 |
 | Q14 | GD10 | MỚI, ĐÃ ĐÓNG (D10) – sai lệch mức LS huy động là hạn chế; xuất sai lệch mức trong mẫu GD9b ra CSV trước GD12 | GD12 |
+| D11-a | GD12 | ĐÃ ĐÓNG (D11) – ý (ii) của hộp "Những điều không được diễn giải" thay bằng: không so sánh trực tiếp B−A với mức giảm 1,5–2%/năm trong CV 9608 (chỉ đạo nhắm SXKD/ưu tiên, `policy_step` trừ vào toàn bộ lãi suất cho vay); step 0.14–0.50 cho B−A cuối kỳ −0.26 đến −0.89 điểm % | GD12, GD13 |
+| D11-b | GD12 | ĐÃ ĐÓNG (D11) – ánh xạ step 0.375–0.50 ≈ 1,5–2 điểm %/năm: chỉ giữ một câu ở thiết kế kịch bản (mục 4.4), ghi "giả định" và nêu khác phạm vi; xóa khỏi phần kết quả và kết luận | GD12, GD13 |
