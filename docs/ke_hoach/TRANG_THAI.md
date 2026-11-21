@@ -6,7 +6,7 @@ Trạng thái: CHUA_LAM · DANG_LAM · XONG · XONG_CHO_DUYET · BI_CHAN · DUNG
 |---|---|---|---|---|---|---|
 | GD7c | Quyết định GĐ8 + chỉ đạo LS và biên cho vay | – | XONG | ff20d53 | reports/calibration/estimates_stage7c.md | Làm thủ công trước khi cài điều phối; không có bằng chứng chỉ đạo làm hẹp biên → giữ D6 |
 | GD9a | Đưa hằng số cứng còn lại ra YAML | – | XONG_CHO_DUYET | 9e806f4 | reports/giai_doan/GD9a.md | 13 khóa mới, hành vi bitwise không đổi; reviewer ĐẠT vòng 1; 2 việc NHỎ chuyển sang đầu GD9 |
-| GD9 | Hiệu chỉnh bằng mô phỏng + kiểm định ngoài mẫu lịch sử | GD7c, GD9a | XONG_CHO_DUYET | HASH9 | reports/giai_doan/GD9.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; nghiệm ở biên lưới (λ 0.45 ngoài CI), chờ Huy: Q4b, Q6, Q7 |
+| GD9 | Hiệu chỉnh bằng mô phỏng + kiểm định ngoài mẫu lịch sử | GD7c, GD9a | XONG_CHO_DUYET | 464c86d | reports/giai_doan/GD9.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; nghiệm ở biên lưới (λ 0.45 ngoài CI), chờ Huy: Q4b, Q6, Q7 |
 | GD10 | Chạy lại A/B/C, độ nhạy, độ vững | GD9 | CHUA_LAM | | reports/giai_doan/GD10.md | |
 | GD11 | Khung kiểm định ngoài mẫu Q4/2026 | GD9 | CHUA_LAM | | reports/giai_doan/GD11.md | |
 | GD12 | Hoàn thiện báo cáo nghiên cứu | GD10, GD11 | CHUA_LAM | | reports/giai_doan/GD12.md | |
