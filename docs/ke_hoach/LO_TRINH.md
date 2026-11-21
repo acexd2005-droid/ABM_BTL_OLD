@@ -93,10 +93,11 @@ Tiên quyết: GD9b. Kết quả: `reports/stage10/`.
 5. Tách hiệu ứng tuân thủ: báo tuân thủ theo biến thể và nêu nhiễu lẫn với mức `nim_proxy`.
 
 ## GD10b – Độ nhạy `deposit_competition` và `policy_step` 0.375 (theo D10, Q10)
-Tiên quyết: GD10. Kết quả: `reports/stage10/`. Không đổi YAML chính, không chạm `src/`.
+Tiên quyết: GD10. Kết quả: `reports/stage10/` và `reports/calibration/stage9b/`; báo cáo giai đoạn ở `reports/giai_doan/GD10b.md`. Không đổi YAML chính; chỉ thêm script phân tích ở bước 4, không chạm `src/agents/`, `src/core/`.
 1. Trên cấu hình GD9b, 30 lần chạy, mỗi lần đổi một tham số: `deposit_competition` ∈ {0.07, 0.3, 0.7, 1.2}; `policy_step` = 0.375.
-2. Quy tắc đọc đặt trước: báo cả 4 giá trị `deposit_competition` (B−A, C−A, C−B, tỷ lệ chạm trần LDR); KHÔNG chọn giá trị nào làm bản chính, không dùng kết quả để sửa YAML.
+2. Quy tắc đọc đặt trước: báo cả 4 giá trị `deposit_competition` (B−A, C−A, C−B, tỷ lệ chạm trần LDR); KHÔNG chọn giá trị nào làm bản chính, không dùng kết quả để sửa YAML. Reviewer kiểm: bảng GD10b có đủ 4 giá trị `deposit_competition` và `policy_step` 0.375; không giá trị nào được chọn làm bản chính; YAML chính không đổi (md5).
 3. Ghi rõ đây là độ nhạy, không phải ước lượng.
+4. Xuất sai lệch mức trong mẫu của GD9b (Q14): script mới `src/calibration/mean_error_insample_stage9b.py` (chỉ đọc, không đổi nghiệm, không đổi YAML). Tính sai số trung bình có dấu và RMSE khử mức trong mẫu (2023Q2–2025Q2) của LS cho vay và LS huy động, kịch bản A, nghiệm GD9b; làm tương tự cho GD9 để đối chiếu. Ghi `reports/calibration/stage9b/mean_error_insample_stage9b.csv`. Test: tái lập từng byte; YAML không đổi; giá trị khớp RMSE thô và khử mức trong `oos_stage9b.csv` (√(thô² − khử mức²) = |sai số TB|).
 
 ## GD11 – Khung kiểm định ngoài mẫu sau chính sách (Q4/2026 trở đi)
 Tiên quyết: GD9 (xong; chạy lại script khi `configs/scenarios_calibrated.yaml` đổi ở GD9b). Kết quả: `src/analysis/kiem_dinh_ngoai_mau.py`, `reports/stage11/`.
@@ -106,7 +107,7 @@ Tiên quyết: GD9 (xong; chạy lại script khi `configs/scenarios_calibrated.
 4. Ghi rõ cách đọc: thực tế Q4/2026 có chỉ đạo (CV 9608/9736) nên tương ứng nhánh B/C; A là phản thực tế.
 
 ## GD12 – Hoàn thiện báo cáo nghiên cứu `report/bao_cao.md`
-Tiên quyết: GD10, GD10b, GD11. Trước khi viết: xuất sai lệch mức trong mẫu của GD9b ra CSV (Q14).
+Tiên quyết: GD10, GD10b, GD11 (file `mean_error_insample_stage9b.csv` do GD10b tạo).
 1. Viết mục 1–5 còn thiếu: (1) Giới thiệu và câu hỏi nghiên cứu; (2) Tổng quan tài liệu (ABM trong kinh tế/ngân hàng; truyền dẫn lãi suất ở Việt Nam); (3) Dữ liệu (panel, định nghĩa lợi suất sổ sách và ánh xạ CASA, dữ liệu ON từ API NHNN, danh mục chỉ đạo); (4) Mô hình (tác nhân, phương trình, trình tự, kịch bản, tùy chọn macro và học thích nghi); (5) Ước lượng và hiệu chỉnh (GĐ7, 7b, 7c, 9 – phương pháp, kết quả, hạn chế).
 2. Cập nhật mục 6–8 theo kết quả GD9–GD11 (bỏ các câu đã lỗi thời, vd. "tham số chưa hiệu chỉnh"); thêm phần độ vững (học thích nghi, độ nhạy) và bối cảnh chỉ đạo thực tế 10/2026.
 3. Trích dẫn: chỉ dùng nguồn đã kiểm chứng được bằng WebSearch/WebFetch; nguồn chưa xác minh ghi `[CẦN XÁC MINH]`, tuyệt đối không bịa thông tin xuất bản. Bao gồm: bài SFI "Agent-Based Modeling: Worlds Within Worlds"; Santa Fe Artificial Stock Market (Arthur, Holland, LeBaron, Palmer); các văn bản NHNN trong danh mục chỉ đạo; NHNN là nguồn dữ liệu ON.
@@ -114,9 +115,9 @@ Tiên quyết: GD10, GD10b, GD11. Trước khi viết: xuất sai lệch mức t
 Reviewer kiểm tra: số liệu khớp, không diễn giải A/B/C là tác động thực, nêu đủ hạn chế.
 5. **Hộp "Những điều không được diễn giải"** (đặt nổi bật trong báo cáo): (i) A/B/C không phải tác động chính sách thực; (ii) mô hình không tái tạo mức giảm 1.5–2 điểm %; (iii) 0% chạm trần LDR không phải bằng chứng về cơ chế; (iv) λ, biên tổng, `deposit_competition` không phải ước lượng; (v) RMSE ngoài mẫu không phải dự báo.
 6. **`policy_step`**: chính sách trừ trực tiếp `policy_step` khỏi lãi suất cho vay của ngân hàng tuân thủ (`bank.py`). `policy_step` là giả định kịch bản; B−A ≈ −1.4 × step. Báo B−A theo dải step (0.14–0.50, gồm 0.375), không nêu một số.
-7. **Bảng song song GD9b / GD9** (và λ = 0.35): cùng chỉ tiêu trong mẫu, ngoài mẫu, B−A, C−A, C−B; không chọn theo ngoài mẫu (Q11). Báo cả hai bản học thích nghi (Q12) và kết quả GD10b.
-8. **Hạn chế**: (a) sai lệch mức lãi suất huy động (dùng CSV sai lệch mức trong mẫu của GD9b, xuất trước GD12 theo Q14); (b) biên tổng hiệu chỉnh 3.4–3.8 so với 4.59 quan sát; (c) nghiệm GD9b là nghiệm biên (Q9).
+7. **Bảng song song GD9b / GD9** (và λ = 0.35): cùng chỉ tiêu trong mẫu, ngoài mẫu, B−A, C−A, C−B; không chọn theo ngoài mẫu (Q11). Báo cả hai bản học thích nghi (Q12) và kết quả GD10b; GD12 không lấy giá trị `deposit_competition` nào của GD10b làm số chính.
+8. **Hạn chế**: (a) sai lệch mức lãi suất huy động (chỉ trích số sai lệch mức từ `mean_error_insample_stage9b.csv`; không trích +0.33 – đó là số của GD9 – cho GD9b; Q14); (b) biên tổng hiệu chỉnh 3.4–3.8 so với 4.59 quan sát; (c) nghiệm GD9b là nghiệm biên (Q9).
 9. Reviewer kiểm thêm: hộp không-diễn-giải có đủ 5 ý; dải `policy_step`; bảng GD9b/GD9; mục hạn chế (a)–(c); không câu nào diễn giải A/B/C là tác động thực.
 
 ## GD13 – Tổng hợp cho trưởng nhóm
-Tiên quyết: tất cả. Cập nhật CLAUDE.md mục 4.2 (danh sách hằng số cứng; bỏ câu "1.15/12 khác YAML"; trỏ tới `tests/test_constants_yaml.py`) – chỉ tài liệu, được Huy cho phép (D9, Q3). Viết `reports/giai_doan/TONG_HOP.md`: tóm tắt 1 trang toàn dự án; bảng giai đoạn; **mọi quyết định đang mở** với phương án mặc định đã dùng và hệ quả nếu đổi; việc cần làm khi có dữ liệu Q4/2026; đề xuất PR (nhánh nào, gộp theo thứ tự nào); danh sách câu hỏi cho Minh. Không cần reviewer.
+Tiên quyết: tất cả. Cập nhật CLAUDE.md mục 4.2 (danh sách hằng số cứng; bỏ câu "1.15/12 khác YAML"; trỏ tới `tests/test_constants_yaml.py`) – chỉ tài liệu, được Huy cho phép (D9, Q3). Viết `reports/giai_doan/TONG_HOP.md`: tóm tắt 1 trang toàn dự án; bảng giai đoạn; **mọi quyết định đang mở** với phương án mặc định đã dùng và hệ quả nếu đổi; việc cần làm khi có dữ liệu Q4/2026; đề xuất PR (nhánh nào, gộp theo thứ tự nào); danh sách câu hỏi cho Minh, gồm: xác nhận biên 4.59 (GĐ7, PT2) có cùng định nghĩa với biên mô hình (`loan_rate` − chi phí vốn trễ, 3.696 trong GD9b; theo `loan_rate` − `deposit_rate` là 2.806) hay không. Phần quyết định liệt kê Q14 và các quyết định D10. Không cần reviewer.
