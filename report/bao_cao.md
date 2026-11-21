@@ -38,7 +38,7 @@ ABM mô phỏng một hệ thống từ dưới lên: các tác nhân dị biệ
 
 Ví dụ kinh điển là Santa Fe Artificial Stock Market của W. Brian Arthur, John H. Holland, Blake LeBaron, Richard Palmer và Paul Tayler. Các nhà đầu tư nhân tạo liên tục thử và loại bỏ các mô hình kỳ vọng; khi tốc độ khám phá thấp, thị trường hội tụ về cân bằng kỳ vọng hợp lý, còn khi tốc độ khám phá cao, xuất hiện giao dịch kỹ thuật, bong bóng và sụp đổ tạm thời, cùng các đặc trưng thống kê giống dữ liệu thực (như hành vi GARCH) [1]. Bài học phương pháp cho nghiên cứu này: (i) quy tắc hành vi đơn giản, minh bạch; (ii) so sánh kết quả mô phỏng với đặc trưng của dữ liệu thực thay vì chỉ kiểm tra tính nội nhất quán.
 
-Trong ngân hàng, ABM được dùng để mô phỏng cạnh tranh lãi suất, lây lan rủi ro qua liên ngân hàng và phản ứng với quy định [CẦN XÁC MINH: chưa có tài liệu cụ thể được kiểm chứng trong GD12; không trích tên bài khi chưa xác minh]. Mô hình ở đây dùng thư viện Mesa 3.3.1 cho Python [CẦN XÁC MINH: trích dẫn chính thức của Mesa].
+[CẦN XÁC MINH: tài liệu ABM trong ngân hàng]. Mô hình ở đây dùng thư viện Mesa 3.3.1 cho Python [CẦN XÁC MINH: trích dẫn chính thức của Mesa].
 
 ### 2.2. Truyền dẫn lãi suất ở Việt Nam
 
@@ -266,7 +266,7 @@ Cửa sổ biên trong YAML được đặt quanh biên gốc; với biên hiệ
 
 B−A gần như không đổi theo `deposit_competition`; C−B đổi theo `deposit_competition` nhưng không đơn điệu. C−B **khác 0 về thống kê** (nửa rộng CI 95% ghép cặp: ±0.0008 ở 0.3, ±0.0020 ở 0.7, ±0.0010 ở 1.2; `CmB_ci95_nua_rong`) nhưng **nhỏ về độ lớn**: |C−B| ≤ 1.44% |B−A|, dưới ngưỡng 10% đã đặt trước ở GD10. CI ghép cặp rất hẹp vì B và C dùng chung dãy bốc thăm, nên "khác 0 về thống kê" không mang ý nghĩa kinh tế. Vì vậy **kết luận về B so với C chỉ ở mức "không phân biệt được"** trong mô hình, không phải kết luận về hiệu quả của hạn chế cạnh tranh huy động.
 
-**Tóm lại các kết luận vững (trong mô hình):** (i) B và C cho LS cho vay thấp hơn A ở mọi biến thể đã thử; (ii) độ lớn vững với λ, σ, ε, spread, `policy_pressure`, học thích nghi và cấu hình nền, nhưng **tỷ lệ với giả định `policy_step`**; (iii) B và C không phân biệt được.
+**Tóm lại các kết luận vững (trong mô hình):** (i) B và C cho LS cho vay thấp hơn A ở mọi biến thể đã thử. Dấu âm phần lớn do cấu trúc (chính sách chỉ trừ `policy_step` khỏi lãi suất cho vay); điều vững đáng chú ý là các phản hồi qua huy động và tăng trưởng không đảo được dấu này. (ii) độ lớn vững với λ, σ, ε, spread, `policy_pressure`, học thích nghi và cấu hình nền, nhưng **tỷ lệ với giả định `policy_step`**; (iii) B và C không phân biệt được.
 
 ### 6.3. Bối cảnh chỉ đạo thực tế tháng 10/2026 và kiểm định ngoài mẫu sau chính sách
 <!-- nguồn: data/raw/chi_dao_lai_suat_2023_2026.csv (dòng 2026-10-18, 2026-10-21); data/raw/sbv_lnh_qua_dem_ngoai_mau.csv; reports/stage11/trang_thai_stage11.md -->

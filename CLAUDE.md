@@ -58,8 +58,9 @@ Khi chỉ cần kiểm tra code có chạy không, dùng bản chạy nhanh. Ch�
 ### 4.2. Tham số
 - Tham số chỉnh trong `configs/scenarios.yaml`, không hard-code giá trị mới trong Python.
 - Khi thêm tham số mới: thêm vào YAML (có comment ý nghĩa + đơn vị), đọc trong `ABMModel.__init__` bằng `p.get(...)` với giá trị mặc định **trùng với YAML**, và cập nhật bảng tham số trong `README.md`.
-- Lưu ý đã biết: mặc định trong `model.py` (`max_loan_to_deposit=1.15`, `policy_month=12`) đang **khác** YAML (`1.60`, `14`). Đừng dựa vào mặc định trong code; luôn truyền tham số từ YAML.
-- Các hằng số cứng hiện có: `0.018` và `1.35` (`bank.py`), `reference_rate=9.5`, `base_growth` (`borrowers.py`, `depositors.py`), `margin_floor=2.2` (`regulator.py`). Không đổi giá trị mà không được duyệt.
+- Mặc định trong `model.py` (`p.get(...)`) và mặc định trong hàm khởi tạo các agent **phải trùng** `configs/scenarios.yaml` cho mọi khóa; `tests/test_constants_yaml.py` kiểm điều này (GD9a). Ghi chú cũ "`max_loan_to_deposit=1.15`, `policy_month=12` khác YAML" đã lỗi thời. Dù vậy, vẫn nên truyền tham số từ YAML, không dựa vào mặc định trong code.
+- Các hằng số hành vi trước đây cứng trong code (`0.018` → `base_deposit_rate_step`, `1.35` → `loan_spread_add`, `reference_rate=9.5` → `borrower_reference_rate`, `margin_floor=2.2`, hệ số logistic tuân thủ, `target_margin`, `funding_cost_add`, ngưỡng LDR, các chặn tăng trưởng, `depositor_min_growth`, ...) nay đã ở YAML; danh sách đầy đủ và kiểm tra "không còn hằng số cũ trong agent" nằm ở `tests/test_constants_yaml.py`. Còn cứng trong code (giữ, trùng ràng buộc mục 6): miền hợp lệ lãi suất 0–20 / 0–14 và sàn 0.01 (Q5). Không đổi giá trị mà không được duyệt.
+- Cấu hình chuẩn cho kết quả hiện hành: `configs/scenarios_macro.yaml` (`macro_driver: exogenous`) và bộ hiệu chỉnh `configs/scenarios_calibrated.yaml` (GD9b); `scenarios.yaml` giữ nguyên để golden không đổi.
 
 ### 4.3. Code
 - Giữ tương thích **Mesa 3.3.1** (agent khởi tạo bằng `super().__init__(model)`, gọi qua `agents_by_type[...]`). Không nâng cấp phiên bản thư viện trong `requirements.txt` nếu không được yêu cầu.

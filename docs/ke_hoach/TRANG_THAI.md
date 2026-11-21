@@ -12,7 +12,7 @@ Trạng thái: CHUA_LAM · DANG_LAM · XONG · XONG_CHO_DUYET · BI_CHAN · DUNG
 | GD11 | Khung kiểm định ngoài mẫu Q4/2026 | GD9b | XONG_CHO_DUYET | f8658cc | reports/giai_doan/GD11.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; chưa có kết quả ngoài mẫu thực (panel dừng ở 2026Q3); đã tải ON Q4/2026 đến 19/11; chạy lại script khi YAML đổi ở GD9b; Q8 đã đóng (D9) |
 | GD10b | Độ nhạy `deposit_competition` ∈ {0.07, 0.3, 0.7, 1.2} và `policy_step` 0.375 trên GD9b (30 lần; không đổi YAML) | GD10 | XONG | ab6d156 | reports/giai_doan/GD10b.md | Theo D10 (Q10); quy tắc đọc đặt trước: báo cả 4 giá trị, không chọn. Gồm xuất sai lệch mức GD9b (Q14) |
 | GD12 | Hoàn thiện báo cáo nghiên cứu | GD10, GD10b, GD11 | XONG_CHO_DUYET | 01f250c | reports/giai_doan/GD12.md | Reviewer ĐẠT sau 2 vòng; hộp 5 ý, B−A theo dải `policy_step` (TB ≈ −1.4×step, cuối kỳ ≈ −1.8×step), bảng GD9b/GD9/λ 0.35, hạn chế (a) +0.312, (b), (c). Hộp ý (ii) và ánh xạ step↔1.5–2 điểm % đã đóng theo D11 (không còn chờ Huy). Câu hỏi cho Minh: ngày/thứ tự CV 9608–9736, định nghĩa biên PT2 |
-| GD13 | Tổng hợp cho trưởng nhóm | tất cả | CHUA_LAM | | reports/giai_doan/TONG_HOP.md | Gồm cập nhật CLAUDE.md mục 4.2 (Q3, được phép) |
+| GD13 | Tổng hợp cho trưởng nhóm | tất cả | XONG_CHO_DUYET | | reports/giai_doan/TONG_HOP.md | CLAUDE.md mục 4.2 đã cập nhật (Q3); TONG_HOP.md có D9–D11, Q14, bảng quyết định mở (Q1, Q2, Q4, Q5), đề xuất PR, câu hỏi cho Minh (ngày/thứ tự CV 9608–9736, định nghĩa μ = 4.59). Không cần reviewer |
 
 ## Quyết định đang mở (chờ Huy)
 | # | Giai đoạn | Câu hỏi | Mặc định đã áp dụng | Giai đoạn bị ảnh hưởng |
