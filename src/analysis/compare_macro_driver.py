@@ -228,6 +228,15 @@ def make_figure(hist, actual, out):
     plt.close(fig)
 
 
+DECISIONS = """
+## Quyết định (trưởng nhóm, sau Giai đoạn 8)
+
+1. **`macro_lending_on_coef` giữ 0.** Không dùng số hạng ON trực tiếp trong mục tiêu cho vay: nó làm xấu thước chính (RMSE khử mức của lãi suất cho vay 0.505 → 0.617, hồi phục vượt thực 126%, đáy lệch sớm 3 quý) và ON đã vào mô hình qua chi phí vốn (neo trong phương trình huy động).
+2. **Cấu hình chuẩn cho các giai đoạn sau: `macro_driver: exogenous`**, đặt trong `configs/scenarios_macro.yaml` (file ghi đè). `configs/scenarios.yaml` giữ `macro_driver: none` để golden không đổi.
+3. **`macro_dep_spread = 1.2723`** (Giai đoạn 7b, mẫu N = 112).
+4. **ON sau 2026Q3 giữ 3.946 cho mọi kịch bản.** Không dùng ON thật của Q4/2026 trong kịch bản, vì có thể đã chịu tác động của Công văn 9608/9736; dữ liệu đó để dành cho kiểm định ngoài mẫu.
+"""
+
 INTERPRETATION = """
 ## Diễn giải (viết tay sau khi xem kết quả; các con số lấy từ các bảng ở trên)
 
@@ -309,6 +318,7 @@ def main():
                md_table(sub[["month", "quarter", "actual_loan_rate", "loan_rate", "actual_deposit_rate",
                              "deposit_rate_data_basis", "deposit_rate_term_basis"]], 3)]
     md.append(INTERPRETATION)
+    md.append(DECISIONS)
     md.append("\nFile: quarterly_stage8.csv, fit_vs_actual_stage8.csv, effects_stage8.csv, compliance_stage8.csv, checks_stage8.csv, drift_equilibrium_stage8.csv, fig_mo_phong_vs_thuc.png, C_lai_suat_thuc_te_tu_panel.csv.\n")
     (out / "summary_stage8.md").write_text("\n".join(md), encoding="utf-8")
     print(f"Đã ghi kết quả vào {out}")

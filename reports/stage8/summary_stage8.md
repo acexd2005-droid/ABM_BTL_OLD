@@ -182,4 +182,12 @@ Với `macro_driver: exogenous` mức cân bằng của lãi suất huy động 
 **Hạn chế.** (i) Trong mẫu như trên. (ii) `macro_dep_spread` lấy từ mẫu N = 112 của 7b (1.272); mẫu N = 104 và 96 cho 1.08 và 1.14, độ nhạy của kết quả theo giá trị này chưa được đo. (iii) Tâm hóa `macro_lending_on_ref` là lựa chọn của người thực hiện để khớp cách ước lượng hệ số 0.45; yêu cầu gốc không nêu. (iv) Sai số mức (+0.97 điểm % ở cho vay) và biên độ chữ V còn thiếu của lãi suất cho vay cần hiệu chỉnh λ, biên mục tiêu, base_step, base_growth và ngưỡng chặn ở Giai đoạn 9; không chỉnh ở đây. (v) Biến vĩ mô ngoại sinh chỉ có một chuỗi ON chung cho mọi ngân hàng. (vi) Hệ số 0.45 là θ/λ của biến thể (d1) với λ = 0.3145 và ước lượng trên khoảng 14 điểm theo quý; (d1) bác bỏ ràng buộc b+γ=1 nên không còn là PT1 của mô hình; mô hình dùng `pass_through = 0.48` nên tác động ON mỗi quý là 0.48 × 0.45 = 0.216 chứ không phải 0.142. Đồng bộ λ và hệ số này là việc của Giai đoạn 9.
 
 
+## Quyết định (trưởng nhóm, sau Giai đoạn 8)
+
+1. **`macro_lending_on_coef` giữ 0.** Không dùng số hạng ON trực tiếp trong mục tiêu cho vay: nó làm xấu thước chính (RMSE khử mức của lãi suất cho vay 0.505 → 0.617, hồi phục vượt thực 126%, đáy lệch sớm 3 quý) và ON đã vào mô hình qua chi phí vốn (neo trong phương trình huy động).
+2. **Cấu hình chuẩn cho các giai đoạn sau: `macro_driver: exogenous`**, đặt trong `configs/scenarios_macro.yaml` (file ghi đè). `configs/scenarios.yaml` giữ `macro_driver: none` để golden không đổi.
+3. **`macro_dep_spread = 1.2723`** (Giai đoạn 7b, mẫu N = 112).
+4. **ON sau 2026Q3 giữ 3.946 cho mọi kịch bản.** Không dùng ON thật của Q4/2026 trong kịch bản, vì có thể đã chịu tác động của Công văn 9608/9736; dữ liệu đó để dành cho kiểm định ngoài mẫu.
+
+
 File: quarterly_stage8.csv, fit_vs_actual_stage8.csv, effects_stage8.csv, compliance_stage8.csv, checks_stage8.csv, drift_equilibrium_stage8.csv, fig_mo_phong_vs_thuc.png, C_lai_suat_thuc_te_tu_panel.csv.

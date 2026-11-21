@@ -48,6 +48,9 @@ parameters:
   #   macro_dep_spread 1.2723 = spread_equilibrium 1.272256 (muc can bang ngu y r^D_term - ON, binh quan cac NH; mau N=104/96 cho 1.08/1.14).
   # CHUA hieu chinh lai (lambda, delta, base_step, base_growth, nguong chan: Giai doan 9). Khi giu base_step va deposit_competition,
   # muc can bang ngu y la ON + spread + drift/phi.
+  # QUYET DINH cua truong nhom sau Giai doan 8: giu macro_driver: none o day de golden khong doi; cau hinh chuan cho cac giai doan sau
+  # la configs/scenarios_macro.yaml (exogenous, macro_lending_on_coef = 0, macro_dep_spread = 1.2723, ON sau 2026Q3 giu 3.946,
+  # khong dung ON that Q4/2026 trong kich ban vi co the da chiu tac dong cua Cong van 9608/9736; danh cho kiem dinh ngoai mau).
   macro_driver: none
   macro_dep_speed: 0.177           # phi: ty le/QUY
   macro_dep_spread: 1.2723         # diem %/nam: r^D_term can bang - ON

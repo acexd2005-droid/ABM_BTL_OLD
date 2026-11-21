@@ -1,0 +1,12 @@
+# FILE GHI ĐÈ lên scenarios.yaml: CẤU HÌNH CHUẨN cho các giai đoạn sau (quyết định của trưởng nhóm sau Giai đoạn 8).
+# scenarios.yaml giữ macro_driver: none để golden không đổi. Dùng file này khi cần biến vĩ mô ngoại sinh:
+#   python main.py --config configs/scenarios_macro.yaml
+# - macro_driver: exogenous: lãi suất huy động neo về ON quý liền trước (cơ sở term).
+# - macro_lending_on_coef giữ 0: KHÔNG dùng số hạng ON trực tiếp trong mục tiêu cho vay (làm xấu thước chính ở Giai đoạn 8;
+#   ON đã vào qua chi phí vốn).
+# - macro_dep_spread = 1.2723 (Giai đoạn 7b, mẫu N = 112). ON sau 2026Q3 giữ 3.946 cho mọi kịch bản; KHÔNG dùng ON thật của Q4/2026
+#   trong kịch bản vì có thể đã chịu tác động của Công văn 9608/9736 (dành cho kiểm định ngoài mẫu).
+parameters:
+  macro_driver: exogenous
+  macro_dep_spread: 1.2723
+  macro_lending_on_coef: 0.0

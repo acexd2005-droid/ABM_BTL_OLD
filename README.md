@@ -319,7 +319,8 @@ ABM_LaiSuat_Vu/
 │   ├── scenarios_adaptive.yaml
 │   ├── scenarios_adaptive_relative.yaml
 │   ├── scenarios_adaptive_relative_nonim.yaml
-│   └── scenarios_total.yaml
+│   ├── scenarios_total.yaml
+│   └── scenarios_macro.yaml
 │
 ├── data/
 │   └── clean/
@@ -423,4 +424,4 @@ Từ Bước A mặc định là `term`. Chạy cơ sở cũ `total` để đố
 
 ## Biến vĩ mô ngoại sinh (Giai đoạn 8)
 
-`macro_driver: exogenous` đưa lãi suất liên ngân hàng qua đêm vào phương trình huy động (mặc định vẫn `none`). Mọi kết quả khi bật `exogenous` là kiểm tra TRONG MẪU (φ và spread ước lượng trên cùng dữ liệu 2023Q1–2026Q3). So sánh `none`, `exogenous`, `exogenous + lending_on 0.45` (60 lần chạy, so với chuỗi thực): `python -m src.analysis.compare_macro_driver` → `reports/stage8/summary_stage8.md`.
+`macro_driver: exogenous` đưa lãi suất liên ngân hàng qua đêm vào phương trình huy động (mặc định vẫn `none`). Cấu hình chuẩn cho các giai đoạn sau là `configs/scenarios_macro.yaml` (`exogenous`, `macro_lending_on_coef: 0`, spread 1.2723, ON sau 2026Q3 giữ 3.946); `scenarios.yaml` giữ `none` để golden không đổi. Mọi kết quả khi bật `exogenous` là kiểm tra TRONG MẪU (φ và spread ước lượng trên cùng dữ liệu 2023Q1–2026Q3). So sánh `none`, `exogenous`, `exogenous + lending_on 0.45` (60 lần chạy, so với chuỗi thực): `python -m src.analysis.compare_macro_driver` → `reports/stage8/summary_stage8.md`.

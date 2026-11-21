@@ -198,3 +198,30 @@ def test_anchor_respects_deposit_rate_bounds(tmp_path):
                 macro_dep_speed=1.0, macro_dep_spread=-20.0, base_deposit_rate_step=0.0, deposit_competition=0.0)
     low.step()
     assert [b.deposit_rate for b in low.banks] == pytest.approx([0.0] * 8)
+
+
+MACRO = ROOT / "configs/scenarios_macro.yaml"
+
+
+def test_macro_config_is_standard_and_default_unchanged():
+    base, macro = load_config(), load_config(MACRO)["parameters"]
+    assert base["parameters"]["macro_driver"] == "none"           # golden không đổi
+    assert macro["macro_driver"] == "exogenous"
+    assert macro["macro_lending_on_coef"] == 0.0
+    assert macro["macro_dep_spread"] == pytest.approx(1.2723)
+    # file ghi đè chỉ đổi các khóa macro
+    changed = {k for k in macro if macro[k] != base["parameters"].get(k)}
+    assert changed == {"macro_driver"}
+
+
+@pytest.mark.parametrize("scenario", "ABC")
+def test_macro_config_runs_and_holds_on_after_2026q3(scenario):
+    cfg = load_config(MACRO)
+    m = ABMModel(scenario, cfg["n_months"], 202611, dict(cfg["parameters"]), rows())
+    m.run()
+    assert m.macro_driver == "exogenous"
+    assert m._macro_on[-1] == pytest.approx(3.946)                 # quý cuối có dữ liệu (2026Q3)
+    for step in (14, 15, 16, 17):                                  # các bước sau 2026Q3 dùng đúng 3.946
+        m.month = step
+        assert m.macro_on_previous() == pytest.approx(3.946)
+    assert all(0 <= b.deposit_rate <= 14 and 0 <= b.loan_rate <= 20 for b in m.banks)
