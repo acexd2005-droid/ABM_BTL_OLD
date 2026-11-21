@@ -35,7 +35,7 @@ Thay cho bản tổng hợp tạm thời trước đó (khi GD10, GD12, GD13 cò
 | GD10b | XONG | ab6d156 | Độ nhạy `deposit_competition` {0.07, 0.3, 0.7, 1.2} và `policy_step` 0.375; sai lệch mức trong mẫu (Q14) | [GD10b.md](GD10b.md) |
 | GD11 | XONG_CHO_DUYET | f8658cc | Khung kiểm định ngoài mẫu; chờ panel Q4/2026; đã tải ON Q4/2026 đến 19/11 (bình quân 4.074 so với 3.946 giả định) | [GD11.md](GD11.md) |
 | GD12 | XONG_CHO_DUYET | 01f250c, 4914bf5 | `report/bao_cao.md`; reviewer ĐẠT sau 2 vòng; áp dụng D11 | [GD12.md](GD12.md) |
-| GD13 | XONG_CHO_DUYET | (xem dòng GD13 trong `docs/ke_hoach/TRANG_THAI.md`) | CLAUDE.md mục 4.2 cập nhật; tổng hợp này; hai sửa lời văn báo cáo theo yêu cầu của Huy (xem mục 7) | – |
+| GD13 | XONG_CHO_DUYET | 671054d | CLAUDE.md mục 4.2 cập nhật; tổng hợp này; hai sửa lời văn báo cáo theo yêu cầu của Huy (xem mục 7) | – |
 
 Kiểm tra cuối GD13: `pytest -q` 216 passed, 1 xfailed; validation 7/7 ĐẠT; `configs/scenarios.yaml` và `configs/scenarios_calibrated.yaml` không đổi (md5 `36daf800…`, `5292f5b2…`). GD13 không chạm `src/`, `configs/`, `data/`, `tests/`.
 
