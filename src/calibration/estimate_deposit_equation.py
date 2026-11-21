@@ -30,23 +30,23 @@ import pandas as pd
 import yaml
 
 from .estimate_equations import (
-    CONFIG, MACRO, T_CRIT, BOOT_SEED, TARGET_MARGIN, _codes, _demean, _fe_level, _group_means, _row,
+    CONFIG, MACRO, T_CRIT, BOOT_SEED, FUNDING_CONST, TARGET_MARGIN, _codes, _read_param, _demean, _fe_level, _group_means, _row,
     estimate_all, fe_intercepts, fit, load_data, run_variant, sample, wild_cluster_bootstrap, yaml_values,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTDIR = ROOT / "reports/calibration"
-PIVOT = 0.82         # bank.py: ldr - 0.82
-CLIP = 0.5           # bank.py: ±0.5
+PIVOT = _read_param("deposit_ldr_target", 0.82)   # YAML deposit_ldr_target: ldr - 0.82 trong bank.py
+CLIP = _read_param("demand_pressure_cap", 0.5)     # YAML demand_pressure_cap: ±0.5 trong bank.py
 T0 = 4               # quý bắt đầu mô phỏng offline (2023Q4); cần ON trễ tới 3 quý
 def _read_margin_const():
-    """target_margin (3.2, mặc định của Bank, không ở YAML) + loan_spread_add (YAML) = 4.55 hiện hành."""
+    """target_margin (YAML, 3.2) + loan_spread_add (YAML, 1.35) = 4.55 hiện hành."""
     with open(CONFIG, encoding="utf-8") as f:
         return TARGET_MARGIN + float(yaml.safe_load(f)["parameters"]["loan_spread_add"])
 
 
 MARGIN_CONST = _read_margin_const()
-FUNDING_CONST = 0.15
+# FUNDING_CONST nhập từ estimate_equations (YAML funding_cost_add)
 
 
 # ======================================================================

@@ -7,6 +7,7 @@ Các tham số chưa hiệu chỉnh, các tốc độ tăng trưởng là giả 
 
 from pathlib import Path
 
+import warnings
 import pandas as pd
 from mesa import Model
 
@@ -212,9 +213,24 @@ class ABMModel(Model):
             max_growth=float(
                 p.get("depositor_max_growth", 0.04)
             ),
+            # Giai đoạn 9 (TÙY CHỌN): sàn riêng của tăng trưởng tiền gửi; None = -depositor_max_growth (hành vi cũ)
+            min_growth=p.get("depositor_min_growth", None),
         )
         if self.depositor.max_growth < 0:
             raise ValueError("depositor_max_growth phải không âm")
+        if (
+            self.depositor.min_growth is not None
+            and self.depositor.min_growth > self.depositor.max_growth
+        ):
+            raise ValueError("depositor_min_growth không được lớn hơn depositor_max_growth")
+        if self.depositor.min_growth is not None and self.depositor.min_growth > 0:
+            # Sàn dương = ép mọi ngân hàng có tiền gửi tăng tối thiểu mỗi quý; cho phép nhưng cảnh báo rõ.
+            warnings.warn(
+                "depositor_min_growth > 0: sàn dương ép tiền gửi mọi ngân hàng tăng tối thiểu mỗi quý "
+                "(thường sàn phải <= 0)",
+                UserWarning,
+                stacklevel=2,
+            )
 
         # Tạo agent người vay gộp
         self.borrower = BorrowerBlock(

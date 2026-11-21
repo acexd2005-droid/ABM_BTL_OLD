@@ -37,18 +37,28 @@ OUTDIR = ROOT / "reports/calibration"
 
 # t_{0.975} với 7 bậc tự do (8 cụm - 1). Không dùng scipy nên ghi cứng.
 T_CRIT = 2.3646
-FUNDING_CONST = 0.15      # bank.py: hằng số cộng vào chi phí vốn
-def _read_reference_rate():
+
+
+def _read_param(key, default):
+    """Đọc parameters[key] từ configs/scenarios.yaml; mặc định trùng YAML/model.py (dùng khi YAML thiếu khóa).
+
+    Từ Giai đoạn 9a các hằng số hành vi nằm trong YAML; script ước lượng đọc từ đó để không lệch khỏi mô hình.
+    """
     with open(CONFIG, encoding="utf-8") as f:
-        return float(yaml.safe_load(f)["parameters"]["borrower_reference_rate"])
+        return float(yaml.safe_load(f)["parameters"].get(key, default))
 
 
+def _read_reference_rate():
+    return _read_param("borrower_reference_rate", 9.5)
+
+
+FUNDING_CONST = _read_param("funding_cost_add", 0.15)      # YAML funding_cost_add: hằng số cộng vào chi phí vốn
 REFERENCE_RATE = _read_reference_rate()   # YAML borrower_reference_rate (9.5)
-TARGET_MARGIN = 3.2       # Bank(target_margin=3.2): mặc định trong code, KHÔNG nằm trong YAML
+TARGET_MARGIN = _read_param("target_margin", 3.2)          # YAML target_margin (Giai đoạn 9a; trước đây mặc định của Bank)
 BOOT_B = 9999             # số lần lặp wild-cluster bootstrap
 BOOT_SEED = 20261121      # seed cố định, để tái lập
 WEBB = np.array([-np.sqrt(1.5), -1.0, -np.sqrt(0.5), np.sqrt(0.5), 1.0, np.sqrt(1.5)])  # trọng số Webb 6 điểm
-DEPOSITOR_BASE = 0.004    # DepositorBlock(base_growth=0.004): mặc định trong code, KHÔNG nằm trong YAML
+DEPOSITOR_BASE = _read_param("depositor_base_growth", 0.004)   # YAML depositor_base_growth (Giai đoạn 9a)
 
 
 # ======================================================================

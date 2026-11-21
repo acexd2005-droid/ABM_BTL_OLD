@@ -3,6 +3,8 @@
 
 base_growth (mặc định 0.004) và max_growth (0.04) là giả định MỖI QUÝ, chưa hiệu chỉnh;
 giá trị lấy từ YAML (depositor_base_growth, depositor_max_growth) qua ABMModel.
+min_growth (Giai đoạn 9, TÙY CHỌN): sàn riêng của tăng trưởng; None (mặc định) = -max_growth, tức chặn
+đối xứng như cũ (YAML depositor_min_growth: null).
 Lãi suất đầu vào có đơn vị %/năm; tăng trưởng tiền gửi theo quý.
 """
 
@@ -16,12 +18,14 @@ class DepositorBlock(Agent):
         sensitivity=0.035,
         base_growth=0.004,
         max_growth=0.04,
+        min_growth=None,
     ):
         super().__init__(model)
 
         self.sensitivity = float(sensitivity)
         self.base_growth = float(base_growth)
         self.max_growth = float(max_growth)
+        self.min_growth = None if min_growth is None else float(min_growth)
 
     def growth(self, bank_rate, market_rate):
         """Tốc độ tăng trưởng tiền gửi trong một quý."""
@@ -32,8 +36,11 @@ class DepositorBlock(Agent):
             )
         )
 
+        # min_growth None => sàn = -max_growth (chặn đối xứng, hành vi cũ)
+        floor = -self.max_growth if self.min_growth is None else self.min_growth
+
         return max(
-            -self.max_growth,
+            floor,
             min(self.max_growth, raw)
         )
 

@@ -1,0 +1,14 @@
+{
+  "lambda_best": 0.45,
+  "lambda_ci_stage7": [
+    0.158,
+    0.395
+  ],
+  "lambda_in_ci": false,
+  "scenario_A_deterministic_two_seeds": true,
+  "ldr_mean_window": 1.0899618858566973,
+  "n_grid_per_variant": 1536,
+  "yaml_matches_best": true,
+  "yaml_path_max_abs_diff": 0.0,
+  "section6_pass_calibrated": true
+}

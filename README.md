@@ -139,6 +139,7 @@ parameters:
   demand_pressure_cap: 0.5
   depositor_base_growth: 0.004
   depositor_max_growth: 0.04
+  depositor_min_growth: null
   borrower_growth_min: -0.04
   borrower_growth_max: 0.035
   compliance_pressure_coef: 2.5
@@ -190,6 +191,7 @@ sensitivity_relative_width: 0.30
 | `demand_pressure_cap` | Chặn đối xứng của `demand_pressure`, tỷ lệ (trước đây cứng `0.5`). Giai đoạn 9a |
 | `depositor_base_growth` | Tăng trưởng tiền gửi cơ sở khi lãi suất NH = lãi suất thị trường, tỷ lệ **mỗi quý** (trước đây cứng `0.004`). Giai đoạn 9a |
 | `depositor_max_growth` | Chặn đối xứng của tăng trưởng tiền gửi, tỷ lệ **mỗi quý** (trước đây cứng `0.04`). Giai đoạn 9a |
+| `depositor_min_growth` | Sàn riêng của tăng trưởng tiền gửi, tỷ lệ **mỗi quý** (TÙY CHỌN, Giai đoạn 9). `null` (mặc định) = `−depositor_max_growth`, tức chặn đối xứng như cũ; đặt số để chặn bất đối xứng (dùng trong `scenarios_calibrated.yaml`) |
 | `borrower_growth_min`, `borrower_growth_max` | Chặn dưới/trên của tăng trưởng dư nợ mong muốn, tỷ lệ **mỗi quý** (trước đây cứng `−0.04` và `0.035`). Giai đoạn 9a |
 | `compliance_pressure_coef`, `compliance_pressure_center`, `compliance_margin_coef` | Hệ số logistic tuân thủ: `x = coef_p·(policy_pressure − center) + coef_m·(nim_proxy − margin_floor)` (trước đây cứng `2.5`, `0.5`, `1.1`; `coef_m` có đơn vị 1/điểm %). Giai đoạn 9a |
 | `compliance_prob_min`, `compliance_prob_max` | Sàn/trần xác suất tuân thủ (trước đây cứng `0.02`, `0.98`). Giai đoạn 9a |
@@ -344,7 +346,8 @@ ABM_LaiSuat_Vu/
 │   ├── scenarios_adaptive_relative.yaml
 │   ├── scenarios_adaptive_relative_nonim.yaml
 │   ├── scenarios_total.yaml
-│   └── scenarios_macro.yaml
+│   ├── scenarios_macro.yaml
+│   └── scenarios_calibrated.yaml   (sinh bởi src/calibration/calibrate_stage9.py)
 │
 ├── data/
 │   └── clean/
@@ -449,3 +452,8 @@ Từ Bước A mặc định là `term`. Chạy cơ sở cũ `total` để đố
 ## Biến vĩ mô ngoại sinh (Giai đoạn 8)
 
 `macro_driver: exogenous` đưa lãi suất liên ngân hàng qua đêm vào phương trình huy động (mặc định vẫn `none`). Cấu hình chuẩn cho các giai đoạn sau là `configs/scenarios_macro.yaml` (`exogenous`, `macro_lending_on_coef: 0`, spread 1.2723, ON sau 2026Q3 giữ 3.946); `scenarios.yaml` giữ `none` để golden không đổi. Mọi kết quả khi bật `exogenous` là kiểm tra TRONG MẪU (φ và spread ước lượng trên cùng dữ liệu 2023Q1–2026Q3). So sánh `none`, `exogenous`, `exogenous + lending_on 0.45` (60 lần chạy, so với chuỗi thực): `python -m src.analysis.compare_macro_driver` → `reports/stage8/summary_stage8.md`.
+
+
+## Hiệu chỉnh bằng mô phỏng (Giai đoạn 9)
+
+`python -m src.calibration.calibrate_stage9` → `reports/calibration/stage9/` (phương pháp chốt trước ở `DANG_KY_TRUOC.md`, kết quả ở `summary_stage9.md`) và ghi `configs/scenarios_calibrated.yaml` (file ghi đè, mọi khóa hành vi ghi tường minh). Cửa sổ hiệu chỉnh 2023Q2–2025Q2, ngoài mẫu 2025Q3–2026Q3; kịch bản A, hàm mục tiêu J = 0.5·RMSE thô LS cho vay + 0.5·RMSE thô LS huy động (cơ sở dữ liệu). Tăng trưởng nền và ngưỡng chặn theo quy tắc (trung bình, phân vị 2.5/97.5), không tối ưu. σ, ε, `policy_pressure`, `policy_step` không hiệu chỉnh. Chạy với bộ hiệu chỉnh: `python main.py --config configs/scenarios_calibrated.yaml`. Đây là đối chiếu lịch sử (mô hình được cấp ON thực), không phải dự báo.
