@@ -46,9 +46,10 @@ class Bank(Agent):
     @property
     def funding_cost(self):
         """Chi phí vốn xấp xỉ, đơn vị %/năm."""
+        # funding_cost_add (điểm %/năm, YAML): chi phí vốn ngoài lãi tiền gửi, giá trị cũ 0.15
         return (
             self.deposit_rate * (1 - self.casa_ratio)
-            + 0.15
+            + self.model.funding_cost_add
         )
 
     @property
@@ -63,9 +64,10 @@ class Bank(Agent):
         # 1. Áp lực huy động từ tỷ lệ cho vay/tiền gửi
         ldr = self.loans / self.deposits
 
+        # deposit_ldr_target (giá trị cũ 0.82) và demand_pressure_cap (±0.5) đọc từ YAML
         demand_pressure = max(
-            -0.5,
-            min(0.5, ldr - 0.82)
+            -model.demand_pressure_cap,
+            min(model.demand_pressure_cap, ldr - model.deposit_ldr_target)
         )
 
         # base_deposit_rate_step: mức điều chỉnh cơ sở GIẢ ĐỊNH MỖI QUÝ (YAML).

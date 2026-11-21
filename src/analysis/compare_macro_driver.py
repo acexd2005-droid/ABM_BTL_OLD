@@ -144,7 +144,8 @@ def drift_table(bank, cfg):
     A = bank[(bank.variant == "none") & (bank.scenario == "A") & (bank.run_id == 0)].sort_values(["bank_id", "month"])
     A["ldr_prev"] = A.groupby("bank_id")["ldr"].shift()
     A = A.dropna(subset=["ldr_prev"])        # tháng 2..18: LDR đầu quý = LDR cuối quý trước
-    drift = p["base_deposit_rate_step"] + p["deposit_competition"] * (A["ldr_prev"] - 0.82).clip(-0.5, 0.5)
+    ldr_target, cap = p.get("deposit_ldr_target", 0.82), p.get("demand_pressure_cap", 0.5)
+    drift = p["base_deposit_rate_step"] + p["deposit_competition"] * (A["ldr_prev"] - ldr_target).clip(-cap, cap)
     phi, spread = p["macro_dep_speed"], p["macro_dep_spread"]
     on = pd.read_csv(ROOT / p["macro_on_path"]).set_index("quy").bq_gian_don
     on_mean = float(on.loc["2023Q1":"2026Q2"].mean())

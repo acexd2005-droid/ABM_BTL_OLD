@@ -132,6 +132,21 @@ parameters:
   borrower_base_growth: 0.006
   margin_floor: 2.2
 
+  # Giai đoạn 9a: hằng số hành vi còn lại (giá trị cũ, giả định chưa hiệu chỉnh)
+  target_margin: 3.2
+  funding_cost_add: 0.15
+  deposit_ldr_target: 0.82
+  demand_pressure_cap: 0.5
+  depositor_base_growth: 0.004
+  depositor_max_growth: 0.04
+  borrower_growth_min: -0.04
+  borrower_growth_max: 0.035
+  compliance_pressure_coef: 2.5
+  compliance_pressure_center: 0.5
+  compliance_margin_coef: 1.1
+  compliance_prob_min: 0.02
+  compliance_prob_max: 0.98
+
   # Học thích nghi (tùy chọn, mặc định TẮT)
   adaptive_learning: false
   learning_up_step: 0.05
@@ -169,6 +184,15 @@ sensitivity_relative_width: 0.30
 | `borrower_reference_rate` | Lãi suất cho vay tham chiếu của khối người vay, %/năm (trước đây cứng `9.5`) |
 | `borrower_base_growth` | Tăng trưởng dư nợ cơ sở tại lãi suất tham chiếu, tỷ lệ **mỗi quý** (trước đây cứng `0.006`) |
 | `margin_floor` | Biên `nim_proxy` tham chiếu trong xác suất tuân thủ của NHNN, điểm % (trước đây cứng `2.2`) |
+| `target_margin` | Biên mục tiêu **ban đầu** của mọi ngân hàng, điểm %/năm (trước đây mặc định `3.2` của `Bank`; cột `target_margin` trong dữ liệu, nếu có, được ưu tiên). Giai đoạn 9a |
+| `funding_cost_add` | Chi phí vốn ngoài lãi tiền gửi: `funding_cost = deposit_rate·(1−casa) + funding_cost_add`, điểm %/năm (trước đây cứng `0.15`). Giai đoạn 9a |
+| `deposit_ldr_target` | Ngưỡng LDR của áp lực huy động: `demand_pressure = clip(LDR − deposit_ldr_target, ±demand_pressure_cap)`, tỷ lệ (trước đây cứng `0.82`). Giai đoạn 9a |
+| `demand_pressure_cap` | Chặn đối xứng của `demand_pressure`, tỷ lệ (trước đây cứng `0.5`). Giai đoạn 9a |
+| `depositor_base_growth` | Tăng trưởng tiền gửi cơ sở khi lãi suất NH = lãi suất thị trường, tỷ lệ **mỗi quý** (trước đây cứng `0.004`). Giai đoạn 9a |
+| `depositor_max_growth` | Chặn đối xứng của tăng trưởng tiền gửi, tỷ lệ **mỗi quý** (trước đây cứng `0.04`). Giai đoạn 9a |
+| `borrower_growth_min`, `borrower_growth_max` | Chặn dưới/trên của tăng trưởng dư nợ mong muốn, tỷ lệ **mỗi quý** (trước đây cứng `−0.04` và `0.035`). Giai đoạn 9a |
+| `compliance_pressure_coef`, `compliance_pressure_center`, `compliance_margin_coef` | Hệ số logistic tuân thủ: `x = coef_p·(policy_pressure − center) + coef_m·(nim_proxy − margin_floor)` (trước đây cứng `2.5`, `0.5`, `1.1`; `coef_m` có đơn vị 1/điểm %). Giai đoạn 9a |
+| `compliance_prob_min`, `compliance_prob_max` | Sàn/trần xác suất tuân thủ (trước đây cứng `0.02`, `0.98`). Giai đoạn 9a |
 | `adaptive_learning` | Bật/tắt học thích nghi của ngân hàng (`false` = kết quả giống bản cũ) |
 | `learning_up_step` | Bước tăng `target_margin` mỗi quý, điểm % (khởi điểm 0.05, **chưa hiệu chỉnh, chờ Huy duyệt**) |
 | `learning_down_step` | Bước giảm `target_margin` mỗi quý, điểm % (khởi điểm 0.10, **chưa hiệu chỉnh**) |
@@ -243,7 +267,7 @@ Ba mức độ nhạy sẽ là:
 - Chỉ thay đổi những tham số đã được nhóm thống nhất.
 - Giữ đúng đơn vị và phạm vi giá trị hợp lệ.
 - Không tự thay đổi công thức hành vi khi chỉ muốn hiệu chỉnh tham số.
-- Những hằng số như `base_growth`, `target_margin`, `reference_rate`, `1.35` và `0.018` hiện vẫn cố định trong mã nguồn tác nhân.
+- Từ Giai đoạn 9a, mọi hằng số hành vi của tác nhân đều đọc từ YAML (giá trị mặc định = giá trị cũ; kiểm tra: `tests/test_constants_yaml.py`, `python -m src.analysis.check_stage9a`). Chỉ còn cố định trong code: miền hợp lệ của lãi suất (cho vay 0–20, huy động 0–14 %/năm, trùng các assert của mô hình), sàn số dư `0.01`, cách tính `market_rate` (bình quân đơn giản lãi suất huy động đầu quý), giá trị mặc định khi dữ liệu thiếu cột (`casa_ratio` 0.20) và bộ ngân hàng giả lập.
 - Nếu thay đổi các hằng số hoặc công thức này, cần ghi rõ phiên bản và kiểm thử lại.
 - Không lựa chọn tham số chỉ nhằm tạo ra kết quả mô phỏng mong muốn.
 

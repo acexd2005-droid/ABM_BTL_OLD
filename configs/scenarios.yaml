@@ -38,6 +38,23 @@ parameters:
   borrower_base_growth: 0.006      # ty le/QUY: tang truong du no co so tai lai suat tham chieu
   margin_floor: 2.2                # diem %: bien nim_proxy tham chieu trong xac suat tuan thu cua NHNN
 
+  # Giai doan 9a: cac hang so hanh vi con lai truoc day cung trong src/agents/ (gia tri GIU NGUYEN = hanh vi cu,
+  # GIA DINH chua hieu chinh). Doi gia tri o day se doi ket qua; golden tao voi cac gia tri nay.
+  target_margin: 3.2               # diem %/nam: bien muc tieu BAN DAU cua moi NH (chi khi du lieu khong co cot target_margin)
+  funding_cost_add: 0.15           # diem %/nam: chi phi von ngoai lai tien gui, funding_cost = deposit_rate*(1-casa) + 0.15
+  deposit_ldr_target: 0.82         # ty le: nguong LDR (du no/tien gui) cua ap luc huy dong, demand_pressure = LDR - 0.82
+  demand_pressure_cap: 0.5         # ty le: chan doi xung |demand_pressure| <= 0.5
+  depositor_base_growth: 0.004     # ty le/QUY: tang truong tien gui co so khi lai suat NH = lai suat thi truong
+  depositor_max_growth: 0.04       # ty le/QUY: chan doi xung |tang truong tien gui| <= 0.04
+  borrower_growth_min: -0.04       # ty le/QUY: chan duoi tang truong du no mong muon
+  borrower_growth_max: 0.035       # ty le/QUY: chan tren tang truong du no mong muon
+  # Xac suat tuan thu cua NHNN: p = clip(logistic(coef_p*(policy_pressure - center) + coef_m*(nim - margin_floor)), min, max)
+  compliance_pressure_coef: 2.5    # khong don vi: he so cua ap luc chinh sach trong logistic
+  compliance_pressure_center: 0.5  # khong don vi: muc ap luc trung tinh
+  compliance_margin_coef: 1.1      # 1/diem %: he so cua bien nim_proxy trong logistic
+  compliance_prob_min: 0.02        # xac suat: san xac suat tuan thu
+  compliance_prob_max: 0.98        # xac suat: tran xac suat tuan thu
+
   # --- Bien vi mo ngoai sinh trong PHUONG TRINH HUY DONG (Giai doan 8, TUY CHON, mac dinh TAT) ---
   # macro_driver: none | exogenous. Voi exogenous, trong Bank.step (sau desired_increase, deposit_cap_factor KHONG ap vao so hang nay):
   #   deposit_rate += macro_dep_speed * (ON_{t-1} + macro_dep_spread - deposit_rate_{t-1})

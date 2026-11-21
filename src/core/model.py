@@ -82,6 +82,17 @@ class ABMModel(Model):
             p.get("loan_spread_add", 1.35)
         )
 
+        # Giai đoạn 9a: các hằng số hành vi còn lại trước đây cứng trong agent (giá trị giữ nguyên, GIẢ ĐỊNH)
+        # Bank: chi phí vốn = deposit_rate*(1-casa) + funding_cost_add; áp lực huy động
+        # demand_pressure = clip(LDR - deposit_ldr_target, ±demand_pressure_cap); biên mục tiêu ban đầu target_margin
+        # (chỉ dùng khi dữ liệu ngân hàng không có cột target_margin).
+        self.funding_cost_add = float(p.get("funding_cost_add", 0.15))
+        self.deposit_ldr_target = float(p.get("deposit_ldr_target", 0.82))
+        self.demand_pressure_cap = float(p.get("demand_pressure_cap", 0.5))
+        self.initial_target_margin = float(p.get("target_margin", 3.2))
+        if self.demand_pressure_cap < 0:
+            raise ValueError("demand_pressure_cap phải không âm")
+
         # Cơ sở của deposit_rate trong dữ liệu ngân hàng nạp vào (mặc định "term" từ Bước A):
         #  term : quy đổi deposit_rate = deposit_rate_dữ_liệu / (1 - casa_ratio) khi nạp dữ liệu, để
         #         funding_cost = deposit_rate_dữ_liệu + 0.15. Chỉ áp dụng cho dữ liệu nạp vào, không cho bộ giả lập.
@@ -180,7 +191,14 @@ class ABMModel(Model):
             margin_floor=float(
                 p.get("margin_floor", 2.2)
             ),
+            pressure_coef=float(p.get("compliance_pressure_coef", 2.5)),
+            pressure_center=float(p.get("compliance_pressure_center", 0.5)),
+            margin_coef=float(p.get("compliance_margin_coef", 1.1)),
+            prob_min=float(p.get("compliance_prob_min", 0.02)),
+            prob_max=float(p.get("compliance_prob_max", 0.98)),
         )
+        if not 0 <= self.regulator.prob_min <= self.regulator.prob_max <= 1:
+            raise ValueError("Cần 0 <= compliance_prob_min <= compliance_prob_max <= 1")
 
         # Tạo agent người gửi tiền gộp
         self.depositor = DepositorBlock(
@@ -188,7 +206,15 @@ class ABMModel(Model):
             sensitivity=float(
                 p.get("depositor_sensitivity", 0.035)
             ),
+            base_growth=float(
+                p.get("depositor_base_growth", 0.004)
+            ),
+            max_growth=float(
+                p.get("depositor_max_growth", 0.04)
+            ),
         )
+        if self.depositor.max_growth < 0:
+            raise ValueError("depositor_max_growth phải không âm")
 
         # Tạo agent người vay gộp
         self.borrower = BorrowerBlock(
@@ -202,7 +228,15 @@ class ABMModel(Model):
             base_growth=float(
                 p.get("borrower_base_growth", 0.006)
             ),
+            growth_min=float(
+                p.get("borrower_growth_min", -0.04)
+            ),
+            growth_max=float(
+                p.get("borrower_growth_max", 0.035)
+            ),
         )
+        if self.borrower.growth_min > self.borrower.growth_max:
+            raise ValueError("borrower_growth_min không được lớn hơn borrower_growth_max")
 
         # Tạo các agent ngân hàng
         self.banks = self._make_banks(initial_banks)
@@ -287,6 +321,8 @@ class ABMModel(Model):
                 )
 
             d = dict(item)
+            # Biên mục tiêu ban đầu từ YAML nếu dữ liệu không có cột target_margin (giá trị cũ = 3.2, mặc định của Bank)
+            d.setdefault("target_margin", self.initial_target_margin)
 
             # Quy đổi cơ sở lãi suất huy động (chỉ với dữ liệu nạp vào)
             if from_data and self.deposit_rate_basis == "term":

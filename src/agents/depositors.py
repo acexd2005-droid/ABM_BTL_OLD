@@ -1,7 +1,8 @@
 
 """Agent đại diện cho khối người gửi tiền, tăng trưởng theo quý.
 
-Các hệ số 0.004 và 0.04 là giả định MỖI QUÝ, chưa hiệu chỉnh.
+base_growth (mặc định 0.004) và max_growth (0.04) là giả định MỖI QUÝ, chưa hiệu chỉnh;
+giá trị lấy từ YAML (depositor_base_growth, depositor_max_growth) qua ABMModel.
 Lãi suất đầu vào có đơn vị %/năm; tăng trưởng tiền gửi theo quý.
 """
 

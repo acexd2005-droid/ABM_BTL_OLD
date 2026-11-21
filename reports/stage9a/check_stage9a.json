@@ -1,0 +1,166 @@
+{
+  "new_keys": [
+    {
+      "key": "target_margin",
+      "old_location": "bank.py: Bank(target_margin=3.2)",
+      "old_value": 3.2,
+      "yaml": 3.2,
+      "code_default": 3.2,
+      "equal": true
+    },
+    {
+      "key": "funding_cost_add",
+      "old_location": "bank.py: funding_cost + 0.15",
+      "old_value": 0.15,
+      "yaml": 0.15,
+      "code_default": 0.15,
+      "equal": true
+    },
+    {
+      "key": "deposit_ldr_target",
+      "old_location": "bank.py: ldr - 0.82",
+      "old_value": 0.82,
+      "yaml": 0.82,
+      "code_default": 0.82,
+      "equal": true
+    },
+    {
+      "key": "demand_pressure_cap",
+      "old_location": "bank.py: max(-0.5, min(0.5, .))",
+      "old_value": 0.5,
+      "yaml": 0.5,
+      "code_default": 0.5,
+      "equal": true
+    },
+    {
+      "key": "depositor_base_growth",
+      "old_location": "depositors.py: base_growth=0.004",
+      "old_value": 0.004,
+      "yaml": 0.004,
+      "code_default": 0.004,
+      "equal": true
+    },
+    {
+      "key": "depositor_max_growth",
+      "old_location": "depositors.py: max_growth=0.04",
+      "old_value": 0.04,
+      "yaml": 0.04,
+      "code_default": 0.04,
+      "equal": true
+    },
+    {
+      "key": "borrower_growth_min",
+      "old_location": "borrowers.py: max(-0.04, .)",
+      "old_value": -0.04,
+      "yaml": -0.04,
+      "code_default": -0.04,
+      "equal": true
+    },
+    {
+      "key": "borrower_growth_max",
+      "old_location": "borrowers.py: min(0.035, .)",
+      "old_value": 0.035,
+      "yaml": 0.035,
+      "code_default": 0.035,
+      "equal": true
+    },
+    {
+      "key": "compliance_pressure_coef",
+      "old_location": "regulator.py: 2.5 * (pressure - .)",
+      "old_value": 2.5,
+      "yaml": 2.5,
+      "code_default": 2.5,
+      "equal": true
+    },
+    {
+      "key": "compliance_pressure_center",
+      "old_location": "regulator.py: (pressure - 0.5)",
+      "old_value": 0.5,
+      "yaml": 0.5,
+      "code_default": 0.5,
+      "equal": true
+    },
+    {
+      "key": "compliance_margin_coef",
+      "old_location": "regulator.py: 1.1 * (margin - .)",
+      "old_value": 1.1,
+      "yaml": 1.1,
+      "code_default": 1.1,
+      "equal": true
+    },
+    {
+      "key": "compliance_prob_min",
+      "old_location": "regulator.py: max(0.02, .)",
+      "old_value": 0.02,
+      "yaml": 0.02,
+      "code_default": 0.02,
+      "equal": true
+    },
+    {
+      "key": "compliance_prob_max",
+      "old_location": "regulator.py: min(0.98, .)",
+      "old_value": 0.98,
+      "yaml": 0.98,
+      "code_default": 0.98,
+      "equal": true
+    }
+  ],
+  "all_yaml_keys_code_default_equal": true,
+  "n_yaml_parameter_keys": 46,
+  "golden": {
+    "term": {
+      "files": 18,
+      "bitwise_equal": 18,
+      "max_abs_diff": 0.0
+    },
+    "total": {
+      "files": 18,
+      "bitwise_equal": 18,
+      "max_abs_diff": 0.0
+    }
+  },
+  "section6": [
+    {
+      "config": "scenarios.yaml",
+      "runs": 10,
+      "policy_first_month": 15,
+      "max_B_minus_A_loan_rate_after_policy": -0.15529692598232536,
+      "max_C_minus_A_loan_rate_after_policy": -0.15505817111945497,
+      "mean_loan_rate_after_policy": {
+        "A": 9.934194597282467,
+        "B": 9.532116265572164,
+        "C": 9.508579913828042
+      },
+      "max_abs_diff_BC_vs_A_before_policy": 0.0,
+      "loan_rate_min": 8.131274757864006,
+      "loan_rate_max": 12.405119963336587,
+      "deposit_rate_min": 4.939109058065356,
+      "deposit_rate_max": 7.435213240569847,
+      "max_loans_minus_ldr_limit": 0.0,
+      "lag_check_first_quarter_max_err_lagged": 0.0,
+      "lag_check_first_quarter_max_err_current": 0.02200559999999996,
+      "pass": true
+    },
+    {
+      "config": "scenarios_macro.yaml",
+      "runs": 10,
+      "policy_first_month": 15,
+      "max_B_minus_A_loan_rate_after_policy": -0.14990071273221695,
+      "max_C_minus_A_loan_rate_after_policy": -0.14990071273221695,
+      "mean_loan_rate_after_policy": {
+        "A": 9.344839527665481,
+        "B": 8.934713435189245,
+        "C": 8.910795465553026
+      },
+      "max_abs_diff_BC_vs_A_before_policy": 0.0,
+      "loan_rate_min": 7.654639071354483,
+      "loan_rate_max": 12.405119963336587,
+      "deposit_rate_min": 3.8186701621507453,
+      "deposit_rate_max": 7.0112374916814435,
+      "max_loans_minus_ldr_limit": -952092.1200864315,
+      "lag_check_first_quarter_max_err_lagged": 0.0,
+      "lag_check_first_quarter_max_err_current": 0.07960387150773052,
+      "pass": true
+    }
+  ]
+}
