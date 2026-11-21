@@ -45,6 +45,9 @@ def _read_reference_rate():
 
 REFERENCE_RATE = _read_reference_rate()   # YAML borrower_reference_rate (9.5)
 TARGET_MARGIN = 3.2       # Bank(target_margin=3.2): mặc định trong code, KHÔNG nằm trong YAML
+BOOT_B = 9999             # số lần lặp wild-cluster bootstrap
+BOOT_SEED = 20261121      # seed cố định, để tái lập
+WEBB = np.array([-np.sqrt(1.5), -1.0, -np.sqrt(0.5), np.sqrt(0.5), 1.0, np.sqrt(1.5)])  # trọng số Webb 6 điểm
 DEPOSITOR_BASE = 0.004    # DepositorBlock(base_growth=0.004): mặc định trong code, KHÔNG nằm trong YAML
 
 
@@ -362,6 +365,129 @@ def estimate_all(df, yv):
 
 
 # ======================================================================
+# 4b. Wild-cluster bootstrap (WCR-t, trọng số Webb 6 điểm) cho một hệ số
+# ======================================================================
+
+def _prepare(y, X, bank, time, spec):
+    """Dữ liệu sau biến đổi (yy, Z) và hệ số hiệu chỉnh CR1, giống fit()."""
+    y = np.asarray(y, float)
+    N = len(y)
+    X = np.asarray(X, float).reshape(N, -1)
+    bc, tc = _codes(bank), _codes(time)
+    G, T = bc.max() + 1, tc.max() + 1
+    k = X.shape[1]
+    if spec == "fe_bank":
+        yy, Z, k_adj = _demean(y, bc, G), _demean(X, bc, G), k
+    elif spec == "fe_twoway":
+        yy = _demean(_demean(y, bc, G), tc, T)
+        Z = _demean(_demean(X, bc, G), tc, T)
+        k_adj = k + T - 1
+    else:
+        raise ValueError("bootstrap chỉ cho fe_bank / fe_twoway")
+    factor = G / (G - 1) * (N - 1) / (N - k_adj)
+    return yy, Z, bc, tc, G, T, factor
+
+
+def wild_cluster_bootstrap(y, X, bank, time, spec, j, B=BOOT_B, seed=BOOT_SEED,
+                           weights=None, grid_n=161, grid_half_width=8.0, alpha=0.05):
+    """Wild-cluster bootstrap kiểu WCR-t (Cameron-Gelbach-Miller) cho hệ số thứ j của X.
+
+    - Trọng số Webb 6 điểm, mỗi cụm một trọng số cho mọi quan sát của cụm; B lần lặp, seed cố định.
+    - p-value đối xứng của H0: β_j = 0, áp đặt H0 khi dựng y*; thống kê t dùng SE cụm CR1.
+    - Khoảng tin cậy: đảo kiểm định trên lưới β0 quanh ước lượng (cùng một bộ trọng số cho mọi β0).
+    - Chạy trên dữ liệu đã biến đổi within (FWL), vectorized bằng numpy.
+    `weights` (B, G) cho phép truyền trọng số có sẵn (dùng khi kiểm thử).
+    """
+    yy, Z, bc, tc, G, T, factor = _prepare(y, X, bank, time, spec)
+    N, k = Z.shape
+    Ainv = np.linalg.inv(Z.T @ Z)
+    b = Ainv @ Z.T @ yy
+    u = yy - Z @ b
+    idx = [np.where(bc == g)[0] for g in range(G)]
+    aj = Ainv[j]
+
+    def var_j(U):          # U: (R, N) phần dư -> phương sai cụm của hệ số j, (R,)
+        tot = 0.0
+        for ix in idx:
+            sc = U[:, ix] @ Z[ix] @ aj
+            tot = tot + sc ** 2
+        return factor * tot
+
+    se = float(np.sqrt(var_j(u[None, :])[0]))
+    if weights is None:
+        weights = np.random.default_rng(seed).choice(WEBB, size=(B, G))
+    W = weights[:, bc]                               # (B, N)
+    Zo = np.delete(Z, j, axis=1)
+    Zj = Z[:, j]
+
+    # Chiếu y* lên phần bù của FE (khử trung bình NH [và quý]) trong từng lần lặp. Với FE hai chiều
+    # bước này BẮT BUỘC (quý không lồng trong cụm nên điểm số cụm phụ thuộc vào nó).
+    cell = np.empty((G, T), int)
+    cell[bc, tc] = np.arange(N)
+    flat_of = cell.ravel()
+
+    def project(Y):                                   # Y: (R, N)
+        Y3 = Y[:, cell]                               # (R, G, T)
+        Y3 = Y3 - Y3.mean(axis=2, keepdims=True)
+        if spec == "fe_twoway":
+            Y3 = Y3 - Y3.mean(axis=1, keepdims=True)
+        out = np.empty_like(Y)
+        out[:, flat_of] = Y3.reshape(len(Y), -1)
+        return out
+
+    def pval(beta0):
+        y0 = yy - beta0 * Zj
+        if Zo.shape[1]:
+            fit0 = Zo @ np.linalg.solve(Zo.T @ Zo, Zo.T @ y0)
+        else:
+            fit0 = np.zeros(N)
+        ur = y0 - fit0
+        ystar = project((fit0 + beta0 * Zj)[None, :] + ur[None, :] * W)
+        bstar = ystar @ Z @ Ainv                     # (B, k)
+        ustar = ystar - bstar @ Z.T
+        tstar = (bstar[:, j] - beta0) / np.sqrt(var_j(ustar))
+        t0 = (b[j] - beta0) / se
+        return float(np.mean(np.abs(tstar) >= abs(t0) - 1e-12)), t0
+
+    p0, t_obs = pval(0.0)
+    grid = b[j] + se * np.linspace(-grid_half_width, grid_half_width, grid_n)
+    pg = np.array([pval(x)[0] for x in grid])
+    c = grid_n // 2                                  # điểm giữa = ước lượng (p = 1)
+    lo = hi = np.nan
+    for i in range(c, 0, -1):                        # đi xuống
+        if pg[i - 1] < alpha <= pg[i]:
+            lo = grid[i - 1] + (alpha - pg[i - 1]) / (pg[i] - pg[i - 1]) * (grid[i] - grid[i - 1])
+            break
+    for i in range(c, grid_n - 1):                   # đi lên
+        if pg[i + 1] < alpha <= pg[i]:
+            hi = grid[i + 1] + (alpha - pg[i + 1]) / (pg[i] - pg[i + 1]) * (grid[i] - grid[i + 1])
+            break
+    return {"coef": float(b[j]), "se_cr1": se, "t_cr1": float(b[j] / se),
+            "p_boot": p0, "ci_boot_lo": lo, "ci_boot_hi": hi, "B": int(len(weights)), "seed": seed}
+
+
+def bootstrap_pt1(df):
+    """λ (PT1) ở biến thể (c) và (d1); hệ số ON trễ 1 ở (d1). Mẫu N = 112, c = deposit_rate_pct + 0.15."""
+    s = sample(df, 2)
+    y, Xdf = eq_vars("PT1", s, "main")
+    X = Xdf.to_numpy(float).reshape(len(s), -1)
+    on = s["ON1"].to_numpy(float)
+    Xd = np.column_stack([X, on - on.mean()])
+    rows = []
+    for variant, spec, XX, j, nm in (("c", "fe_twoway", X, 0, "lambda"),
+                                      ("d1", "fe_bank", Xd, 0, "lambda"),
+                                      ("d1", "fe_bank", Xd, 1, "ON_lag1")):
+        r = wild_cluster_bootstrap(y, XX, s["bank_id"], s["t"], spec, j)
+        r.update({"equation": "PT1", "variant": variant, "parameter": nm,
+                  "ci_cr1_lo": r["coef"] - T_CRIT * r["se_cr1"], "ci_cr1_hi": r["coef"] + T_CRIT * r["se_cr1"],
+                  "n": len(s)})
+        rows.append(r)
+    cols = ["equation", "variant", "parameter", "coef", "se_cr1", "t_cr1", "ci_cr1_lo", "ci_cr1_hi",
+            "p_boot", "ci_boot_lo", "ci_boot_hi", "B", "seed", "n"]
+    return pd.DataFrame(rows)[cols]
+
+
+# ======================================================================
 # 5. FE quý hấp thụ bao nhiêu, lãi suất qua đêm thay thế được bao nhiêu
 # ======================================================================
 
@@ -490,12 +616,14 @@ def stability_table(est):
               "CI112_chua_0", "CI104_chua_0", "doi_dau"]]
 
 
-def write_outputs(est, absr, seas, outl, outdir=OUTDIR):
+def write_outputs(est, absr, seas, outl, outdir=OUTDIR, boot=None):
     outdir = Path(outdir)
     outdir.mkdir(parents=True, exist_ok=True)
     est.to_csv(outdir / "estimates_stage7.csv", index=False)
     absr.to_csv(outdir / "absorption_stage7.csv", index=False)
     outl.to_csv(outdir / "outliers_stage7.csv", index=False)
+    if boot is not None:
+        boot.to_csv(outdir / "bootstrap_stage7.csv", index=False)
 
     md = ["# Giai đoạn 7: ước lượng phương trình hành vi từ panel (sinh tự động)\n",
           "> Chỉ để đối chiếu với giá trị giả định trong `configs/scenarios.yaml`; **không** sửa configs. "
@@ -509,7 +637,7 @@ def write_outputs(est, absr, seas, outl, outdir=OUTDIR):
           "- **Hạn chế quan trọng nhất:** SE cụm theo ngân hàng KHÔNG xử lý được phụ thuộc chéo giữa các ngân hàng trong cùng một quý. "
           "Quý FE một mình giải thích khoảng 71% phương sai within của Δr^L (xem mục hấp thụ), tức cú sốc chung rất lớn, nên t-stat và khoảng tin cậy của (a), (b), (d) bị đánh giá QUÁ CAO "
           "(với (d) thông tin hiệu dụng của lãi suất qua đêm chỉ cỡ 14 điểm theo quý). Chỉ (c) kiểm soát được cú sốc cộng chung, nhưng vẫn chỉ 8 cụm và vẫn có thể thấp SE. "
-          "Không nên dùng chữ \"có ý nghĩa\" cho (a), (b), (d). Wild-cluster bootstrap hoặc Driscoll-Kraay chưa được làm (chờ nhóm quyết định).",
+          "Không nên dùng chữ \"có ý nghĩa\" cho (a), (b), (d). Wild-cluster bootstrap (Webb, B = 9999) đã làm cho PT1 ở mục riêng bên dưới; Driscoll-Kraay không làm vì T = 14 quá ngắn.",
           "- Nickell (PT1, T = 14): FE ngân hàng làm lệch XUỐNG hệ số của biến trễ r^L_{t-1} (= 1-λ), nên λ của (b), (c), (d) có xu hướng bị lệch LÊN. "
           "Ngược lại λ của (a) bị kéo xuống vì hiệu ứng ngân hàng bị bỏ sót (biên khác nhau giữa các NH tương quan với mức r^L_{t-1}). "
           "Khoảng λ = 0.11 đến 0.53 là khoảng giữa hai cực thiên lệch, KHÔNG phải khoảng tin cậy.",
@@ -520,7 +648,8 @@ def write_outputs(est, absr, seas, outl, outdir=OUTDIR):
           "- Cả `deposit_rate_pct` và `loan_rate_pct` là lợi suất sổ sách, trễ so với lãi suất cận biên.",
           "- Mô hình chặn g^D trong ±0.04 và g^L trong [-0.04, 0.035], nhưng 42% quan sát g^D và 59% g^L nằm ngoài; OLS ước lượng phần tuyến tính toàn mẫu. "
           "Hằng số ước lượng a_D ≈ 0.045 và base_growth_L ≈ 0.05 cao gấp 8-11 lần giá trị mô hình (0.004, 0.006): đây là **khoảng cách mô hình - dữ liệu** (tăng trưởng nền của dữ liệu lớn hơn cả trần chặn), không phải kết quả ước lượng độ nhạy lãi suất.",
-          "- `target_margin` (3.2) và `loan_spread_add` (1.35) chỉ nhận diện được **tổng**. Việc μ ≈ 4.59 gần 4.55 chỉ là khớp trong mẫu: chưa xác nhận nguồn gốc con số 1.35 (nếu từng chọn theo dữ liệu 2023Q1 thì không phải kiểm định độc lập), và r^L - c_{t-1} chưa ở trạng thái dừng (c giảm mạnh giai đoạn 2023-2024, r^L điều chỉnh chậm).\n"]
+          "- `target_margin` (3.2) và `loan_spread_add` (1.35) chỉ nhận diện được **tổng**. Ước lượng μ ≈ 4.59 **nhất quán với 4.55 (chưa phải kiểm định độc lập; nguồn gốc loan_spread_add=1.35 đang được xác minh)**. "
+          "Ngoài ra r^L - c_{t-1} chưa ở trạng thái dừng (c giảm mạnh giai đoạn 2023-2024, r^L điều chỉnh chậm).\n"]
 
     md.append("## Bảng chính (mẫu N = 112; c = deposit_rate_pct + 0.15)\n")
     md.append(md_table(headline_table(est, "main"),
@@ -537,6 +666,13 @@ def write_outputs(est, absr, seas, outl, outdir=OUTDIR):
               "`approx_share_explained_by_ON_via_common` = R2_common_on_ON x share_quarter_FE_only: phần phương sai within của biến phụ thuộc mà ON giải thích qua thành phần chung (ví dụ Δr^L, trễ 1: khoảng 0.5, không phải 0.71). "
               "Lưu ý: ở PT1 trễ 1, `share_quarter_FE_only` (0.708105) và `R2_common_on_ON` (0.708102) trùng đến 5 chữ số **do ngẫu nhiên**; chúng là hai đại lượng khác nhau.\n")
     md.append(md_table(absr, list(absr.columns)))
+    if boot is not None:
+        md.append("\n## Wild-cluster bootstrap cho PT1 (λ và hệ số lãi suất qua đêm trễ 1 quý)\n")
+        md.append(f"WCR-t (áp đặt H0), trọng số Webb 6 điểm, B = {int(boot.B.iloc[0])}, seed = {int(boot.seed.iloc[0])} (cố định), chỉ numpy; "
+                  "p-value đối xứng của H0: hệ số = 0; khoảng tin cậy boot = đảo kiểm định trên lưới. Cạnh đó là CR1 (t với 7 bậc tự do). "
+                  "Bootstrap chạy trên dữ liệu đã biến đổi within và vẫn chỉ có 8 cụm; với (d1), ON là biến chung theo quý nên thông tin hiệu dụng của hệ số ON chỉ cỡ 14 điểm: bootstrap theo ngân hàng không khắc phục được hạn chế này. Không làm Driscoll-Kraay (T = 14 quá ngắn).\n")
+        md.append(md_table(boot, ["variant", "parameter", "coef", "se_cr1", "t_cr1", "ci_cr1_lo", "ci_cr1_hi",
+                                  "p_boot", "ci_boot_lo", "ci_boot_hi"]))
     md.append("\n## Ổn định giữa N = 112 và N = 104 (bỏ 2023Q2), biến thể a, b, c\n")
     md.append("`CI..._chua_0` = True nghĩa là khoảng tin cậy 95% (cụm, t7) chứa 0. Cảnh báo: với (a), (b) khoảng tin cậy bị đánh giá quá hẹp do cú sốc chung theo quý.\n")
     md.append(md_table(stability_table(est), ["equation", "parameter", "variant", "coef_N112", "coef_N104",
@@ -546,11 +682,18 @@ def write_outputs(est, absr, seas, outl, outdir=OUTDIR):
     md.append("\n## Quan sát bất thường để Minh kiểm tra\n")
     md.append("`z_robust` = (x - trung vị)/(1.4826 MAD) trên toàn mẫu 112 quan sát.\n")
     md.append(md_table(outl, list(outl.columns)))
+    md.append("\n## Quyết định của trưởng nhóm sau phản biện (vòng reviewer 2)\n")
+    md.append("1. **Không cập nhật tham số nào trong `configs/`.** Khoảng λ = 0.11 đến 0.53 (hai cực thiên lệch giữa các biến thể) là **phạm vi lưới tìm kiếm cho Giai đoạn 9**, không phải khoảng tin cậy. σ và ε chỉ là tương quan mô tả, không dùng làm tham số nhân quả.")
+    md.append("2. **Biến thể chuẩn cho tham số hành vi: (c)** FE ngân hàng + quý. **Đặc tả macro cho Giai đoạn 8: (d) với lãi suất qua đêm trễ 1 quý**, tác động vào phương trình lãi suất cho vay (PT1).")
+    md.append("3. Wild-cluster bootstrap đã làm cho λ và hệ số ON trễ 1 (bảng trên); không làm Driscoll-Kraay.")
+    md.append("4. μ ≈ 4.59 **nhất quán với 4.55 (chưa phải kiểm định độc lập; nguồn gốc loan_spread_add=1.35 đang được xác minh)**.")
+    md.append("5. **Khoảng cách tăng trưởng nền và ngưỡng chặn là vấn đề cấu trúc, chuyển sang Giai đoạn 9**: `base_growth` (tiền gửi 0.004, dư nợ 0.006) và các ngưỡng chặn (±0.04 cho tiền gửi; [-0.04, 0.035] cho dư nợ) sẽ nằm trong danh sách tham số hiệu chỉnh. "
+              "Dữ liệu cho a_D ≈ 0.045 và base_growth_L ≈ 0.05; 42% quan sát g^D và 59% g^L vượt ngưỡng chặn hiện tại.\n")
     md.append("\n## Phụ lục: công thức chi phí vốn cũ (trừ CASA hai lần)\n")
     md.append(md_table(headline_table(est, "old"),
                        ["equation", "parameter", "bien_the", "coef", "se_cluster", "t_cluster",
                         "ci95_lo", "ci95_hi", "se_ols", "R2", "n", "yaml_value"]))
-    md.append("\nToàn bộ hàng (mọi hệ số, hằng số, SE thường, R² chung nền): `estimates_stage7.csv`; hấp thụ: `absorption_stage7.csv`; bất thường: `outliers_stage7.csv`.\n")
+    md.append("\nToàn bộ hàng (mọi hệ số, hằng số, SE thường, R² chung nền): `estimates_stage7.csv`; hấp thụ: `absorption_stage7.csv`; bất thường: `outliers_stage7.csv`; bootstrap: `bootstrap_stage7.csv`.\n")
     (outdir / "estimates_stage7.md").write_text("\n".join(md), encoding="utf-8")
 
 
@@ -562,7 +705,8 @@ def main():
     est = estimate_all(df, yaml_values())
     absr = absorption(df)
     seas, outl = seasonality_and_outliers(df)
-    write_outputs(est, absr, seas, outl, args.outdir)
+    boot = bootstrap_pt1(df)
+    write_outputs(est, absr, seas, outl, args.outdir, boot)
     print(f"Đã ghi kết quả vào {args.outdir}")
 
 

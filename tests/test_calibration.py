@@ -154,3 +154,90 @@ def test_stability_table_and_absorption_columns(data):
     # Δr^L trễ 1: phần qua thành phần chung nhỏ hơn R² của thành phần chung
     r = absr[(absr.equation == "PT1") & (absr.lag_on == 1)].iloc[0]
     assert r.approx_share_explained_by_ON_via_common < r.R2_common_on_ON
+
+
+# ---------------- Wild-cluster bootstrap ----------------
+
+def test_webb_weights_moments():
+    assert len(ee.WEBB) == 6
+    assert ee.WEBB.mean() == pytest.approx(0.0)
+    assert (ee.WEBB ** 2).mean() == pytest.approx(1.0)    # (1.5+1+0.5)*2/6 = 1
+
+
+def _toy_panel(effect, seed=3, G=8, T=9):
+    rng = np.random.default_rng(seed)
+    bank = np.repeat(np.arange(G), T)
+    time = np.tile(np.arange(T), G)
+    x = rng.normal(size=G * T)
+    y = effect * x + np.repeat(rng.normal(size=G), T) + rng.normal(size=G * T)
+    return y, x[:, None], bank, time
+
+
+def _slow_wcr_p(y, X, bank, time, W, beta0, two_way):
+    """Cài đặt chậm, độc lập: LSDV (biến giả NH [+ quý]) cho từng lần lặp, SE cụm CR1 tự tính."""
+    N = len(y)
+    G, T = len(set(bank)), len(set(time))
+    dums = [(bank == g).astype(float)[:, None] for g in range(G)]
+    if two_way:
+        dums += [(time == t_).astype(float)[:, None] for t_ in range(1, T)]
+    Z = np.hstack([X] + dums)
+    k_adj = 1 + (T - 1 if two_way else 0)
+    factor = G / (G - 1) * (N - 1) / (N - k_adj)
+    Ainv = np.linalg.inv(Z.T @ Z)
+
+    def t_stat(yv, b0):
+        b = Ainv @ Z.T @ yv
+        u = yv - Z @ b
+        meat = sum(np.outer(Z[bank == g].T @ u[bank == g], Z[bank == g].T @ u[bank == g]) for g in range(G))
+        v = factor * (Ainv @ meat @ Ainv)[0, 0]
+        return (b[0] - b0) / np.sqrt(v)
+
+    t_obs = t_stat(y, beta0)
+    # mô hình bị ràng buộc: y - beta0*x hồi quy trên các biến giả
+    D = np.hstack(dums)
+    y0 = y - beta0 * X[:, 0]
+    fit0 = D @ np.linalg.lstsq(D, y0, rcond=None)[0]
+    ur = y0 - fit0
+    ts = []
+    for r in range(W.shape[0]):
+        ystar = fit0 + beta0 * X[:, 0] + ur * W[r, bank]
+        ts.append(t_stat(ystar, beta0))
+    return float(np.mean(np.abs(ts) >= abs(t_obs) - 1e-12)), t_obs
+
+
+@pytest.mark.parametrize("spec,two_way", [("fe_bank", False), ("fe_twoway", True)])
+def test_wild_bootstrap_matches_slow_lsdv_implementation(spec, two_way):
+    y, X, bank, time = _toy_panel(0.4)
+    W = np.random.default_rng(11).choice(ee.WEBB, size=(300, 8))
+    out = ee.wild_cluster_bootstrap(y, X, bank, time, spec, 0, weights=W, grid_n=5, grid_half_width=1.0)
+    p_slow, t_slow = _slow_wcr_p(y, X, bank, time, W, 0.0, two_way)
+    assert out["t_cr1"] == pytest.approx(t_slow)
+    assert out["p_boot"] == pytest.approx(p_slow)
+
+
+def test_wild_bootstrap_properties():
+    # hiệu ứng mạnh: p nhỏ, khoảng tin cậy chứa giá trị thật và không chứa 0
+    y, X, bank, time = _toy_panel(2.0, seed=5, T=12)
+    out = ee.wild_cluster_bootstrap(y, X, bank, time, "fe_bank", 0, B=999)
+    assert out["p_boot"] < 0.05
+    assert out["ci_boot_lo"] < 2.0 < out["ci_boot_hi"] and out["ci_boot_lo"] > 0
+    # tái lập: cùng seed -> cùng kết quả
+    again = ee.wild_cluster_bootstrap(y, X, bank, time, "fe_bank", 0, B=999)
+    assert again == out
+    # không có hiệu ứng: p lớn, khoảng tin cậy chứa 0
+    y0, X0, b0, t0 = _toy_panel(0.0, seed=9, T=12)
+    out0 = ee.wild_cluster_bootstrap(y0, X0, b0, t0, "fe_bank", 0, B=999)
+    assert out0["p_boot"] > 0.05 and out0["ci_boot_lo"] < 0 < out0["ci_boot_hi"]
+
+
+def test_bootstrap_pt1_on_real_data(data):
+    b = ee.bootstrap_pt1(data)
+    assert list(b.parameter) == ["lambda", "lambda", "ON_lag1"]
+    assert (b.B == 9999).all() and (b.seed == ee.BOOT_SEED).all()
+    est = ee.estimate_all(data, ee.yaml_values())
+    lam_c = est[(est.equation == "PT1") & (est.parameter == "lambda") & (est.variant == "c")
+                & (est["sample"] == "N112")].iloc[0]
+    assert b.coef.iloc[0] == pytest.approx(lam_c.coef)
+    assert b.se_cr1.iloc[0] == pytest.approx(lam_c.se_cluster)
+    assert ((b.p_boot > 0) & (b.p_boot <= 1)).all()
+    assert (b.ci_boot_lo < b.coef).all() and (b.coef < b.ci_boot_hi).all()

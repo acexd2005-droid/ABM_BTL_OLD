@@ -9,14 +9,14 @@
 - Biến thể: (a) OLS gộp; (b) FE ngân hàng; (c) FE ngân hàng + quý; (d) FE ngân hàng + lãi suất qua đêm `bq_gian_don` trễ 0/1/2 quý (tâm hoá, nên hằng số tính tại ON trung bình).
 - SE cụm CR1 theo ngân hàng, **chỉ 8 cụm**: SE cụm thường bị đánh thấp, nên dùng t với 7 bậc tự do (giá trị tới hạn 2.3646). Kèm SE thường để so sánh.
 - R²: gộp = R² thường; FE = R² within (nền riêng của từng biến thể).
-- **Hạn chế quan trọng nhất:** SE cụm theo ngân hàng KHÔNG xử lý được phụ thuộc chéo giữa các ngân hàng trong cùng một quý. Quý FE một mình giải thích khoảng 71% phương sai within của Δr^L (xem mục hấp thụ), tức cú sốc chung rất lớn, nên t-stat và khoảng tin cậy của (a), (b), (d) bị đánh giá QUÁ CAO (với (d) thông tin hiệu dụng của lãi suất qua đêm chỉ cỡ 14 điểm theo quý). Chỉ (c) kiểm soát được cú sốc cộng chung, nhưng vẫn chỉ 8 cụm và vẫn có thể thấp SE. Không nên dùng chữ "có ý nghĩa" cho (a), (b), (d). Wild-cluster bootstrap hoặc Driscoll-Kraay chưa được làm (chờ nhóm quyết định).
+- **Hạn chế quan trọng nhất:** SE cụm theo ngân hàng KHÔNG xử lý được phụ thuộc chéo giữa các ngân hàng trong cùng một quý. Quý FE một mình giải thích khoảng 71% phương sai within của Δr^L (xem mục hấp thụ), tức cú sốc chung rất lớn, nên t-stat và khoảng tin cậy của (a), (b), (d) bị đánh giá QUÁ CAO (với (d) thông tin hiệu dụng của lãi suất qua đêm chỉ cỡ 14 điểm theo quý). Chỉ (c) kiểm soát được cú sốc cộng chung, nhưng vẫn chỉ 8 cụm và vẫn có thể thấp SE. Không nên dùng chữ "có ý nghĩa" cho (a), (b), (d). Wild-cluster bootstrap (Webb, B = 9999) đã làm cho PT1 ở mục riêng bên dưới; Driscoll-Kraay không làm vì T = 14 quá ngắn.
 - Nickell (PT1, T = 14): FE ngân hàng làm lệch XUỐNG hệ số của biến trễ r^L_{t-1} (= 1-λ), nên λ của (b), (c), (d) có xu hướng bị lệch LÊN. Ngược lại λ của (a) bị kéo xuống vì hiệu ứng ngân hàng bị bỏ sót (biên khác nhau giữa các NH tương quan với mức r^L_{t-1}). Khoảng λ = 0.11 đến 0.53 là khoảng giữa hai cực thiên lệch, KHÔNG phải khoảng tin cậy.
 - Biến thể (d) thêm lãi suất qua đêm, vốn không có trong mô hình; kiểm định b+γ=1 bị bác ở (d0) và (d1), nên (d) không còn là PT1 của mô hình. Hằng số của (d) tính tại ON trung bình.
 - Hằng số/đại lượng suy ra trong biến thể FE (`margin_const`, `a_D`, `base_growth_L`, `mu_margin`) là trung bình hằng số FE theo ngân hàng; cột `se_cluster` của các hàng đó là **độ phân tán giữa NH sd/√8, không phải SE chuẩn** (bỏ qua sai số ước lượng hằng số từng NH và hiệp phương sai với độ dốc). Biến thể (c) không nhận diện được mức.
 - PT3/PT4 là cân bằng cung-cầu đồng thời, OLS không cho nhân quả. Hệ số PT4 gộp có dấu ngược (β > 0): xu hướng chung 2023-2026 (lãi suất giảm, tăng trưởng cao), không phải độ co giãn. Dấu dương của ε trong (b), (d1) KHÔNG bền: ở mẫu N = 104 các biến thể (b), (c), (d2) đều có khoảng tin cậy chứa 0 (xem bảng ổn định).
 - Cả `deposit_rate_pct` và `loan_rate_pct` là lợi suất sổ sách, trễ so với lãi suất cận biên.
 - Mô hình chặn g^D trong ±0.04 và g^L trong [-0.04, 0.035], nhưng 42% quan sát g^D và 59% g^L nằm ngoài; OLS ước lượng phần tuyến tính toàn mẫu. Hằng số ước lượng a_D ≈ 0.045 và base_growth_L ≈ 0.05 cao gấp 8-11 lần giá trị mô hình (0.004, 0.006): đây là **khoảng cách mô hình - dữ liệu** (tăng trưởng nền của dữ liệu lớn hơn cả trần chặn), không phải kết quả ước lượng độ nhạy lãi suất.
-- `target_margin` (3.2) và `loan_spread_add` (1.35) chỉ nhận diện được **tổng**. Việc μ ≈ 4.59 gần 4.55 chỉ là khớp trong mẫu: chưa xác nhận nguồn gốc con số 1.35 (nếu từng chọn theo dữ liệu 2023Q1 thì không phải kiểm định độc lập), và r^L - c_{t-1} chưa ở trạng thái dừng (c giảm mạnh giai đoạn 2023-2024, r^L điều chỉnh chậm).
+- `target_margin` (3.2) và `loan_spread_add` (1.35) chỉ nhận diện được **tổng**. Ước lượng μ ≈ 4.59 **nhất quán với 4.55 (chưa phải kiểm định độc lập; nguồn gốc loan_spread_add=1.35 đang được xác minh)**. Ngoài ra r^L - c_{t-1} chưa ở trạng thái dừng (c giảm mạnh giai đoạn 2023-2024, r^L điều chỉnh chậm).
 
 ## Bảng chính (mẫu N = 112; c = deposit_rate_pct + 0.15)
 
@@ -114,6 +114,17 @@ Các `share_*` là tỷ lệ phương sai within-ngân-hàng của biến phụ 
 | PT4 | 2 | 104 | 0.0033 | 0.3920 | 0.4003 | 0.0070 | 0.0093 | -0.0222 | 0.0067 | 0.0010 | 0.0026 |
 
 
+## Wild-cluster bootstrap cho PT1 (λ và hệ số lãi suất qua đêm trễ 1 quý)
+
+WCR-t (áp đặt H0), trọng số Webb 6 điểm, B = 9999, seed = 20261121 (cố định), chỉ numpy; p-value đối xứng của H0: hệ số = 0; khoảng tin cậy boot = đảo kiểm định trên lưới. Cạnh đó là CR1 (t với 7 bậc tự do). Bootstrap chạy trên dữ liệu đã biến đổi within và vẫn chỉ có 8 cụm; với (d1), ON là biến chung theo quý nên thông tin hiệu dụng của hệ số ON chỉ cỡ 14 điểm: bootstrap theo ngân hàng không khắc phục được hạn chế này. Không làm Driscoll-Kraay (T = 14 quá ngắn).
+
+| variant | parameter | coef | se_cr1 | t_cr1 | ci_cr1_lo | ci_cr1_hi | p_boot | ci_boot_lo | ci_boot_hi |
+|---|---|---|---|---|---|---|---|---|---|
+| c | lambda | 0.2740 | 0.0450 | 6.0836 | 0.1675 | 0.3804 | 0.0030 | 0.1584 | 0.3952 |
+| d1 | lambda | 0.3145 | 0.0438 | 7.1751 | 0.2109 | 0.4182 | 0.0021 | 0.2237 | 0.4489 |
+| d1 | ON_lag1 | 0.1420 | 0.0214 | 6.6382 | 0.0914 | 0.1926 | 0.0059 | 0.0891 | 0.1872 |
+
+
 ## Ổn định giữa N = 112 và N = 104 (bỏ 2023Q2), biến thể a, b, c
 
 `CI..._chua_0` = True nghĩa là khoảng tin cậy 95% (cụm, t7) chứa 0. Cảnh báo: với (a), (b) khoảng tin cậy bị đánh giá quá hẹp do cú sốc chung theo quý.
@@ -198,6 +209,15 @@ Các `share_*` là tỷ lệ phương sai within-ngân-hàng của biến phụ 
 | Δr^L | MB Bank | 2025Q4 | 0.2810 | 0.6693 | HDBank 2023Q2 / MB Bank quý 4 (yêu cầu kiểm tra) |
 
 
+## Quyết định của trưởng nhóm sau phản biện (vòng reviewer 2)
+
+1. **Không cập nhật tham số nào trong `configs/`.** Khoảng λ = 0.11 đến 0.53 (hai cực thiên lệch giữa các biến thể) là **phạm vi lưới tìm kiếm cho Giai đoạn 9**, không phải khoảng tin cậy. σ và ε chỉ là tương quan mô tả, không dùng làm tham số nhân quả.
+2. **Biến thể chuẩn cho tham số hành vi: (c)** FE ngân hàng + quý. **Đặc tả macro cho Giai đoạn 8: (d) với lãi suất qua đêm trễ 1 quý**, tác động vào phương trình lãi suất cho vay (PT1).
+3. Wild-cluster bootstrap đã làm cho λ và hệ số ON trễ 1 (bảng trên); không làm Driscoll-Kraay.
+4. μ ≈ 4.59 **nhất quán với 4.55 (chưa phải kiểm định độc lập; nguồn gốc loan_spread_add=1.35 đang được xác minh)**.
+5. **Khoảng cách tăng trưởng nền và ngưỡng chặn là vấn đề cấu trúc, chuyển sang Giai đoạn 9**: `base_growth` (tiền gửi 0.004, dư nợ 0.006) và các ngưỡng chặn (±0.04 cho tiền gửi; [-0.04, 0.035] cho dư nợ) sẽ nằm trong danh sách tham số hiệu chỉnh. Dữ liệu cho a_D ≈ 0.045 và base_growth_L ≈ 0.05; 42% quan sát g^D và 59% g^L vượt ngưỡng chặn hiện tại.
+
+
 ## Phụ lục: công thức chi phí vốn cũ (trừ CASA hai lần)
 
 | equation | parameter | bien_the | coef | se_cluster | t_cluster | ci95_lo | ci95_hi | se_ols | R2 | n | yaml_value |
@@ -240,4 +260,4 @@ Các `share_*` là tỷ lệ phương sai within-ngân-hàng của biến phụ 
 | PT4 | base_growth_L | d(lag1) | 0.0459 | 0.0226 | 2.0309 | -0.0075 | 0.0994 |  | 0.0613 | 112 | 0.0060 |
 
 
-Toàn bộ hàng (mọi hệ số, hằng số, SE thường, R² chung nền): `estimates_stage7.csv`; hấp thụ: `absorption_stage7.csv`; bất thường: `outliers_stage7.csv`.
+Toàn bộ hàng (mọi hệ số, hằng số, SE thường, R² chung nền): `estimates_stage7.csv`; hấp thụ: `absorption_stage7.csv`; bất thường: `outliers_stage7.csv`; bootstrap: `bootstrap_stage7.csv`.
