@@ -95,3 +95,17 @@ Sau mỗi giai đoạn có thay đổi trong `src/agents/`, `src/core/` hoặc `
 3. Tối đa **3 vòng** sửa cho mỗi giai đoạn. Sau 3 vòng vẫn chưa đạt thì dừng, báo cáo cho người dùng.
 4. Vấn đề nằm trong mục "CẦN NGƯỜI DÙNG/NHÓM QUYẾT ĐỊNH" (giá trị tham số, giả định kinh tế): **không tự sửa**, dừng lại và hỏi người dùng.
 5. Chỉ commit giai đoạn khi reviewer trả về ĐẠT hoặc ĐẠT CÓ ĐIỀU KIỆN. Đưa nguyên văn báo cáo cuối của reviewer vào báo cáo gửi người dùng.
+
+## 8. Chế độ điều phối (`/dieu-phoi`) – trưởng nhóm Huy duyệt ngày 21/11/2026
+
+Khi chạy qua `/dieu-phoi` và subagent `thuc-thi-giai-doan`, trưởng nhóm cho phép chạy không cần hỏi giữa chừng, với các quy tắc sau (ưu tiên hơn mục 5.1, 5.7 và 7.4 trong chế độ này):
+
+1. **Kế hoạch đã duyệt sẵn:** nội dung từng giai đoạn trong `docs/ke_hoach/LO_TRINH.md` coi như kế hoạch đã được duyệt (mục 5.1). Việc chạm `src/agents/`, `src/core/` chỉ được phép đúng phạm vi LO_TRINH.md ghi.
+2. **Quyết định mặc định khi gặp lựa chọn kinh tế/tham số chưa có trong "Quyết định đã duyệt sẵn":**
+   - Chọn phương án **bảo thủ**: không đổi giá trị trong `configs/scenarios.yaml`; cơ chế mới là tùy chọn mặc định TẮT; khi có nhiều cách hợp lý, chạy và báo cáo **cả hai**, chọn một làm chính theo tiêu chí đã ghi trước (không theo kết quả nào "đẹp" hơn).
+   - Ghi vào mục "CẦN HUY QUYẾT ĐỊNH" của báo cáo giai đoạn và bảng "Quyết định đang mở" trong `docs/ke_hoach/TRANG_THAI.md`.
+   - Chỉ chạy tiếp các giai đoạn không phụ thuộc vào quyết định đó theo cách làm thay đổi kết luận; nếu mọi giai đoạn còn lại đều phụ thuộc → dừng.
+3. **Commit và push:** commit sau mỗi giai đoạn đạt; được phép `git push fork <nhánh>` (chỉ remote `fork`). Không push `origin`, không sửa `main`, không tạo PR.
+4. **Vẫn dừng như cũ** khi: vi phạm mục 6; golden thay đổi ngoài phép của LO_TRINH.md; reviewer KHÔNG ĐẠT sau 3 vòng; cần dữ liệu không có.
+5. Không đụng thư mục `docs/nhat_ky_lam_viec/` (của người dùng).
+6. Mọi báo cáo giai đoạn nằm ở `reports/giai_doan/`; trưởng nhóm duyệt sau cùng qua `reports/giai_doan/TONG_HOP.md`.
