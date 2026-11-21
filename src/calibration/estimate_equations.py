@@ -642,6 +642,8 @@ def write_outputs(est, absr, seas, outl, outdir=OUTDIR, boot=None):
           "Ngược lại λ của (a) bị kéo xuống vì hiệu ứng ngân hàng bị bỏ sót (biên khác nhau giữa các NH tương quan với mức r^L_{t-1}). "
           "Khoảng λ = 0.11 đến 0.53 là khoảng giữa hai cực thiên lệch, KHÔNG phải khoảng tin cậy.",
           "- Biến thể (d) thêm lãi suất qua đêm, vốn không có trong mô hình; kiểm định b+γ=1 bị bác ở (d0) và (d1), nên (d) không còn là PT1 của mô hình. Hằng số của (d) tính tại ON trung bình.",
+          "- Kiểm định ràng buộc b+γ=1 không bị bác ở (a), (b), (c) và ổn định ở N=104: dữ liệu ủng hộ dạng điều chỉnh từng phần của PT1 (không bác bỏ; với 8 cụm kiểm định có thể thiếu lực).",
+          "- λ đo tốc độ điều chỉnh của lợi suất bình quân danh mục (sổ sách). Nếu r^L trong mô hình là lãi suất chào cho khoản vay mới, λ sổ sách có thể thấp hơn λ của lãi suất chào. Cần chốt khái niệm r^L trước Giai đoạn 9.",
           "- Hằng số/đại lượng suy ra trong biến thể FE (`margin_const`, `a_D`, `base_growth_L`, `mu_margin`) là trung bình hằng số FE theo ngân hàng; cột `se_cluster` của các hàng đó là **độ phân tán giữa NH sd/√8, không phải SE chuẩn** (bỏ qua sai số ước lượng hằng số từng NH và hiệp phương sai với độ dốc). Biến thể (c) không nhận diện được mức.",
           "- PT3/PT4 là cân bằng cung-cầu đồng thời, OLS không cho nhân quả. Hệ số PT4 gộp có dấu ngược (β > 0): xu hướng chung 2023-2026 (lãi suất giảm, tăng trưởng cao), không phải độ co giãn. "
           "Dấu dương của ε trong (b), (d1) KHÔNG bền: ở mẫu N = 104 các biến thể (b), (c), (d2) đều có khoảng tin cậy chứa 0 (xem bảng ổn định).",
@@ -673,6 +675,8 @@ def write_outputs(est, absr, seas, outl, outdir=OUTDIR, boot=None):
                   "Bootstrap chạy trên dữ liệu đã biến đổi within và vẫn chỉ có 8 cụm; với (d1), ON là biến chung theo quý nên thông tin hiệu dụng của hệ số ON chỉ cỡ 14 điểm: bootstrap theo ngân hàng không khắc phục được hạn chế này. Không làm Driscoll-Kraay (T = 14 quá ngắn).\n")
         md.append(md_table(boot, ["variant", "parameter", "coef", "se_cr1", "t_cr1", "ci_cr1_lo", "ci_cr1_hi",
                                   "p_boot", "ci_boot_lo", "ci_boot_hi"]))
+        md.append("\nTác động dài hạn của ON trong (d1): 0.142/0.315 ≈ 0.45 (ON +1 điểm % lâu dài → r^L +0.45 điểm %). "
+                  "Dùng làm mốc kiểm tra độ lớn cho Giai đoạn 8. Lưu ý (d1) bác b+γ=1 (0.040, t=3.2).\n")
     md.append("\n## Ổn định giữa N = 112 và N = 104 (bỏ 2023Q2), biến thể a, b, c\n")
     md.append("`CI..._chua_0` = True nghĩa là khoảng tin cậy 95% (cụm, t7) chứa 0. Cảnh báo: với (a), (b) khoảng tin cậy bị đánh giá quá hẹp do cú sốc chung theo quý.\n")
     md.append(md_table(stability_table(est), ["equation", "parameter", "variant", "coef_N112", "coef_N104",
@@ -683,7 +687,9 @@ def write_outputs(est, absr, seas, outl, outdir=OUTDIR, boot=None):
     md.append("`z_robust` = (x - trung vị)/(1.4826 MAD) trên toàn mẫu 112 quan sát.\n")
     md.append(md_table(outl, list(outl.columns)))
     md.append("\n## Quyết định của trưởng nhóm sau phản biện (vòng reviewer 2)\n")
-    md.append("1. **Không cập nhật tham số nào trong `configs/`.** Khoảng λ = 0.11 đến 0.53 (hai cực thiên lệch giữa các biến thể) là **phạm vi lưới tìm kiếm cho Giai đoạn 9**, không phải khoảng tin cậy. σ và ε chỉ là tương quan mô tả, không dùng làm tham số nhân quả.")
+    md.append("1. **Không cập nhật tham số nào trong `configs/` cho tới Giai đoạn 9.** λ = 0.48 trong configs nằm NGOÀI khoảng tin cậy bootstrap của cả (c) [0.158; 0.395] và (d1) [0.224; 0.449]. "
+              "Nickell làm λ của các biến thể có FE ngân hàng lệch lên (ước lượng thô ~+0.1 với T=14), nên λ thực có thể còn thấp hơn 0.27. "
+              "Lưới tìm kiếm Giai đoạn 9: 0.10–0.45, dày quanh 0.15–0.35. σ và ε chỉ là tương quan mô tả, không dùng làm tham số nhân quả.")
     md.append("2. **Biến thể chuẩn cho tham số hành vi: (c)** FE ngân hàng + quý. **Đặc tả macro cho Giai đoạn 8: (d) với lãi suất qua đêm trễ 1 quý**, tác động vào phương trình lãi suất cho vay (PT1).")
     md.append("3. Wild-cluster bootstrap đã làm cho λ và hệ số ON trễ 1 (bảng trên); không làm Driscoll-Kraay.")
     md.append("4. μ ≈ 4.59 **nhất quán với 4.55 (chưa phải kiểm định độc lập; nguồn gốc loan_spread_add=1.35 đang được xác minh)**.")
