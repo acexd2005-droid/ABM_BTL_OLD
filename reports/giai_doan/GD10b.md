@@ -1,6 +1,6 @@
 # GD10b – Độ nhạy `deposit_competition` và `policy_step` 0.375; sai lệch mức trong mẫu GD9b
 
-**Trạng thái:** HOÀN THÀNH · **Ngày:** 2026-11-21 · **Commit:** (điều phối viên điền)
+**Trạng thái:** HOÀN THÀNH · **Ngày:** 2026-11-21 · **Commit:** ab6d156
 
 ## 1. Mục tiêu và phạm vi
 Theo LO_TRINH.md (GD10b, D10, Q10, Q14): (1) trên cấu hình GD9b, 30 lần chạy, mỗi lần đổi một tham số: `deposit_competition` ∈ {0.07, 0.3, 0.7, 1.2} và `policy_step` = 0.375; (2) quy tắc đọc đặt trước: báo cả 4 giá trị (B−A, C−A, C−B, tỷ lệ chạm trần LDR), KHÔNG chọn giá trị nào làm bản chính, không dùng kết quả để sửa YAML; (3) ghi rõ đây là độ nhạy, không phải ước lượng; (4) xuất sai lệch mức trong mẫu (2023Q2–2025Q2) của GD9b và GD9 ra CSV.
