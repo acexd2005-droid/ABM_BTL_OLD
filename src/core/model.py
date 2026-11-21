@@ -78,6 +78,15 @@ class ABMModel(Model):
             p.get("loan_spread_add", 1.35)
         )
 
+        # Cơ sở của deposit_rate trong dữ liệu ngân hàng nạp vào (mặc định "total" = hành vi cũ):
+        #  total: dữ liệu là chi phí lãi sổ sách trên TỔNG tiền gửi, dùng nguyên giá trị làm deposit_rate
+        #         (funding_cost trừ CASA lần nữa, tức CASA bị trừ hai lần).
+        #  term : quy đổi deposit_rate = deposit_rate_dữ_liệu / (1 - casa_ratio) khi nạp dữ liệu, để
+        #         funding_cost = deposit_rate_dữ_liệu + 0.15. Chỉ áp dụng cho dữ liệu nạp vào, không cho bộ giả lập.
+        self.deposit_rate_basis = str(p.get("deposit_rate_basis", "total"))
+        if self.deposit_rate_basis not in ("total", "term"):
+            raise ValueError("deposit_rate_basis phải là total hoặc term")
+
         # Học thích nghi (tùy chọn, mặc định TẮT để tái lập kết quả cũ)
         self.adaptive_learning = bool(
             p.get("adaptive_learning", False)
@@ -94,6 +103,12 @@ class ABMModel(Model):
         self.learning_nim_threshold = float(
             p.get("learning_nim_threshold", 5.5875)
         )
+        # n* tính lại cho cơ sở "term" (nim_i = loan_rate - (deposit_rate_dữ_liệu + 0.15))
+        self.learning_nim_threshold_term = float(
+            p.get("learning_nim_threshold_term", 4.6331)
+        )
+        if self.deposit_rate_basis == "term":
+            self.learning_nim_threshold = self.learning_nim_threshold_term
         # Quy tắc học "relative": so sánh với mốc bình quân hệ thống (mặc định TẮT)
         self.learning_rule = str(p.get("learning_rule", "absolute"))
         self.learning_deadband = float(
@@ -170,6 +185,7 @@ class ABMModel(Model):
         self.bank_history = []
     def _make_banks(self, initial):
         """Khởi tạo ngân hàng từ dữ liệu hoặc bộ giả lập."""
+        from_data = initial is not None
         if initial is None:
             initial = []
 
@@ -206,6 +222,13 @@ class ABMModel(Model):
                 )
 
             d = dict(item)
+
+            # Quy đổi cơ sở lãi suất huy động (chỉ với dữ liệu nạp vào)
+            if from_data and self.deposit_rate_basis == "term":
+                casa = float(d.get("casa_ratio", 0.20))   # 0.20 = mặc định của Bank
+                if not 0 <= casa < 1:
+                    raise ValueError("casa_ratio phải nằm trong [0, 1)")
+                d["deposit_rate"] = float(d["deposit_rate"]) / (1 - casa)
 
             if d["deposits"] <= 0 or d["loans"] < 0:
                 raise ValueError(

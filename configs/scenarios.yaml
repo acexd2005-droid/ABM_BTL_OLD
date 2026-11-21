@@ -38,6 +38,14 @@ parameters:
   borrower_base_growth: 0.006      # ty le/QUY: tang truong du no co so tai lai suat tham chieu
   margin_floor: 2.2                # diem %: bien nim_proxy tham chieu trong xac suat tuan thu cua NHNN
 
+  # --- Co so cua deposit_rate trong du lieu ngan hang nap vao (TUY CHON, mac dinh total = hanh vi cu) ---
+  # total: deposit_rate du lieu la chi phi lai so sach tren TONG tien gui (gom CASA), dung nguyen gia tri
+  #        => funding_cost = deposit_rate*(1-casa)+0.15 tru CASA lan nua (CASA bi tru hai lan).
+  # term : khi nap du lieu (--banks) quy doi deposit_rate = deposit_rate_du_lieu/(1-casa_ratio),
+  #        nen funding_cost = deposit_rate_du_lieu + 0.15. Chi ap dung cho du lieu nap vao, khong cho bo gia lap.
+  # Mac dinh GIU total; viec doi sang term la quyet dinh cua truong nhom (Buoc 8a).
+  deposit_rate_basis: total
+
   # --- Hoc thich nghi cua ngan hang (TUY CHON, mac dinh TAT) ---
   # Gia tri khoi diem, CHUA HIEU CHINH, cho Huy duyet.
   # Cuoi moi quy, moi ngan hang chinh target_margin cho quy sau:
@@ -52,6 +60,10 @@ parameters:
   # data/clean/abm_initial_8nganhang_2023Q1.csv: nim_i = loan_rate - (deposit_rate*(1-casa_ratio)+0.15),
   # n* = sum(nim_i*loans_i)/sum(loans_i) = 5.5875. Don vi: diem %/nam. Khong tinh tu dong luc chay.
   learning_nim_threshold: 5.5875
+  # n* cho co so "term" (dung khi deposit_rate_basis: term): nim_i = loan_rate - (deposit_rate + 0.15),
+  # binh quan gia quyen theo du no tai t=0, tinh MOT LAN tu data/clean/abm_initial_8nganhang_2023Q1.csv
+  # = 4.6331. Don vi: diem %/nam. (5.5875 o tren chi dung cho co so "total".)
+  learning_nim_threshold_term: 4.6331
   # Quy tac hoc "relative" (TUY CHON, mac dinh TAT = absolute). CHUA HIEU CHINH, cho Huy duyet.
   #  - g_i < g_bar - theta -> giam bien; g_i > g_bar + theta VA (nim_i >= nim_bar neu bat dieu kien nim) -> tang bien; con lai giu.
   learning_rule: absolute          # absolute | relative
