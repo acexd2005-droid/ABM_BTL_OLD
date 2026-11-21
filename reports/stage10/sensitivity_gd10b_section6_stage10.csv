@@ -1,0 +1,7 @@
+cau_hinh,n_seed,max_BmA_sau_CS_theo_quy_seed,max_CmA_sau_CS_theo_quy_seed,max_abs_khac_nhau_truoc_CS,loan_min,loan_max,dep_min,dep_max,max_loans_tru_tran,ty_le_cham_tran_LDR,lag_err_tre,lag_err_hien_tai,dat_B<=A,dat_C<=A,dat_truoc_CS_trung,dat_loan_0_20,dat_dep_0_14,dat_tran_LDR,dat_tre,dat_tat_ca
+co_so_30,30,-0.1494769952,-0.1494769952,0,6.490816854,12.21779382,3.681309722,6.97434016,-99564282.39,0,0,0.06837187663,True,True,True,True,True,True,True,True
+deposit_competition_0.07,30,-0.1494769952,-0.1494769952,0,6.490816854,12.21779382,3.681309722,6.97434016,-99564282.39,0,0,0.06837187663,True,True,True,True,True,True,True,True
+deposit_competition_0.3,30,-0.149681687,-0.149681687,0,6.466047598,12.21779382,3.639399812,6.989304738,-100884362.1,0,0,0.06283558112,True,True,True,True,True,True,True,True
+deposit_competition_0.7,30,-0.1501119091,-0.1501119091,0,6.436607037,12.21779382,3.58716282,7.015330092,-103180153,0,0,0.05639688208,True,True,True,True,True,True,True,True
+deposit_competition_1.2,30,-0.1506256633,-0.1506256633,0,6.416084816,12.21779382,3.546508529,7.093842759,-106049891.6,0,0,0.08137364152,True,True,True,True,True,True,True,True
+policy_step_0.375,30,-0.2002936181,-0.2002936181,0,6.490816854,12.21779382,3.681309722,6.97434016,-99564282.39,0,0,0.06837187663,True,True,True,True,True,True,True,True
