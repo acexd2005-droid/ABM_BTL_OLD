@@ -11,7 +11,7 @@ Trạng thái: CHUA_LAM · DANG_LAM · XONG · XONG_CHO_DUYET · BI_CHAN · DUNG
 | GD10 | Chạy lại A/B/C, độ nhạy, độ vững | GD9b | XONG_CHO_DUYET | 05712bb | reports/giai_doan/GD10.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; dấu B−A, C−A giữ ở mọi biến thể, độ lớn ≈ −1.4×policy_step (giả định); B và C không phân biệt được; chờ Huy: Q12, Q13 (và Q9–Q11) |
 | GD11 | Khung kiểm định ngoài mẫu Q4/2026 | GD9b | XONG_CHO_DUYET | f8658cc | reports/giai_doan/GD11.md | Reviewer ĐẠT CÓ ĐIỀU KIỆN sau 2 vòng; chưa có kết quả ngoài mẫu thực (panel dừng ở 2026Q3); đã tải ON Q4/2026 đến 19/11; chạy lại script khi YAML đổi ở GD9b; Q8 đã đóng (D9) |
 | GD10b | Độ nhạy `deposit_competition` ∈ {0.07, 0.3, 0.7, 1.2} và `policy_step` 0.375 trên GD9b (30 lần; không đổi YAML) | GD10 | XONG | ab6d156 | reports/giai_doan/GD10b.md | Theo D10 (Q10); quy tắc đọc đặt trước: báo cả 4 giá trị, không chọn. Gồm xuất sai lệch mức GD9b (Q14) |
-| GD12 | Hoàn thiện báo cáo nghiên cứu | GD10, GD10b, GD11 | CHUA_LAM | | reports/giai_doan/GD12.md | D10: hộp "không được diễn giải", dải `policy_step`, bảng GD9b/GD9, hạn chế mức LS huy động và biên tổng 3.4–3.8 vs 4.59; đọc sai lệch mức từ file GD10b |
+| GD12 | Hoàn thiện báo cáo nghiên cứu | GD10, GD10b, GD11 | XONG_CHO_DUYET | | reports/giai_doan/GD12.md | Reviewer ĐẠT sau 2 vòng; hộp 5 ý, B−A theo dải `policy_step` (TB ≈ −1.4×step, cuối kỳ ≈ −1.8×step), bảng GD9b/GD9/λ 0.35, hạn chế (a) +0.312, (b), (c). Chờ Huy: hộp ý (ii) và ánh xạ step↔1.5–2 điểm % (GD12.md mục 6). Câu hỏi cho Minh: ngày/thứ tự CV 9608–9736, định nghĩa biên PT2 |
 | GD13 | Tổng hợp cho trưởng nhóm | tất cả | CHUA_LAM | | reports/giai_doan/TONG_HOP.md | Gồm cập nhật CLAUDE.md mục 4.2 (Q3, được phép) |
 
 ## Quyết định đang mở (chờ Huy)
