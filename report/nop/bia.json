@@ -1,0 +1,43 @@
+{
+ "truong": "HỌC VIỆN CÔNG NGHỆ BƯU CHÍNH VIỄN THÔNG",
+ "khoa": "KHOA TÀI CHÍNH KẾ TOÁN 1",
+ "loai_bao_cao": "BÁO CÁO BÀI TẬP LỚN",
+ "loai_de_tai": "MÔN: [ĐIỀN TÊN MÔN HỌC]",
+ "nam_hoc": "2026-2027",
+ "ten_de_tai": "Phản ứng của ngân hàng thương mại trước chỉ đạo giảm lãi suất cho vay: mô hình dựa trên tác nhân cho 8 ngân hàng Việt Nam",
+ "ma_so": null,
+ "nhom_nganh": "Kinh tế",
+ "noi_thang": "Hà Nội, 11/2026",
+ "noi_ngay_cam_on": "Hà Nội, tháng 11 năm 2026",
+ "nguoi_huong_dan": "[ĐIỀN: học hàm/học vị, họ tên]",
+ "sinh_vien": [
+  {"ho_ten": "Hoàng Huy (trưởng nhóm)", "gioi_tinh": "", "dan_toc": "", "lop_khoa": "", "nam_thu": "", "nganh": ""},
+  {"ho_ten": "[ĐIỀN] Minh", "gioi_tinh": "", "dan_toc": "", "lop_khoa": "", "nam_thu": "", "nganh": ""},
+  {"ho_ten": "[ĐIỀN] Vũ", "gioi_tinh": "", "dan_toc": "", "lop_khoa": "", "nam_thu": "", "nganh": ""}
+ ],
+ "loi_cam_on": [
+  "Trong quá trình thực hiện bài tập lớn, nhóm đã nhận được sự hướng dẫn và góp ý quý báu. Nhóm xin trân trọng cảm ơn [ĐIỀN: giảng viên] đã trực tiếp hướng dẫn, góp ý và định hướng cho nhóm trong suốt quá trình thực hiện và hoàn thiện báo cáo.",
+  "Nhóm xin cảm ơn Khoa Tài chính Kế toán 1, Học viện Công nghệ Bưu chính Viễn thông đã tạo điều kiện để nhóm thực hiện đề tài.",
+  "Do thời gian và kinh nghiệm nghiên cứu còn hạn chế, báo cáo khó tránh khỏi thiếu sót. Nhóm rất mong nhận được ý kiến đóng góp của thầy cô để báo cáo được hoàn thiện hơn."
+ ],
+ "viet_tat": [
+  ["ABM", "Agent-based model", "Mô hình dựa trên tác nhân"],
+  ["CASA", "Current account savings account", "Tiền gửi không kỳ hạn"],
+  ["CI", "Confidence interval", "Khoảng tin cậy"],
+  ["CR1", "Cluster-robust standard error (CR1)", "Sai số chuẩn vững theo cụm (hiệu chỉnh CR1)"],
+  ["CV", "", "Công văn"],
+  ["FC", "Funding cost", "Chi phí vốn"],
+  ["FE", "Fixed effects", "Hiệu ứng cố định"],
+  ["LDR", "Loan-to-deposit ratio", "Tỷ lệ dư nợ cho vay trên tiền gửi"],
+  ["LS", "", "Lãi suất"],
+  ["NHNN", "State Bank of Vietnam", "Ngân hàng Nhà nước Việt Nam"],
+  ["NIM", "Net interest margin", "Biên lãi ròng"],
+  ["ON", "Overnight interbank rate", "Lãi suất liên ngân hàng qua đêm"],
+  ["PT", "", "Phương trình"],
+  ["RMSE", "Root mean squared error", "Căn bậc hai của sai số bình phương trung bình"],
+  ["SE", "Standard error", "Sai số chuẩn"],
+  ["SFI", "Santa Fe Institute", "Viện Santa Fe"],
+  ["TB", "", "Trung bình"]
+ ],
+ "bo_danh_muc_hinh": true
+}
