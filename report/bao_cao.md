@@ -34,17 +34,17 @@ Cấu trúc báo cáo: mục 2 tổng quan tài liệu; mục 3 dữ liệu; m�
 
 ### 2.1. Mô hình dựa trên tác nhân trong kinh tế và ngân hàng
 
-ABM mô phỏng một hệ thống từ dưới lên: các tác nhân dị biệt hành động theo quy tắc đơn giản, và hành vi tổng thể của hệ thống (giá, lãi suất, phân phối) nổi lên từ tương tác giữa chúng, thay vì được áp đặt bằng một phương trình cân bằng. Santa Fe Institute (SFI) là một trong những trung tâm phát triển hướng tiếp cận này trong kinh tế học; SFI có bài tổng quan lịch sử phương pháp "Agent-Based Modeling: Worlds Within Worlds" [CẦN XÁC MINH: tác giả, ngày đăng, URL chính thức trên santafe.edu – lần tìm kiếm ngày 21/11/2026 chỉ thấy bản tóm tắt của bên thứ ba, chưa thấy trang gốc].
+ABM mô phỏng một hệ thống từ dưới lên: các tác nhân dị biệt hành động theo quy tắc đơn giản, và hành vi tổng thể của hệ thống (giá, lãi suất, phân phối) nổi lên từ tương tác giữa chúng, thay vì được áp đặt bằng một phương trình cân bằng. Santa Fe Institute (SFI) là một trong những trung tâm phát triển hướng tiếp cận này trong kinh tế học; SFI có bài tổng quan về phương pháp "Agent-Based Modeling: Worlds Within Worlds" [5].
 
-Ví dụ kinh điển là Santa Fe Artificial Stock Market của W. Brian Arthur, John H. Holland, Blake LeBaron, Richard Palmer và Paul Tayler. Các nhà đầu tư nhân tạo liên tục thử và loại bỏ các mô hình kỳ vọng; khi tốc độ khám phá thấp, thị trường hội tụ về cân bằng kỳ vọng hợp lý, còn khi tốc độ khám phá cao, xuất hiện giao dịch kỹ thuật, bong bóng và sụp đổ tạm thời, cùng các đặc trưng thống kê giống dữ liệu thực (như hành vi GARCH) [1]. Bài học phương pháp cho nghiên cứu này: (i) quy tắc hành vi đơn giản, minh bạch; (ii) so sánh kết quả mô phỏng với đặc trưng của dữ liệu thực thay vì chỉ kiểm tra tính nội nhất quán.
+Ví dụ kinh điển là Santa Fe Artificial Stock Market của W. Brian Arthur, John H. Holland, Blake LeBaron, Richard Palmer và Paul Tayler. Các nhà đầu tư nhân tạo liên tục thử và loại bỏ các mô hình kỳ vọng; khi tốc độ khám phá thấp, thị trường hội tụ về cân bằng kỳ vọng hợp lý, còn khi tốc độ khám phá cao, xuất hiện giao dịch kỹ thuật, bong bóng và sụp đổ tạm thời, cùng các đặc trưng thống kê giống dữ liệu thực (như hành vi GARCH) [1]–[3]. Farmer và Foley (2009) [4] lập luận rằng kinh tế học cần dùng mô hình dựa trên tác nhân. Bài học phương pháp cho nghiên cứu này: (i) quy tắc hành vi đơn giản, minh bạch; (ii) so sánh kết quả mô phỏng với đặc trưng của dữ liệu thực thay vì chỉ kiểm tra tính nội nhất quán.
 
-[CẦN XÁC MINH: tài liệu ABM trong ngân hàng]. Mô hình ở đây dùng thư viện Mesa 3.3.1 cho Python [CẦN XÁC MINH: trích dẫn chính thức của Mesa].
+Trong lĩnh vực ngân hàng, Chan-Lau (2017) [6] xây dựng ABBA, mô hình ABM của hệ thống ngân hàng với ngân hàng là tác nhân dị biệt, thích nghi, đặt lãi suất cho vay bằng markup. Papadopoulos (2020) [7] nhận xét rằng quy tắc đặt lãi suất cho vay trong các ABM thường mang tính ad-hoc và thử nhận diện quy tắc này từ dữ liệu; đây là vấn đề gần với phương trình lãi suất cho vay của nghiên cứu này. Mô hình ở đây dùng thư viện Mesa 3.3.1 cho Python [8].
 
 ### 2.2. Truyền dẫn lãi suất ở Việt Nam
 
 Truyền dẫn lãi suất là mức độ và tốc độ lãi suất bán lẻ (huy động, cho vay) phản ứng với thay đổi của lãi suất điều hành và lãi suất thị trường liên ngân hàng. Trong mô hình, kênh này được biểu diễn bằng hai phương trình: lãi suất huy động neo về ON quý trước (tốc độ φ), và lãi suất cho vay điều chỉnh từng phần (hệ số λ) về chi phí vốn trễ cộng biên. Ở Việt Nam, ngoài công cụ lãi suất điều hành, NHNN còn dùng chỉ đạo hành chính (công văn, chỉ thị, họp với các tổ chức tín dụng) để tác động lãi suất; danh mục 24 sự kiện 2023–2026 của nhóm ở mục 3.4.
 
-[CẦN XÁC MINH: các nghiên cứu thực nghiệm về truyền dẫn lãi suất ở Việt Nam (tác giả, năm, tạp chí) – GD12 chưa kiểm chứng được nguồn nào bằng WebSearch/WebFetch; không bổ sung tài liệu khi chưa xác minh.]
+Các nghiên cứu thực nghiệm về Việt Nam cho thấy: truyền dẫn từ lãi suất thị trường sang lãi suất bán lẻ chưa hoàn toàn (hệ số dài hạn khoảng 0.7–0.93 trong mẫu 07/2004–06/2014), điều chỉnh về cân bằng mất khoảng 3–6 tháng, và lãi suất huy động truyền dẫn mạnh hơn lãi suất cho vay [9]. Truyền dẫn diễn ra theo hai giai đoạn (lãi suất chính sách → lãi suất thị trường → lãi suất bán lẻ) và có tính bất đối xứng; lãi suất thị trường phản ứng nhanh, lãi suất bán lẻ chưa hoàn toàn [10]. Với sáu ngân hàng thương mại giai đoạn 2009–2012, ràng buộc về vốn và thanh khoản là nguyên nhân của bất đối xứng, và truyền dẫn từ lãi suất chính sách sang lãi suất cho vay không rõ ràng [11]. Đây là kết quả của các nghiên cứu nêu trên, không phải kết quả của mô hình này; mẫu và phương pháp của chúng khác dữ liệu quý 2023–2026 ở đây nên chỉ dùng làm bối cảnh.
 
 Khoảng trống mà nghiên cứu hướng tới: phần lớn phân tích truyền dẫn dùng hồi quy trên chuỗi tổng hợp, ít chú ý đến **tính dị biệt của quyết định tuân thủ** giữa các ngân hàng. ABM cho phép mô tả tường minh xác suất tuân thủ phụ thuộc biên lợi nhuận của từng ngân hàng, và tách được (trong mô hình) phần thay đổi lãi suất do quy tắc chỉ đạo với phần do chi phí vốn.
 
@@ -79,7 +79,7 @@ Nguồn: NHNN, trang "Lãi suất thị trường liên ngân hàng" trên sbv.g
 ### 3.4. Danh mục chỉ đạo lãi suất 2023–2026
 <!-- nguồn: data/raw/chi_dao_lai_suat_2023_2026.csv (24 dòng, cột nguon) -->
 
-Nhóm lập danh mục 24 văn bản/sự kiện của NHNN, Chính phủ và Thủ tướng, mỗi dòng có đường dẫn nguồn. Phân loại: yêu cầu giảm lãi suất cho vay (7); thay đổi lãi suất điều hành (4); ổn định huy động, giảm cho vay (4); yêu cầu giảm cả huy động và cho vay (3); công bố lãi suất cho vay (2); kiểm tra thực hiện (2); yêu cầu giảm huy động để giảm cho vay (1); ổn định lãi suất (1). Chỉ một số văn bản có mục tiêu định lượng (6385/2023: giảm 1.5–2%/năm; 4462/2024: giảm 1–2%/năm; 9608/2026: huy động kỳ hạn ≥ 6 tháng giảm tối thiểu 0.5%/năm; giảm lãi suất cho vay nói chung, mức 1.5–2%/năm tập trung cho sản xuất kinh doanh/lĩnh vực ưu tiên). Danh mục **có thể chưa đầy đủ**. Nội dung CV 9608 và 9736 đã được đối chiếu qua báo chí ngày 21/11/2026 (mục Tài liệu tham khảo) [CẦN XÁC MINH: toàn văn CV 9608 trên cổng NHNN]. Các văn bản khác trong danh mục chưa được xác minh lại trong GD12; nguồn của từng văn bản là đường dẫn ghi trong cột `nguon`.
+Nhóm lập danh mục 24 văn bản/sự kiện của NHNN, Chính phủ và Thủ tướng, mỗi dòng có đường dẫn nguồn. Phân loại: yêu cầu giảm lãi suất cho vay (7); thay đổi lãi suất điều hành (4); ổn định huy động, giảm cho vay (4); yêu cầu giảm cả huy động và cho vay (3); công bố lãi suất cho vay (2); kiểm tra thực hiện (2); yêu cầu giảm huy động để giảm cho vay (1); ổn định lãi suất (1). Chỉ một số văn bản có mục tiêu định lượng (6385/2023: giảm 1.5–2%/năm; 4462/2024: giảm 1–2%/năm; 9608/2026: huy động kỳ hạn ≥ 6 tháng giảm tối thiểu 0.5%/năm; giảm lãi suất cho vay nói chung, mức 1.5–2%/năm tập trung cho sản xuất kinh doanh/lĩnh vực ưu tiên). Danh mục **có thể chưa đầy đủ**. Ngày và nội dung CV 9608 được xác nhận qua chính văn bản CV 9736, văn bản này dẫn "công văn số 9608/NHNN-CSTT ngày 18/10/2026" [12], [13]. Các văn bản khác trong danh mục chưa được xác minh lại trong GD12; nguồn của từng văn bản là đường dẫn ghi trong cột `nguon`.
 
 ## 4. Mô hình
 
@@ -271,7 +271,7 @@ B−A gần như không đổi theo `deposit_competition`; C−B đổi theo `de
 ### 6.3. Bối cảnh chỉ đạo thực tế tháng 10/2026 và kiểm định ngoài mẫu sau chính sách
 <!-- nguồn: data/raw/chi_dao_lai_suat_2023_2026.csv (dòng 2026-10-18, 2026-10-21); data/raw/sbv_lnh_qua_dem_ngoai_mau.csv; reports/stage11/trang_thai_stage11.md -->
 
-Ngày 18/10/2026 [CẦN XÁC MINH: ngày ban hành, đang hỏi Minh – GD12.md], NHNN ban hành CV 9608/NHNN-CSTT: giảm tối thiểu 0.5%/năm lãi suất huy động kỳ hạn từ 6 tháng; giảm lãi suất cho vay nói chung, với mức 1.5–2%/năm tập trung cho sản xuất kinh doanh/lĩnh vực ưu tiên (không cùng phạm vi với `policy_step`, vốn áp lên toàn bộ dư nợ trong mô hình; xem hộp ý 2 ở đầu báo cáo). Ngày 21/10/2026, sau cuộc họp ngày 19/10/2026, CV 9736/NHNN-CSTT quán triệt giảm lãi suất huy động giao dịch mới kỳ hạn từ 6 tháng tối thiểu 0.5%/năm so với kỳ 11–20/10/2026. Thời điểm và nội dung trùng với kịch bản C (chỉ đạo từ Q4/2026, cả cho vay và huy động). Thực tế Q4/2026 vì vậy tương ứng nhánh B/C; kịch bản A là phản thực tế, không quan sát được.
+Ngày 18/10/2026, trước cuộc họp của Thống đốc ngày 19/10/2026, NHNN ban hành CV 9608/NHNN-CSTT [12]: giảm tối thiểu 0.5%/năm lãi suất huy động kỳ hạn từ 6 tháng; giảm lãi suất cho vay nói chung, với mức 1.5–2%/năm tập trung cho sản xuất kinh doanh/lĩnh vực ưu tiên (không cùng phạm vi với `policy_step`, vốn áp lên toàn bộ dư nợ trong mô hình; xem hộp ý 2 ở đầu báo cáo). Ngày 21/10/2026, sau cuộc họp ngày 19/10/2026, CV 9736/NHNN-CSTT quán triệt giảm tối thiểu 0.5%/năm lãi suất huy động bình quân của các giao dịch phát sinh mới kỳ hạn từ 6 tháng so với kỳ báo cáo 11–20/10/2026 [13]. Thời điểm và nội dung trùng với kịch bản C (chỉ đạo từ Q4/2026, cả cho vay và huy động). Thực tế Q4/2026 vì vậy tương ứng nhánh B/C; kịch bản A là phản thực tế, không quan sát được.
 
 Kiểm định ngoài mẫu sau chính sách (GD11) **chưa có kết quả**: panel kết thúc 2026Q3, lợi suất sổ sách Q4/2026 chưa công bố. Khung kiểm định đã sẵn sàng (`src/analysis/kiem_dinh_ngoai_mau.py`). ON thực tế Q4/2026 đến 19/11/2026 bình quân 4.074, cao hơn 3.946 giả định trong kịch bản; ý nghĩa của chênh lệch này chưa được đánh giá. Khi có dữ liệu, kết quả chỉ là đối chiếu mô tả trên 1–2 quý, không phải ước lượng tác động chính sách.
 
@@ -281,11 +281,12 @@ Kiểm định ngoài mẫu sau chính sách (GD11) **chưa có kết quả**: p
 
 **Hạn chế (a) – Sai lệch mức lãi suất huy động.** <!-- nguồn: reports/calibration/stage9b/mean_error_insample_stage9b.csv --> Trong mẫu 2023Q2–2025Q2 (kịch bản A, mô hình − thực), cấu hình chính GD9b có sai số trung bình có dấu của LS huy động là **+0.312** điểm % (RMSE thô 0.4303, khử mức 0.2964), trong khi LS cho vay gần như không lệch mức (−0.026). Như vậy phần lớn sai số RMSE của LS huy động là sai lệch mức: phương trình huy động của mô hình đặt LS huy động cao hơn dữ liệu một cách hệ thống. (Kiểm tra nội nhất quán: √(0.4303² − 0.2964²) = 0.312.) Sai lệch này làm chi phí vốn mô phỏng cao hơn thực và là một lý do khiến hiệu chỉnh ưa biên thấp (hạn chế b). Ngoài mẫu, sai số TB của LS huy động GD9b là +0.459. Đây là hạn chế của mô hình (Q14), chưa được sửa.
 
-**Hạn chế (b) – Biên tổng hiệu chỉnh thấp hơn biên quan sát.** Biên tổng hiệu chỉnh nằm trong khoảng 3.4 (GD9b, λ = 0.35) đến 3.8 (GD9), thấp hơn biên trung bình quan sát μ = 4.59 (GĐ7, PT2; CI [3.43; 5.74]). Biên thấp làm `nim_proxy` thấp, kéo xác suất tuân thủ xuống (0.818 ở GD9b so 0.877 ở GD9 và 0.943 ở GĐ8), nên B−A, C−A nhiễu lẫn với lựa chọn biên. Biên tổng 3.4 không nên đọc là ước lượng biên thực của ngân hàng. Lưu ý thêm: biên tổng hiệu chỉnh là **tham số mục tiêu**, còn μ = 4.59 là biên **quan sát**, và hai đại lượng có thể không cùng định nghĩa. Biên thực hiện của mô hình GD9b (TB quý 1–14) là 3.696 nếu tính bằng `loan_rate` − chi phí vốn trễ, và 2.806 nếu tính bằng `loan_rate` − `deposit_rate` (GD9: 3.999 và 3.095) <!-- nguồn: reports/calibration/stage9b/diag_gd9b.csv phần bien -->. [CẦN XÁC MINH: định nghĩa biên của PT2 (GĐ7) để so cùng cơ sở – câu hỏi cho Minh, chuyển sang GD13.]
+**Hạn chế (b) – Biên tổng hiệu chỉnh thấp hơn biên quan sát.** Biên tổng hiệu chỉnh nằm trong khoảng 3.4 (GD9b, λ = 0.35) đến 3.8 (GD9), thấp hơn biên trung bình quan sát μ = 4.59 (GĐ7, PT2; CI [3.43; 5.74]). Biên thấp làm `nim_proxy` thấp, kéo xác suất tuân thủ xuống (0.818 ở GD9b so 0.877 ở GD9 và 0.943 ở GĐ8), nên B−A, C−A nhiễu lẫn với lựa chọn biên. Biên tổng 3.4 không nên đọc là ước lượng biên thực của ngân hàng. Lưu ý thêm: biên tổng hiệu chỉnh là **tham số mục tiêu**, còn μ = 4.59 là biên **quan sát**, và hai đại lượng có thể không cùng định nghĩa. Biên thực hiện của mô hình GD9b (TB quý 1–14) là 3.696 nếu tính bằng `loan_rate` − chi phí vốn trễ, và 2.806 nếu tính bằng `loan_rate` − `deposit_rate` (GD9: 3.999 và 3.095) <!-- nguồn: reports/calibration/stage9b/diag_gd9b.csv phần bien -->. Định nghĩa biên của PT2 (GĐ7) chưa được đối chiếu để so cùng cơ sở; việc này là câu hỏi cho Minh (TONG_HOP.md).
 
 **Hạn chế (c) – Nghiệm GD9b là nghiệm biên.** λ = 0.40 ở biên trên lưới ràng buộc, biên tổng 3.4 ở cận dưới lưới, và hàm mục tiêu đơn điệu theo cả hai tham số trong lưới (5.4). Cực tiểu thực có thể nằm ngoài lưới; theo D9 lưới không được mở rộng. λ = 0.40 còn vượt cận trên CI bootstrap GĐ7 (0.395) khoảng 0.005. Các tham số `base_deposit_rate_step`, `deposit_competition`, ngưỡng LDR có hồ sơ J gần phẳng, nên không nhận diện được.
 
 **Các hạn chế khác.**
+- *Cơ sở đo của chỉ đạo.* CV 9736 đo trên lãi suất bình quân của các giao dịch phát sinh mới (dòng) [13], còn mô hình và dữ liệu dùng lợi suất sổ sách trên toàn bộ số dư (tồn); lợi suất sổ sách phản ánh chỉ đạo chậm hơn, nên so sánh với diễn biến Q4/2026 cần tính đến khác biệt cơ sở này.
 - *Tăng trưởng.* Bù Q7 được tính tại nghiệm GD9, không tại nghiệm GD9b. Trong mẫu, tăng trưởng tổng GD9b khớp gần (tiền gửi 0.0395 so 0.0398; dư nợ 0.0482 so 0.0448 mỗi quý), nhưng ngoài mẫu mô hình tăng nhanh hơn dữ liệu (tiền gửi 0.0560 so 0.0334; dư nợ 0.0537 so 0.0434) <!-- nguồn: reports/calibration/stage9b/growth_ldr_stage9b.csv, diag_gd9b.csv phần bo_bu -->.
 - *Trần LDR.* Ở GD9b không ngân hàng-quý nào chạm trần LDR 1.60, cả khi khởi đầu từ 2023Q1 lẫn khi khởi đầu từ 2026Q3 (GD9: 87.5% ngân hàng chạm trần ở quý cuối khi khởi đầu từ 2026Q3). **Cả hai con số 0% này là hệ quả của bù tăng trưởng Q7, không phải bằng chứng về cơ chế** (GD9b.md, mục 3.5): bù làm tăng trưởng tiền gửi cao lên và dư nợ thấp xuống, nên LDR không chạm trần. Chẩn đoán bỏ bù (cùng nghiệm GD9b, khởi đầu 2023Q1, kịch bản A) cho tỷ lệ chạm trần 18.1% (quý 1–18) và 59.4% (quý 15–18); chẩn đoán bỏ bù chưa được chạy riêng cho khởi đầu 2026Q3. <!-- nguồn: reports/calibration/stage9b/diag_gd9b.csv phần bo_bu; ldr_cap_2026q3_stage9b.csv (month 18); reports/giai_doan/GD9b.md mục 3.5 -->
 - *Dữ liệu.* 8 ngân hàng, không đại diện toàn hệ thống; lợi suất sổ sách khác lãi suất niêm yết và lãi suất khoản vay mới; danh mục chỉ đạo có thể chưa đầy đủ.
@@ -318,20 +319,48 @@ Phần kỹ thuật (mô hình, hiệu chỉnh GD9/GD9b, chạy A/B/C, độ nh�
 - **TV1 – Huy:** duyệt báo cáo này, đặc biệt hộp "Những điều KHÔNG được diễn giải", cách báo B−A theo dải `policy_step` và các hạn chế (a)–(c); quyết định có xem lại giả định kinh tế của kịch bản C hay không.
 - **TV2 – Minh:** xác nhận phương pháp tính lợi suất sổ sách và ánh xạ CASA; cung cấp lợi suất sổ sách Q4/2026 khi có báo cáo tài chính (cùng định nghĩa quy năm như các quý trước) để chạy GD11; rà soát danh mục chỉ đạo (đầy đủ, nguồn).
 - **TV3 – Vũ:** chạy lại GD11 khi có dữ liệu Q4/2026; tải lại ON Q4/2026 sau 31/12/2026; cập nhật CLAUDE.md mục 4.2 (GD13).
-- **Chung:** xác minh các mục `[CẦN XÁC MINH]` trong báo cáo (tài liệu ABM, truyền dẫn lãi suất ở Việt Nam, toàn văn CV 9608) trước khi nộp.
+- **Chung:** kiểm lại trên bản in số báo và năm của tài liệu [11], và đối chiếu toàn văn CV 9608 trên cổng NHNN nếu có, trước khi nộp.
 
 ## Tài liệu tham khảo
 
-Các nguồn dưới đây đã được kiểm tra tồn tại qua tìm kiếm web ngày 21/11/2026; nguồn chưa xác minh được ghi `[CẦN XÁC MINH]` ngay trong văn bản.
+Các mục [1]–[13] lấy từ `docs/tai_lieu_tham_khao_da_xac_minh.md` (đã mở trực tiếp trang nhà xuất bản, RePEc/IDEAS, DOI, thư viện hoặc văn bản gốc, 22/11/2026); [14]–[15] là nguồn dữ liệu của dự án.
 
-[1] Arthur, W. B., Holland, J. H., LeBaron, B., Palmer, R., & Tayler, P. (1996, 12 tháng 12). *Asset Pricing Under Endogenous Expectations in an Artificial Stock Market*. Santa Fe Institute Working Paper 96-12-093. https://sites.santafe.edu/~wbarthur/Papers/Artif_Mkt.pdf. Bản ghi RePEc: https://econpapers.repec.org/RePEc:wop:safiwp:96-12-093.
-  *Ghi chú đối chiếu (21/11/2026):* trang 1 của PDF ghi đủ 5 tác giả "W. Brian Arthur, John H. Holland, Blake LeBaron, Richard Palmer, and Paul Tayler", tiêu đề "…Endogenous Expectations…" (số nhiều), ngày "Dec 12, 1996"; tác giả thứ năm thuộc Dept. of Computer Science, Brunel University. Bản ghi RePEc safiwp 96-12-093 cũng có 5 tác giả theo cùng thứ tự, nhưng ghi "Paul Taylor", "Blake Lebaron" và tiêu đề "…Endogenous Expectation…" (số ít). Báo cáo dùng chính tả và tiêu đề theo PDF gốc.
-  [CẦN XÁC MINH: nơi xuất bản bản 1997 – các cơ sở dữ liệu ghi không thống nhất].
+**ABM trong kinh tế và ngân hàng**
 
-[2] Santa Fe Institute. "Agent-Based Modeling: Worlds Within Worlds". [CẦN XÁC MINH: chưa tìm thấy trang gốc trên santafe.edu; không ghi tác giả, ngày khi chưa xác minh].
+[1] Arthur, W. B., Holland, J. H., LeBaron, B., Palmer, R., & Tayler, P. (1997). Asset pricing under endogenous expectations in an artificial stock market. In W. B. Arthur, S. N. Durlauf, & D. A. Lane (Eds.), *The economy as an evolving complex system II* (Santa Fe Institute Studies in the Sciences of Complexity, Proceedings Vol. 27). Addison-Wesley. Bản working paper: SFI Working Paper 96-12-093 (12/12/1996), https://sites.santafe.edu/~wbarthur/Papers/Artif_Mkt.pdf
 
-[3] Ngân hàng Nhà nước Việt Nam. Lãi suất thị trường liên ngân hàng (nguồn dữ liệu ON). https://sbv.gov.vn/vi/lãi-suất-thị-trường-liên-ngân-hàng (lấy dữ liệu qua API của trang ngày 21/11/2026; xem `data/raw/README_sbv.md`).
+[2] Palmer, R. G., Arthur, W. B., Holland, J. H., LeBaron, B., & Tayler, P. (1994). Artificial economic life: A simple model of a stockmarket. *Physica D: Nonlinear Phenomena, 75*(1–3), 264–274. https://doi.org/10.1016/0167-2789(94)90287-9
 
-[4] NHNN, Công văn 9608/NHNN-CSTT (18/10/2026) và 9736/NHNN-CSTT (21/10/2026), theo các bài: https://thitruongtaichinhtiente.vn/print/86480.html; https://thuonghieucongluan.com.vn/siet-cuoc-dua-huy-dong-mo-duong-ha-lai-suat-cho-vay-a338568.html; https://lsvn.vn/ngan-hang-nha-nuoc-tiep-tuc-chi-dao-giam-thuc-chat-lai-suat-a181292.html. [CẦN XÁC MINH: toàn văn trên cổng NHNN].
+[3] LeBaron, B., Arthur, W. B., & Palmer, R. (1999). Time series properties of an artificial stock market. *Journal of Economic Dynamics and Control, 23*(9–10), 1487–1516. https://doi.org/10.1016/S0165-1889(98)00081-5
 
-[5] Các văn bản chỉ đạo khác 2023–2026 (CV 6385/NHNN-CSTT năm 2023, CV 4462/NHNN-CSTT năm 2024, Chỉ thị 01/CT-NHNN năm 2024, các công điện của Thủ tướng, …): danh mục và đường dẫn nguồn trong `data/raw/chi_dao_lai_suat_2023_2026.csv`. [CẦN XÁC MINH: từng văn bản chưa được kiểm tra lại trong GD12].
+[4] Farmer, J. D., & Foley, D. (2009). The economy needs agent-based modelling. *Nature, 460*(7256), 685–686. https://doi.org/10.1038/460685a
+
+[5] Ostmann, J. (2026). *Agent-based modeling: Worlds within worlds* [Interactive story]. Santa Fe Institute. https://santafe.edu/features/agent-based-modeling-worlds-within-worlds (truy cập 22/11/2026)
+
+[6] Chan-Lau, J. A. (2017). *ABBA: An agent-based model of the banking system* (IMF Working Paper No. 17/136). International Monetary Fund. https://doi.org/10.5089/9781484300688.001
+
+[7] Papadopoulos, G. (2020). *Probing the mechanism: Lending rate setting in a data-driven agent-based model* (MPRA Paper No. 102749). University Library of Munich. https://mpra.ub.uni-muenchen.de/102749/
+
+**Phần mềm**
+
+[8] ter Hoeven, E., Kwakkel, J., Hess, V., Pike, T., Wang, B., rht, & Kazil, J. (2025). Mesa 3: Agent-based modeling with Python in 2025. *Journal of Open Source Software, 10*(107), 7668. https://doi.org/10.21105/joss.07668
+
+**Truyền dẫn lãi suất ở Việt Nam**
+
+[9] Le Phan Thi Dieu Thao, & Nguyen Thi Thu Trang. (2015). Interest rate pass-through estimates from error correction models ECM. *Ho Chi Minh City Open University Journal of Science – Economics and Business Administration, 5*(1), 3–11. https://doi.org/10.46223/HCMCOUJS.econ.en.5.1.906.2015
+
+[10] Ngo, T. H., Ariyoshi, A., & Tran, T. X. A. (2021). Interest rate pass-through and exogenous factors: Evidence from Vietnam. *International Journal of Finance & Economics, 26*(1), 1299–1317. https://doi.org/10.1002/ijfe.1850
+
+[11] Nguyễn, K. Q. B., & Nguyễn, H. H. N. (2013). Empirical evidence of asymmetric interest rate pass-through in Vietnam. *Tạp chí Phát triển Kinh tế* (Journal of Economic Development), (218), 78–93. https://vjol.info.vn/index.php/ed/article/view/34259 (năm theo số báo 218; trang VJOL ghi đăng tải 2018, chưa kiểm trên bản in)
+
+**Văn bản chỉ đạo của NHNN**
+
+[12] Ngân hàng Nhà nước Việt Nam. (2026, 18 tháng 10). *Công văn số 9608/NHNN-CSTT về triển khai các giải pháp hoạt động của tổ chức tín dụng*. Ngày ban hành theo CV 9736 [13] (dẫn lại trên thuvienphapluat.vn, luatvietnam.vn).
+
+[13] Ngân hàng Nhà nước Việt Nam. (2026, 21 tháng 10). *Công văn số 9736/NHNN-CSTT về giảm mặt bằng lãi suất*. https://thuvienphapluat.vn/documents/law.aspx?id=A%3DpJNU9EazTn
+
+**Nguồn dữ liệu của dự án**
+
+[14] Ngân hàng Nhà nước Việt Nam. (2026). *Lãi suất thị trường liên ngân hàng* [Dữ liệu ON]. https://sbv.gov.vn/vi/lãi-suất-thị-trường-liên-ngân-hàng (lấy dữ liệu qua API của trang ngày 21/11/2026; xem `data/raw/README_sbv.md`)
+
+[15] Nhóm nghiên cứu. (2026). Danh mục 24 văn bản chỉ đạo lãi suất 2023–2026 (CV 6385/NHNN-CSTT năm 2023, CV 4462/NHNN-CSTT năm 2024, Chỉ thị 01/CT-NHNN năm 2024, các công điện của Thủ tướng, …) [Dữ liệu]. `data/raw/chi_dao_lai_suat_2023_2026.csv` (nguồn từng văn bản ở cột `nguon`; chưa kiểm tra lại trong GD12).
