@@ -38,6 +38,10 @@ D10. **Quyết định của Huy 21/11/2026 sau GD10** (đã đóng Q9–Q13, th
 - Q13: giữ ngưỡng đã đặt trước; B−A báo theo dải `policy_step`, không nêu một số.
 - Q14 (mới): sai lệch mức lãi suất huy động là hạn chế của mô hình (ghi vào GD12); trước GD12 xuất sai lệch mức trong mẫu của GD9b ra CSV.
 
+D11. **Quyết định của Huy 21/11/2026 sau GD12** (đóng hai điểm của GD12):
+- D11-a: ý (ii) của hộp "Những điều không được diễn giải" thay bằng: không so sánh trực tiếp B−A với mức giảm 1,5–2%/năm trong CV 9608 (chỉ đạo nhắm vào lĩnh vực sản xuất kinh doanh, ưu tiên; mô hình trừ `policy_step` vào toàn bộ lãi suất cho vay); với giả định step 0.14–0.50, B−A cuối kỳ của mô hình là −0.26 đến −0.89 điểm %.
+- D11-b: ánh xạ step 0.375–0.50 ≈ 1,5–2 điểm %/năm chỉ giữ một câu ở phần thiết kế kịch bản (mục 4.4), ghi "giả định" và nêu khác phạm vi; xóa khỏi phần kết quả và kết luận.
+
 ---
 
 ## GD7c – Ghi quyết định GĐ8 + chỉ đạo lãi suất và biên cho vay (KHÔNG sửa mô hình)
